@@ -1,0 +1,21 @@
+{
+  "Id":"3-meditation-point",
+  "Name":"Meditation Point",
+  "Music":"m31",
+  "Width":5,
+  "Height":6,
+  "BackgroundImage":"back_2",
+  "Tiles":
+  [
+    [0,0,0,0,0],
+    [0,0,9,0,0],
+    [0,7,5,7,0],
+    [0,5,5,5,0],
+    [0,7,5,7,0],
+    [2,2,3,2,2]
+  ],
+  "Portals":
+  [
+    {"X":2,"Y":5,"Destination":"1-monastery","DestX":4,"DestY":1}
+  ]
+}

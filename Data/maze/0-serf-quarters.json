@@ -1,0 +1,19 @@
+{
+  "Id":"0-serf-quarters",
+  "Name":"Serf Quarters",
+  "Music":"m31",
+  "Width":3,
+  "Height":4,
+  "BackgroundImage":"back_2",
+  "Tiles":
+  [
+    [2,2,2],
+    [2,17,2],
+    [3,5,2],
+    [2,2,2]
+  ],
+  "Portals":
+  [
+    {"X":0,"Y":2,"Destination":"1-monastery","DestX":6,"DestY":6}
+  ]
+}

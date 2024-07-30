@@ -1,0 +1,19 @@
+{
+  "Id":"2-monk-quarters",
+  "Name":"Monk Quarters",
+  "Music":"m31",
+  "Width":3,
+  "Height":4,
+  "BackgroundImage":"back_0",
+  "Tiles":
+  [
+    [2,2,2],
+    [2,8,2],
+    [2,5,3],
+    [2,2,2]
+  ],
+  "Portals":
+  [
+    {"X":2,"Y":2,"Destination":"1-monastery","DestX":2,"DestY":6}
+  ]
+}
