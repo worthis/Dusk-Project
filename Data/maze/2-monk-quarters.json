@@ -4,7 +4,7 @@
   "Music":"m31",
   "Width":3,
   "Height":4,
-  "BackgroundImage":"back_0",
+  "BackgroundImage":0,
   "Tiles":
   [
     [2,2,2],

@@ -1,6 +1,7 @@
 ﻿namespace DuskProject.Source
 {
     using DuskProject.Source.MazeObjects;
+    using DuskProject.Source.Resources;
     using Newtonsoft.Json;
 
     public enum AvatarFacing : byte
@@ -37,7 +38,9 @@
         private ResourceManager _resourceManager;
 
         private MazeWorld _mazeWorld;
+
         private Tile[] _tileSet;
+        private ImageResource[] _backgrounds;
 
         private MazeWorldManager()
         {
@@ -88,6 +91,12 @@
             _tileSet[19] = new Tile(_resourceManager.LoadImage("Data/images/tiles/death_speaker.png"), true);
             _tileSet[20] = new Tile(_resourceManager.LoadImage("Data/images/tiles/wood_floor.png"), true);
             _tileSet[21] = new Tile(_resourceManager.LoadImage("Data/images/tiles/template_floor.png"), true);
+
+            _backgrounds = new ImageResource[4];
+            _backgrounds[0] = _resourceManager.LoadImage("Data/images/backgrounds/black.png");
+            _backgrounds[1] = _resourceManager.LoadImage("Data/images/backgrounds/nightsky.png");
+            _backgrounds[2] = _resourceManager.LoadImage("Data/images/backgrounds/tempest.png");
+            _backgrounds[3] = _resourceManager.LoadImage("Data/images/backgrounds/interior.png");
         }
 
         public void LoadMazeWorld(string fileName)
@@ -214,6 +223,12 @@
 
         public void RenderBackground(AvatarFacing avatarFacing)
         {
+            if (_mazeWorld is null)
+            {
+                return;
+            }
+
+            _windowManager.Draw(_backgrounds[_mazeWorld.BackgroundImage]);
         }
 
         private bool CheckBounds(int posX, int posY)
@@ -282,7 +297,7 @@
             MazeWorld mazeWorld = new MazeWorld();
             mazeWorld.Name = "Monastery Trail";
             mazeWorld.Id = "Monastery Trail ID";
-            mazeWorld.BackgroundImage = "back_1";
+            mazeWorld.BackgroundImage = 1;
             mazeWorld.Music = "m31";
 
             mazeWorld.Width = 14;

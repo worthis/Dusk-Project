@@ -4,7 +4,7 @@
   "Music":"elegy_dm",
   "Width":13,
   "Height":10,
-  "BackgroundImage":"back_2",
+  "BackgroundImage":2,
   "Tiles":
   [
     [ 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],

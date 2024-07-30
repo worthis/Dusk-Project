@@ -12,7 +12,7 @@
 
         public int Height { get; set; }
 
-        public string BackgroundImage { get; set; }
+        public int BackgroundImage { get; set; }
 
         public int[,] Tiles { get; set; }
 

@@ -4,7 +4,7 @@
   "Music":"haply",
   "Width":12,
   "Height":12,
-  "BackgroundImage":"back_1",
+  "BackgroundImage":1,
   "Tiles":
   [
     [ 2, 2, 2, 3, 2, 2, 2, 2, 0, 0, 0, 0],

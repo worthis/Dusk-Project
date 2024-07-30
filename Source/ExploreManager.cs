@@ -44,6 +44,7 @@
         public void Render()
         {
             // Maze Cell
+            _mazeWorldManager.RenderBackground(AvatarFacing.North);
             _mazeWorldManager.Render(2, 4, AvatarFacing.North);
 
             // UI
