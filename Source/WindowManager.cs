@@ -52,7 +52,7 @@
         {
             if (_window == IntPtr.Zero)
             {
-                CheckSDLErr(SDL.SDL_Init(SDL.SDL_INIT_VIDEO | SDL.SDL_INIT_AUDIO));
+                CheckSDLErr(SDL.SDL_Init(SDL.SDL_INIT_VIDEO));
             }
         }
 

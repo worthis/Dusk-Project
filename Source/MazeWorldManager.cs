@@ -28,6 +28,7 @@
 
         private WindowManager _windowManager;
         private ResourceManager _resourceManager;
+        private SoundManager _soundManager;
 
         private MazeWorld _mazeWorld;
 
@@ -61,36 +62,10 @@
         {
             _windowManager = WindowManager.GetInstance();
             _resourceManager = ResourceManager.GetInstance();
+            _soundManager = SoundManager.GetInstance();
 
-            _tileSet = new Tile[22];
-            _tileSet[0] = new Tile(null, false);
-            _tileSet[1] = new Tile(_resourceManager.LoadImage("Data/images/tiles/dungeon_floor.png"), true);
-            _tileSet[2] = new Tile(_resourceManager.LoadImage("Data/images/tiles/dungeon_wall.png"), false);
-            _tileSet[3] = new Tile(_resourceManager.LoadImage("Data/images/tiles/dungeon_door.png"), true);
-            _tileSet[4] = new Tile(_resourceManager.LoadImage("Data/images/tiles/pillar_exterior.png"), false);
-            _tileSet[5] = new Tile(_resourceManager.LoadImage("Data/images/tiles/dungeon_ceiling.png"), true);
-            _tileSet[6] = new Tile(_resourceManager.LoadImage("Data/images/tiles/grass.png"), true);
-            _tileSet[7] = new Tile(_resourceManager.LoadImage("Data/images/tiles/pillar_interior.png"), false);
-            _tileSet[8] = new Tile(_resourceManager.LoadImage("Data/images/tiles/chest_interior.png"), true);
-            _tileSet[9] = new Tile(_resourceManager.LoadImage("Data/images/tiles/chest_exterior.png"), true);
-            _tileSet[10] = new Tile(_resourceManager.LoadImage("Data/images/tiles/medieval_house.png"), false);
-            _tileSet[11] = new Tile(_resourceManager.LoadImage("Data/images/tiles/medieval_door.png"), true);
-            _tileSet[12] = new Tile(_resourceManager.LoadImage("Data/images/tiles/tree_evergreen.png"), false);
-            _tileSet[13] = new Tile(_resourceManager.LoadImage("Data/images/tiles/grave_cross.png"), false);
-            _tileSet[14] = new Tile(_resourceManager.LoadImage("Data/images/tiles/grave_stone.png"), false);
-            _tileSet[15] = new Tile(_resourceManager.LoadImage("Data/images/tiles/water.png"), false);
-            _tileSet[16] = new Tile(_resourceManager.LoadImage("Data/images/tiles/skull_pile.png"), false);
-            _tileSet[17] = new Tile(_resourceManager.LoadImage("Data/images/tiles/hay_pile.png"), true);
-            _tileSet[18] = new Tile(_resourceManager.LoadImage("Data/images/tiles/locked_door.png"), false);
-            _tileSet[19] = new Tile(_resourceManager.LoadImage("Data/images/tiles/death_speaker.png"), true);
-            _tileSet[20] = new Tile(_resourceManager.LoadImage("Data/images/tiles/wood_floor.png"), true);
-            _tileSet[21] = new Tile(_resourceManager.LoadImage("Data/images/tiles/template_floor.png"), true);
-
-            _backgrounds = new ImageResource[4];
-            _backgrounds[0] = _resourceManager.LoadImage("Data/images/backgrounds/black.png");
-            _backgrounds[1] = _resourceManager.LoadImage("Data/images/backgrounds/nightsky.png");
-            _backgrounds[2] = _resourceManager.LoadImage("Data/images/backgrounds/tempest.png");
-            _backgrounds[3] = _resourceManager.LoadImage("Data/images/backgrounds/interior.png");
+            LoadTiles();
+            LoadBackgrounds();
 
             Console.WriteLine("MazeWorldManager initialized");
         }
@@ -124,6 +99,8 @@
                     _mazeWorld.Tiles.GetLength(0),
                     _mazeWorld.Tiles.GetLength(1));
             }
+
+            _soundManager.PlayMusic(_mazeWorld.Music);
 
             Console.WriteLine("MazeWorld {0} loaded", fileName);
         }
@@ -318,6 +295,42 @@
                 _tileLayouts[position].Height,
                 _tileLayouts[position].DstX,
                 _tileLayouts[position].DstY);
+        }
+
+        private void LoadTiles()
+        {
+            _tileSet = new Tile[22];
+            _tileSet[0] = new Tile(null, false);
+            _tileSet[1] = new Tile(_resourceManager.LoadImage("Data/images/tiles/dungeon_floor.png"), true);
+            _tileSet[2] = new Tile(_resourceManager.LoadImage("Data/images/tiles/dungeon_wall.png"), false);
+            _tileSet[3] = new Tile(_resourceManager.LoadImage("Data/images/tiles/dungeon_door.png"), true);
+            _tileSet[4] = new Tile(_resourceManager.LoadImage("Data/images/tiles/pillar_exterior.png"), false);
+            _tileSet[5] = new Tile(_resourceManager.LoadImage("Data/images/tiles/dungeon_ceiling.png"), true);
+            _tileSet[6] = new Tile(_resourceManager.LoadImage("Data/images/tiles/grass.png"), true);
+            _tileSet[7] = new Tile(_resourceManager.LoadImage("Data/images/tiles/pillar_interior.png"), false);
+            _tileSet[8] = new Tile(_resourceManager.LoadImage("Data/images/tiles/chest_interior.png"), true);
+            _tileSet[9] = new Tile(_resourceManager.LoadImage("Data/images/tiles/chest_exterior.png"), true);
+            _tileSet[10] = new Tile(_resourceManager.LoadImage("Data/images/tiles/medieval_house.png"), false);
+            _tileSet[11] = new Tile(_resourceManager.LoadImage("Data/images/tiles/medieval_door.png"), true);
+            _tileSet[12] = new Tile(_resourceManager.LoadImage("Data/images/tiles/tree_evergreen.png"), false);
+            _tileSet[13] = new Tile(_resourceManager.LoadImage("Data/images/tiles/grave_cross.png"), false);
+            _tileSet[14] = new Tile(_resourceManager.LoadImage("Data/images/tiles/grave_stone.png"), false);
+            _tileSet[15] = new Tile(_resourceManager.LoadImage("Data/images/tiles/water.png"), false);
+            _tileSet[16] = new Tile(_resourceManager.LoadImage("Data/images/tiles/skull_pile.png"), false);
+            _tileSet[17] = new Tile(_resourceManager.LoadImage("Data/images/tiles/hay_pile.png"), true);
+            _tileSet[18] = new Tile(_resourceManager.LoadImage("Data/images/tiles/locked_door.png"), false);
+            _tileSet[19] = new Tile(_resourceManager.LoadImage("Data/images/tiles/death_speaker.png"), true);
+            _tileSet[20] = new Tile(_resourceManager.LoadImage("Data/images/tiles/wood_floor.png"), true);
+            _tileSet[21] = new Tile(_resourceManager.LoadImage("Data/images/tiles/template_floor.png"), true);
+        }
+
+        private void LoadBackgrounds()
+        {
+            _backgrounds = new ImageResource[4];
+            _backgrounds[0] = _resourceManager.LoadImage("Data/images/backgrounds/black.png");
+            _backgrounds[1] = _resourceManager.LoadImage("Data/images/backgrounds/nightsky.png");
+            _backgrounds[2] = _resourceManager.LoadImage("Data/images/backgrounds/tempest.png");
+            _backgrounds[3] = _resourceManager.LoadImage("Data/images/backgrounds/interior.png");
         }
 
         private int GetTileId(int posX, int posY)

@@ -13,6 +13,7 @@
             // Create singletons
             WindowManager windowManager = WindowManager.GetInstance();
             ResourceManager resourceManager = ResourceManager.GetInstance();
+            SoundManager soundManager = SoundManager.GetInstance();
             TextManager textManager = TextManager.GetInstance();
             GameStateManager gameStateManager = GameStateManager.GetInstance();
             TitleManager titleManager = TitleManager.GetInstance();
@@ -22,6 +23,7 @@
 
             // Initialization
             windowManager.CreateWindow("Dusk Project");
+            soundManager.Init();
             textManager.Init();
             gameStateManager.Init();
             titleManager.Init();
@@ -73,6 +75,8 @@
                 windowManager.Display();
             }
 
+            resourceManager.Quit();
+            soundManager.Quit();
             windowManager.Quit();
         }
     }

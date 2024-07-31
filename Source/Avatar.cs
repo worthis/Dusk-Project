@@ -17,6 +17,7 @@
         private static object instanceLock = new object();
 
         private WindowManager _windowManager;
+        private SoundManager _soundManager;
         private MazeWorldManager _mazeWorldManager;
 
         private int _posX;
@@ -71,6 +72,7 @@
         public void Init()
         {
             _windowManager = WindowManager.GetInstance();
+            _soundManager = SoundManager.GetInstance();
             _mazeWorldManager = MazeWorldManager.GetInstance();
 
             Console.WriteLine("Avatar initialized");
@@ -140,7 +142,7 @@
                 return;
             }
 
-            // play sound - blocked
+            _soundManager.PlaySound(SFX.Blocked);
         }
 
         public void StepForward()

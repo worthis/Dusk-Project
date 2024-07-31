@@ -4,10 +4,11 @@
     using System.Runtime.InteropServices;
     using SDL2;
 
-    public class ImageResource : CommonResource
+    public class ImageResource : CommonResource, IDisposable
     {
         private IntPtr _image;
         private SDL.SDL_Surface _imageSurface;
+        private bool _disposedValue;
 
         public ImageResource(string filename, bool alpha)
         {
@@ -42,6 +43,11 @@
             Console.WriteLine("Loaded image {0} [{1}x{2}]", Name, Width, Height);
         }
 
+        ~ImageResource()
+        {
+            Dispose(disposing: false);
+        }
+
         public int Width
         {
             get { return _imageSurface.w; }
@@ -52,9 +58,34 @@
             get { return _imageSurface.h; }
         }
 
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
         public IntPtr GetImage()
         {
             return _image;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+                }
+
+                if (_image != IntPtr.Zero)
+                {
+                    SDL.SDL_FreeSurface(_image);
+                    _image = IntPtr.Zero;
+                }
+
+                _disposedValue = true;
+            }
         }
     }
 }
