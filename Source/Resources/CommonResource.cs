@@ -2,19 +2,15 @@
 {
     public class CommonResource
     {
-        private string _name;
         private int _count;
+        private string _name;
 
         public int Count
         {
             get { return _count; }
         }
 
-        protected string Name
-        {
-            get { return _name; }
-            set { _name = value; }
-        }
+        public string Name { get => _name; }
 
         public void Load()
         {
@@ -24,6 +20,11 @@
         public void Unload()
         {
             _count--;
+        }
+
+        protected void SetName(string name)
+        {
+            _name = name;
         }
     }
 }

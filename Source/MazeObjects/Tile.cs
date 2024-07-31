@@ -16,5 +16,18 @@
         public ImageResource Image { get => _image; }
 
         public bool Walkable { get => _walkable; }
+
+        public string Name
+        {
+            get
+            {
+                if (_image is not null)
+                {
+                    return _image.Name;
+                }
+
+                return string.Empty;
+            }
+        }
     }
 }

@@ -11,7 +11,7 @@
 
         public ImageResource(string filename, bool alpha)
         {
-            Name = filename;
+            SetName(filename);
 
             _image = SDL_image.IMG_Load(Name);
 
@@ -31,10 +31,13 @@
                 return;
             }
 
-            /*if (alpha)
+            if (alpha)
             {
-                SDL.SDL_SetColorKey(_image, (int)SDL.SDL_bool.SDL_TRUE, SDL.SDL_MapRGB(_imageSurface.format, 0, 0, 255));
-            }*/
+                SDL.SDL_SetColorKey(
+                    _image,
+                    (int)SDL.SDL_bool.SDL_TRUE,
+                    SDL.SDL_MapRGB(_imageSurface.format, 0, 0, 255));
+            }
 
             Console.WriteLine("Loaded image {0} [{1}x{2}]", Name, Width, Height);
         }
