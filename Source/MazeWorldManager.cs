@@ -4,14 +4,6 @@
     using DuskProject.Source.Resources;
     using Newtonsoft.Json;
 
-    public enum AvatarFacing : byte
-    {
-        North = 0,
-        South = 1,
-        West = 2,
-        East = 3,
-    }
-
     public class MazeWorldManager
     {
         private static MazeWorldManager instance;
@@ -44,7 +36,10 @@
 
         private MazeWorldManager()
         {
+            Init();
         }
+
+        public string MazeWorldName { get => _mazeWorld.Name; }
 
         public static MazeWorldManager GetInstance()
         {
@@ -97,13 +92,17 @@
             _backgrounds[1] = _resourceManager.LoadImage("Data/images/backgrounds/nightsky.png");
             _backgrounds[2] = _resourceManager.LoadImage("Data/images/backgrounds/tempest.png");
             _backgrounds[3] = _resourceManager.LoadImage("Data/images/backgrounds/interior.png");
+
+            Console.WriteLine("MazeWorldManager initialized");
         }
 
-        public void LoadMazeWorld(string fileName)
+        public void LoadMazeWorld(string mazeWorldName)
         {
+            string fileName = string.Format("Data/maze/{0}.json", mazeWorldName);
+
             if (!File.Exists(fileName))
             {
-                Console.WriteLine("Error: Unable to load MazeWorld {0}", fileName);
+                Console.WriteLine("Error: Unable to load MazeWorld {0} from {1}", mazeWorldName, fileName);
                 return;
             }
 
@@ -115,11 +114,49 @@
                 _mazeWorld = JsonConvert.DeserializeObject<MazeWorld>(jsonData);
             }
 
+            if (_mazeWorld.Width != _mazeWorld.Tiles.GetLength(1) &&
+                _mazeWorld.Height != _mazeWorld.Tiles.GetLength(0))
+            {
+                Console.WriteLine(
+                    "Error: MazeWorld {0} dimensions {1}x{2} do not match the tiles dimensions {3}x{4}",
+                    MazeWorldName,
+                    _mazeWorld.Width,
+                    _mazeWorld.Height,
+                    _mazeWorld.Tiles.GetLength(0),
+                    _mazeWorld.Tiles.GetLength(1));
+            }
+
             Console.WriteLine("MazeWorld {0} loaded", fileName);
         }
 
-        public void Update()
+        public bool CheckPortals(int posX, int posY, out MazePortal mazePortal)
         {
+            for (int i = 0; i < _mazeWorld.Portals.Count; i++)
+            {
+                if (_mazeWorld.Portals[i].CheckEnter(posX, posY))
+                {
+                    mazePortal = _mazeWorld.Portals[i];
+                    return true;
+                }
+            }
+
+            mazePortal = null;
+            return false;
+        }
+
+        public bool CheckShops(int posX, int posY, out ShopPortal shopPortal)
+        {
+            for (int i = 0; i < _mazeWorld.Shops.Count; i++)
+            {
+                if (_mazeWorld.Shops[i].CheckEnter(posX, posY))
+                {
+                    shopPortal = _mazeWorld.Shops[i];
+                    return true;
+                }
+            }
+
+            shopPortal = null;
+            return false;
         }
 
         public void Render(int posX, int posY, AvatarFacing avatarFacing)
@@ -231,6 +268,19 @@
             _windowManager.Draw(_backgrounds[_mazeWorld.BackgroundImage]);
         }
 
+        public Tile GetTile(int posX, int posY)
+        {
+            int tileId = GetTileId(posX, posY);
+
+            if (tileId <= 0 ||
+                tileId >= _tileSet.Length)
+            {
+                return _tileSet[0];
+            }
+
+            return _tileSet[tileId];
+        }
+
         private bool CheckBounds(int posX, int posY)
         {
             if (_mazeWorld is null)
@@ -239,9 +289,10 @@
                 return false;
             }
 
+            // Note: x,y flipped to ease map making
             if (posX >= 0 &&
-                posY >= 0 &&
                 posX < _mazeWorld.Width &&
+                posY >= 0 &&
                 posY < _mazeWorld.Height)
             {
                 return true;
@@ -252,10 +303,10 @@
 
         private void RenderTile(int posX, int posY, int position)
         {
-            int tileId = GetTile(posX, posY);
+            int tileId = GetTileId(posX, posY);
 
             if (tileId <= 0 ||
-                tileId >= _tileLayouts.Length)
+                tileId >= _tileSet.Length)
             {
                 return;
             }
@@ -270,7 +321,7 @@
                 _tileLayouts[position].DstY);
         }
 
-        private int GetTile(int posX, int posY)
+        private int GetTileId(int posX, int posY)
         {
             if (!CheckBounds(posX, posY))
             {

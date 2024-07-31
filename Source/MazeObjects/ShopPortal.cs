@@ -11,5 +11,10 @@
         public int DestX { get; set; }
 
         public int DestY { get; set; }
+
+        public bool CheckEnter(int posX, int posY)
+        {
+            return posX == X && posY == Y;
+        }
     }
 }

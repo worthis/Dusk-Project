@@ -1,5 +1,7 @@
 ﻿namespace DuskProject.Source
 {
+    using DuskProject.Source.MazeObjects;
+
     public class ExploreManager
     {
         private static ExploreManager instance;
@@ -7,6 +9,9 @@
 
         private TextManager _textManager;
         private MazeWorldManager _mazeWorldManager;
+        private Avatar _avatar;
+
+        private string _message = string.Empty;
 
         private ExploreManager()
         {
@@ -33,22 +38,66 @@
         {
             _textManager = TextManager.GetInstance();
             _mazeWorldManager = MazeWorldManager.GetInstance();
+            _avatar = Avatar.GetInstance();
 
-            _mazeWorldManager.LoadMazeWorld("Data/maze/3-meditation-point.json");
+            _mazeWorldManager.LoadMazeWorld("0-serf-quarters");
         }
 
         public void Update()
         {
+            _message = string.Empty;
+
+            _avatar.Update();
+
+            if (_avatar.Moved)
+            {
+                if (_mazeWorldManager.CheckPortals(_avatar.PosX, _avatar.PosY, out MazePortal mazePortal))
+                {
+                    _avatar.PosX = mazePortal.DestX;
+                    _avatar.PosY = mazePortal.DestY;
+
+                    _mazeWorldManager.LoadMazeWorld(mazePortal.Destination);
+
+                    _message = _mazeWorldManager.MazeWorldName;
+                }
+
+                // Check exit
+                // Check shop
+                // Special scripts
+                // Encounters
+            }
         }
 
         public void Render()
         {
             // Maze Cell
-            _mazeWorldManager.RenderBackground(AvatarFacing.North);
-            _mazeWorldManager.Render(2, 4, AvatarFacing.North);
+            _mazeWorldManager.RenderBackground(_avatar.Facing);
+            _mazeWorldManager.Render(_avatar.PosX, _avatar.PosY, _avatar.Facing);
 
             // UI
-            _textManager.Render("NORTH", 160, 4, TextJustify.JUSTIFY_CENTER);
+            // Compass
+            switch (_avatar.Facing)
+            {
+                case AvatarFacing.North:
+                    _textManager.Render("NORTH", 160, 4, TextJustify.JUSTIFY_CENTER);
+                    break;
+
+                case AvatarFacing.East:
+                    _textManager.Render("EAST", 160, 4, TextJustify.JUSTIFY_CENTER);
+                    break;
+
+                case AvatarFacing.West:
+                    _textManager.Render("WEST", 160, 4, TextJustify.JUSTIFY_CENTER);
+                    break;
+
+                case AvatarFacing.South:
+                    _textManager.Render("SOUTH", 160, 4, TextJustify.JUSTIFY_CENTER);
+                    break;
+            }
+
+            // Minimap
+            // Messages
+            _textManager.Render(_message, 160, 200, TextJustify.JUSTIFY_CENTER);
         }
     }
 }

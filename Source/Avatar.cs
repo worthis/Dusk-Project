@@ -34,7 +34,7 @@
         private int _spellBook;
         private int _gold;
 
-        private string _sleepMazeWorld;
+        private string _sleepMazeWorld = string.Empty;
         private int _sleepPosX;
         private int _sleepPosY;
 
