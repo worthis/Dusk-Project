@@ -50,6 +50,10 @@
 
         private WindowManager()
         {
+            if (_window == IntPtr.Zero)
+            {
+                CheckSDLErr(SDL.SDL_Init(SDL.SDL_INIT_VIDEO | SDL.SDL_INIT_AUDIO));
+            }
         }
 
         public static WindowManager GetInstance()
@@ -82,16 +86,6 @@
         public IntPtr GetRenderer()
         {
             return _renderer;
-        }
-
-        public void Init()
-        {
-            if (_window == IntPtr.Zero)
-            {
-                CheckSDLErr(SDL.SDL_Init(SDL.SDL_INIT_VIDEO));
-            }
-
-            Console.WriteLine("WindowManager initialized");
         }
 
         public void CreateWindow(string title)

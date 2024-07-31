@@ -40,7 +40,6 @@
 
         private Avatar()
         {
-            Init();
             Reset();
         }
 
@@ -73,6 +72,8 @@
         {
             _windowManager = WindowManager.GetInstance();
             _mazeWorldManager = MazeWorldManager.GetInstance();
+
+            Console.WriteLine("Avatar initialized");
         }
 
         public void Reset()
@@ -109,15 +110,15 @@
 
         public void Respawn()
         {
+            _gold = 0;
+
             _hp = _maxHp;
             _mp = _maxMp;
 
             _posX = _sleepPosX;
             _posY = _sleepPosY;
 
-            _gold = 0;
-
-            // loadworld
+            _mazeWorldManager.LoadMazeWorld(_sleepMazeWorld);
         }
 
         public bool IsBadlyHurt()

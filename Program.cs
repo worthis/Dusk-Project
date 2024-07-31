@@ -10,24 +10,24 @@
 
         public static void Main()
         {
+            // Create singletons
             WindowManager windowManager = WindowManager.GetInstance();
-            windowManager.Init();
-            windowManager.CreateWindow("Dusk Project");
-
+            ResourceManager resourceManager = ResourceManager.GetInstance();
             TextManager textManager = TextManager.GetInstance();
-            textManager.Init();
-
-            TitleManager titleManager = TitleManager.GetInstance();
-            titleManager.Init();
-
-            ExploreManager exploreManager = ExploreManager.GetInstance();
-            exploreManager.Init();
-
-            MazeWorldManager mazeWorldManager = MazeWorldManager.GetInstance();
-            mazeWorldManager.Init();
-
             GameStateManager gameStateManager = GameStateManager.GetInstance();
+            TitleManager titleManager = TitleManager.GetInstance();
+            ExploreManager exploreManager = ExploreManager.GetInstance();
+            MazeWorldManager mazeWorldManager = MazeWorldManager.GetInstance();
+            Avatar avatar = Avatar.GetInstance();
+
+            // Initialization
+            windowManager.CreateWindow("Dusk Project");
+            textManager.Init();
             gameStateManager.Init();
+            titleManager.Init();
+            exploreManager.Init();
+            mazeWorldManager.Init();
+            avatar.Init();
 
             _lastUpdateTime = SDL.SDL_GetTicks();
 

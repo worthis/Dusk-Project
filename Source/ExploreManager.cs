@@ -40,7 +40,7 @@
             _mazeWorldManager = MazeWorldManager.GetInstance();
             _avatar = Avatar.GetInstance();
 
-            _mazeWorldManager.LoadMazeWorld("0-serf-quarters");
+            Console.WriteLine("ExploreManager initialized");
         }
 
         public void Update()

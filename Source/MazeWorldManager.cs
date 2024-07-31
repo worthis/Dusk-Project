@@ -36,7 +36,6 @@
 
         private MazeWorldManager()
         {
-            Init();
         }
 
         public string MazeWorldName { get => _mazeWorld.Name; }
