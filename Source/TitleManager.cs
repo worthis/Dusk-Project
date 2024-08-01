@@ -57,7 +57,7 @@
 
         public void Update()
         {
-            if (_windowManager.KeyPressed(InputKeys.KEY_UP))
+            if (_windowManager.KeyPressed(InputKey.KEY_UP))
             {
                 _menuSelected--;
                 if (_menuSelected < 0)
@@ -66,7 +66,7 @@
                 }
             }
 
-            if (_windowManager.KeyPressed(InputKeys.KEY_DOWN))
+            if (_windowManager.KeyPressed(InputKey.KEY_DOWN))
             {
                 _menuSelected++;
                 if (_menuSelected >= _menuCount)
@@ -75,19 +75,22 @@
                 }
             }
 
-            if (_windowManager.KeyPressed(InputKeys.KEY_A))
+            if (_windowManager.KeyPressed(InputKey.KEY_A))
             {
                 switch (_menuSelected)
                 {
+                    // Start
                     case 0:
                         _mazeWorldManager.LoadMazeWorld("0-serf-quarters");
                         _gameStateManager.ChangeState(GameState.Explore);
                         break;
 
+                    // Options
                     case 1:
 
                         break;
 
+                    // Quit
                     case 2:
                         _gameStateManager.RegisterQuit();
                         break;

@@ -1,6 +1,6 @@
 ﻿namespace DuskProject.Source.Enums
 {
-    public enum SFX
+    public enum SFX : byte
     {
         Attack,
         Blocked,

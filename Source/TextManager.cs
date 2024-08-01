@@ -1,10 +1,10 @@
 ﻿namespace DuskProject.Source
 {
     using System;
-    using System.Text.Json;
     using DuskProject.Source.Enums;
     using DuskProject.Source.Resources;
     using DuskProject.Source.Text;
+    using Newtonsoft.Json;
 
     public class TextManager
     {
@@ -128,7 +128,7 @@
                 string jsonData = streamReader.ReadToEnd();
                 streamReader.Close();
 
-                _glyphDictionary = JsonSerializer.Deserialize<Dictionary<char, TextGlyph>>(jsonData);
+                _glyphDictionary = JsonConvert.DeserializeObject<Dictionary<char, TextGlyph>>(jsonData);
             }
 
             Console.WriteLine("Font charset {0} loaded", fileName);

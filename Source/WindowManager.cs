@@ -27,7 +27,7 @@
         private SDL.SDL_Surface _screenSurface;
         private SDL.SDL_Rect _screenRect;
 
-        private List<InputKeys> _keyPressed = new List<InputKeys>();
+        private List<InputKey> _keyPressed = new List<InputKey>();
 
         private WindowManager()
         {
@@ -173,70 +173,70 @@
                 switch (e.type)
                 {
                     case SDL.SDL_EventType.SDL_QUIT:
-                        _keyPressed.Add(InputKeys.KEY_QUIT);
+                        _keyPressed.Add(InputKey.KEY_QUIT);
                         break;
 
                     case SDL.SDL_EventType.SDL_KEYUP:
                         switch (e.key.keysym.sym)
                         {
                             case SDL.SDL_Keycode.SDLK_UP:
-                                _keyPressed.Add(InputKeys.KEY_UP);
+                                _keyPressed.Add(InputKey.KEY_UP);
                                 break;
 
                             case SDL.SDL_Keycode.SDLK_DOWN:
-                                _keyPressed.Add(InputKeys.KEY_DOWN);
+                                _keyPressed.Add(InputKey.KEY_DOWN);
                                 break;
 
                             case SDL.SDL_Keycode.SDLK_LEFT:
-                                _keyPressed.Add(InputKeys.KEY_LEFT);
+                                _keyPressed.Add(InputKey.KEY_LEFT);
                                 break;
 
                             case SDL.SDL_Keycode.SDLK_RIGHT:
-                                _keyPressed.Add(InputKeys.KEY_RIGHT);
+                                _keyPressed.Add(InputKey.KEY_RIGHT);
                                 break;
 
                             case SDL.SDL_Keycode.SDLK_SPACE:
-                                _keyPressed.Add(InputKeys.KEY_A);
+                                _keyPressed.Add(InputKey.KEY_A);
                                 break;
 
                             case SDL.SDL_Keycode.SDLK_LCTRL:
-                                _keyPressed.Add(InputKeys.KEY_B);
+                                _keyPressed.Add(InputKey.KEY_B);
                                 break;
 
                             case SDL.SDL_Keycode.SDLK_LSHIFT:
-                                _keyPressed.Add(InputKeys.KEY_X);
+                                _keyPressed.Add(InputKey.KEY_X);
                                 break;
 
                             case SDL.SDL_Keycode.SDLK_LALT:
-                                _keyPressed.Add(InputKeys.KEY_Y);
+                                _keyPressed.Add(InputKey.KEY_Y);
                                 break;
 
                             case SDL.SDL_Keycode.SDLK_e:
-                                _keyPressed.Add(InputKeys.KEY_L1);
+                                _keyPressed.Add(InputKey.KEY_L1);
                                 break;
 
                             case SDL.SDL_Keycode.SDLK_TAB:
-                                _keyPressed.Add(InputKeys.KEY_L2);
+                                _keyPressed.Add(InputKey.KEY_L2);
                                 break;
 
                             case SDL.SDL_Keycode.SDLK_t:
-                                _keyPressed.Add(InputKeys.KEY_R1);
+                                _keyPressed.Add(InputKey.KEY_R1);
                                 break;
 
                             case SDL.SDL_Keycode.SDLK_BACKSPACE:
-                                _keyPressed.Add(InputKeys.KEY_R2);
+                                _keyPressed.Add(InputKey.KEY_R2);
                                 break;
 
                             case SDL.SDL_Keycode.SDLK_RCTRL:
-                                _keyPressed.Add(InputKeys.KEY_SELECT);
+                                _keyPressed.Add(InputKey.KEY_SELECT);
                                 break;
 
                             case SDL.SDL_Keycode.SDLK_RETURN:
-                                _keyPressed.Add(InputKeys.KEY_START);
+                                _keyPressed.Add(InputKey.KEY_START);
                                 break;
 
                             case SDL.SDL_Keycode.SDLK_ESCAPE:
-                                _keyPressed.Add(InputKeys.KEY_MENU);
+                                _keyPressed.Add(InputKey.KEY_MENU);
                                 break;
                         }
 
@@ -245,7 +245,7 @@
             }
         }
 
-        public bool KeyPressed(InputKeys key)
+        public bool KeyPressed(InputKey key)
         {
             return _keyPressed.Contains(key);
         }

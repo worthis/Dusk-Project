@@ -32,7 +32,7 @@
             return instance;
         }
 
-        public ImageResource LoadImage(string fileName)
+        public ImageResource LoadImage(string fileName, bool alpha = false)
         {
             ImageResource image;
 
@@ -42,7 +42,7 @@
                 return image;
             }
 
-            image = new ImageResource(fileName, false);
+            image = new ImageResource(fileName, alpha);
             image.Load();
 
             _imageResources.Add(fileName, image);

@@ -108,7 +108,8 @@
 
         public void PlayMusic(string musicName)
         {
-            if (!_useSound)
+            if (!_useSound ||
+                string.IsNullOrEmpty(musicName))
             {
                 return;
             }

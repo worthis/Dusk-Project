@@ -230,22 +230,22 @@
         {
             _moved = false;
 
-            if (_windowManager.KeyPressed(InputKeys.KEY_UP))
+            if (_windowManager.KeyPressed(InputKey.KEY_UP))
             {
                 StepForward();
             }
 
-            if (_windowManager.KeyPressed(InputKeys.KEY_DOWN))
+            if (_windowManager.KeyPressed(InputKey.KEY_DOWN))
             {
                 StepBackward();
             }
 
-            if (_windowManager.KeyPressed(InputKeys.KEY_LEFT))
+            if (_windowManager.KeyPressed(InputKey.KEY_LEFT))
             {
                 TurnLeft();
             }
 
-            if (_windowManager.KeyPressed(InputKeys.KEY_RIGHT))
+            if (_windowManager.KeyPressed(InputKey.KEY_RIGHT))
             {
                 TurnRight();
             }

@@ -1,6 +1,6 @@
 ﻿namespace DuskProject.Source.Enums
 {
-    public enum InputKeys : byte
+    public enum InputKey : byte
     {
         KEY_UP,
         KEY_DOWN,
