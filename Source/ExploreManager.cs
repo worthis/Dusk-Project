@@ -8,8 +8,10 @@
         private static ExploreManager instance;
         private static object instanceLock = new object();
 
+        private GameStateManager _gameStateManager;
         private TextManager _textManager;
         private MazeWorldManager _mazeWorldManager;
+        private DialogManager _dialogManager;
         private Avatar _avatar;
 
         private string _message = string.Empty;
@@ -37,8 +39,10 @@
 
         public void Init()
         {
+            _gameStateManager = GameStateManager.GetInstance();
             _textManager = TextManager.GetInstance();
             _mazeWorldManager = MazeWorldManager.GetInstance();
+            _dialogManager = DialogManager.GetInstance();
             _avatar = Avatar.GetInstance();
 
             Console.WriteLine("ExploreManager initialized");
@@ -52,6 +56,7 @@
 
             if (_avatar.Moved)
             {
+                // Check exit portals
                 if (_mazeWorldManager.CheckPortals(_avatar.PosX, _avatar.PosY, out MazePortal mazePortal))
                 {
                     _avatar.PosX = mazePortal.DestX;
@@ -60,10 +65,22 @@
                     _mazeWorldManager.LoadMazeWorld(mazePortal.Destination);
 
                     _message = _mazeWorldManager.MazeWorldName;
+
+                    return;
                 }
 
-                // Check exit
-                // Check shop
+                // Check shop entrance
+                if (_mazeWorldManager.CheckShops(_avatar.PosX, _avatar.PosY, out ShopPortal shopPortal))
+                {
+                    _avatar.PosX = shopPortal.DestX;
+                    _avatar.PosY = shopPortal.DestY;
+
+                    _dialogManager.LoadShop(shopPortal.ShopId);
+                    _gameStateManager.ChangeState(GameState.Dialog);
+
+                    return;
+                }
+
                 // Special scripts
                 // Encounters
             }

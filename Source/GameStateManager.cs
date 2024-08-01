@@ -7,12 +7,13 @@
         private static GameStateManager instance;
         private static object instanceLock = new object();
 
+        private TitleManager _titleManager;
+        private ExploreManager _exploreManager;
+        private DialogManager _dialogManager;
+
         private GameState _gameState = GameState.Title;
         private bool _redraw = false;
         private bool _quit = false;
-
-        private TitleManager _titleManager;
-        private ExploreManager _exploreManager;
 
         private GameStateManager()
         {
@@ -39,6 +40,7 @@
         {
             _titleManager = TitleManager.GetInstance();
             _exploreManager = ExploreManager.GetInstance();
+            _dialogManager = DialogManager.GetInstance();
 
             Console.WriteLine("GameStateManager initialized");
         }
@@ -75,6 +77,7 @@
                     break;
 
                 case GameState.Dialog:
+                    _dialogManager.Update();
                     break;
 
                 case GameState.Info:
@@ -104,7 +107,7 @@
                     break;
 
                 case GameState.Dialog:
-
+                    _dialogManager.Render();
                     break;
 
                 case GameState.Info:

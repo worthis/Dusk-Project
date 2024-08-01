@@ -20,6 +20,7 @@
             TitleManager titleManager = TitleManager.GetInstance();
             ExploreManager exploreManager = ExploreManager.GetInstance();
             MazeWorldManager mazeWorldManager = MazeWorldManager.GetInstance();
+            DialogManager dialogManager = DialogManager.GetInstance();
             Avatar avatar = Avatar.GetInstance();
 
             // Initialization
@@ -30,6 +31,7 @@
             titleManager.Init();
             exploreManager.Init();
             mazeWorldManager.Init();
+            dialogManager.Init();
             avatar.Init();
 
             _lastUpdateTime = SDL.SDL_GetTicks();
@@ -55,8 +57,8 @@
 
                 // Check quit conditions
                 /*Console.WriteLine("Game tick: check quit");*/
-                if (windowManager.KeyPressed(InputKeys.KEY_MENU) ||
-                    windowManager.KeyPressed(InputKeys.KEY_QUIT) ||
+                if (windowManager.KeyPressed(InputKey.KEY_MENU) ||
+                    windowManager.KeyPressed(InputKey.KEY_QUIT) ||
                     gameStateManager.Quitting())
                 {
                     windowManager.Close();

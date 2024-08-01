@@ -31,7 +31,7 @@
   ],
   "Shops":
   [
-    {"X":5,"Y":13,"ShopId":"4","DestX":5,"DestY":12}
+    {"X":5,"Y":13,"ShopId":"4-woodsman","DestX":5,"DestY":12}
   ],
   "Enemies":
   [

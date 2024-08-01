@@ -103,11 +103,18 @@
 
             _soundManager.PlayMusic(_mazeWorld.Music);
 
-            Console.WriteLine("MazeWorld {0} loaded", fileName);
+            Console.WriteLine("MazeWorld {0} loaded from {1}", mazeWorldName, fileName);
         }
 
         public bool CheckPortals(int posX, int posY, out MazePortal mazePortal)
         {
+            if (_mazeWorld is null ||
+                _mazeWorld.Portals is null)
+            {
+                mazePortal = null;
+                return false;
+            }
+
             for (int i = 0; i < _mazeWorld.Portals.Count; i++)
             {
                 if (_mazeWorld.Portals[i].CheckEnter(posX, posY))
@@ -123,6 +130,13 @@
 
         public bool CheckShops(int posX, int posY, out ShopPortal shopPortal)
         {
+            if (_mazeWorld is null ||
+                _mazeWorld.Shops is null)
+            {
+                shopPortal = null;
+                return false;
+            }
+
             for (int i = 0; i < _mazeWorld.Shops.Count; i++)
             {
                 if (_mazeWorld.Shops[i].CheckEnter(posX, posY))
@@ -243,6 +257,17 @@
             }
 
             _windowManager.Draw(_backgrounds[_mazeWorld.BackgroundImage]);
+        }
+
+        public void RenderBackground(int backgroundId)
+        {
+            if (backgroundId < 0 ||
+                backgroundId >= _backgrounds.Length)
+            {
+                return;
+            }
+
+            _windowManager.Draw(_backgrounds[backgroundId]);
         }
 
         public Tile GetTile(int posX, int posY)
@@ -419,7 +444,7 @@
                 DestY = 12,
             });
 
-            using (StreamWriter streamWriter = new("mazeWorldTest.dat"))
+            using (StreamWriter streamWriter = new("mazeWorldTest.json"))
             {
                 string mazeWorldData = JsonConvert.SerializeObject(mazeWorld);
                 streamWriter.Write(mazeWorldData);

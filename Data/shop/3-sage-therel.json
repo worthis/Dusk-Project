@@ -1,0 +1,10 @@
+{
+  "Name":"Sage Therel",
+  "Music":"",
+  "BackgroundImage":3,
+  "Items":
+  [
+    {"Type":"Message","Value":0,"MessageFirst":"Fire magic is effective","MessageSecond":"against undead and bone."},
+    {"Type":"Spell","Value":2,"MessageFirst":"","MessageSecond":""}
+  ]
+}

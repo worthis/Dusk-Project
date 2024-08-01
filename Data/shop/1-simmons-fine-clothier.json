@@ -1,0 +1,10 @@
+{
+  "Name":"Simmons Fine Clothier",
+  "Music":"",
+  "BackgroundImage":3,
+  "Items":
+  [
+    {"Type":"Armor","Value":2,"MessageFirst":"","MessageSecond":""},
+    {"Type":"Armor","Value":3,"MessageFirst":"","MessageSecond":""}
+  ]
+}

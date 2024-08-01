@@ -1,0 +1,10 @@
+{
+  "Name":"The Pilgrim Inn",
+  "Music":"",
+  "BackgroundImage":3,
+  "Items":
+  [
+    {"Type":"Message","Value":0,"MessageFirst":"We saw dead walking","MessageSecond":"from the Canal Boneyard."},
+    {"Type":"Room","Value":10,"MessageFirst":"","MessageSecond":""}
+  ]
+}
