@@ -1,6 +1,7 @@
 ﻿namespace DuskProject
 {
     using DuskProject.Source;
+    using DuskProject.Source.Enums;
     using SDL2;
 
     public class Program

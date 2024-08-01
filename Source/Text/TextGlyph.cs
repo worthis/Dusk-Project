@@ -1,4 +1,4 @@
-﻿namespace DuskProject.Source
+﻿namespace DuskProject.Source.Text
 {
     public class TextGlyph
     {

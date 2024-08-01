@@ -1,5 +1,6 @@
 ﻿namespace DuskProject.Source
 {
+    using DuskProject.Source.Enums;
     using DuskProject.Source.MazeObjects;
 
     public class ExploreManager

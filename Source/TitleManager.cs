@@ -1,13 +1,7 @@
 ﻿namespace DuskProject.Source
 {
+    using DuskProject.Source.Enums;
     using DuskProject.Source.Resources;
-
-    public enum TitleState : byte
-    {
-        Main = 0,
-        Options = 1,
-        Quit = 2,
-    }
 
     public class TitleManager
     {

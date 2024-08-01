@@ -2,14 +2,9 @@
 {
     using System;
     using System.Text.Json;
+    using DuskProject.Source.Enums;
     using DuskProject.Source.Resources;
-
-    public enum TextJustify : byte
-    {
-        JUSTIFY_LEFT,
-        JUSTIFY_RIGHT,
-        JUSTIFY_CENTER,
-    }
+    using DuskProject.Source.Text;
 
     public class TextManager
     {

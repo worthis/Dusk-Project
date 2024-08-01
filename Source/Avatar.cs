@@ -1,15 +1,8 @@
 ﻿namespace DuskProject.Source
 {
     using System;
+    using DuskProject.Source.Enums;
     using DuskProject.Source.MazeObjects;
-
-    public enum AvatarFacing : byte
-    {
-        North = 0,
-        South = 1,
-        West = 2,
-        East = 3,
-    }
 
     public class Avatar
     {

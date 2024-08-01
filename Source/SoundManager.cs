@@ -1,26 +1,9 @@
 ﻿namespace DuskProject.Source
 {
     using System;
+    using DuskProject.Source.Enums;
     using DuskProject.Source.Resources;
     using SDL2;
-
-    public enum SFX
-    {
-        Attack,
-        Blocked,
-        BoneShield,
-        Click,
-        Coin,
-        Critical,
-        Defeat,
-        Fire,
-        Heal,
-        HPDrain,
-        Miss,
-        MPDrain,
-        Run,
-        Unlock,
-    }
 
     public class SoundManager
     {
