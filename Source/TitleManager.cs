@@ -107,7 +107,7 @@
                         _textManager.Render(GetMenuItemText("OPTIONS", 1, _menuSelected), 160, 100 + 16, TextJustify.JUSTIFY_CENTER);
                         _textManager.Render(GetMenuItemText("QUIT", 2, _menuSelected), 160, 100 + 16 + 16, TextJustify.JUSTIFY_CENTER);
 
-                        _textManager.Render("by Clint Bellanger 2013", 160, 200, TextJustify.JUSTIFY_CENTER);
+                        _textManager.Render("by Worthis, 2024", 160, 200, TextJustify.JUSTIFY_CENTER);
                         _textManager.Render("ft. music by Yubatake", 160, 200 + 16, TextJustify.JUSTIFY_CENTER);
                     }
 
@@ -119,8 +119,6 @@
 
                     break;
             }
-
-            TextManager.GetInstance().Render("Hello, traveller!", 160, 60, TextJustify.JUSTIFY_CENTER);
         }
 
         private static string GetMenuItemText(string menuItemText, int menuItemPos, int menuSelected)
