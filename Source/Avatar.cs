@@ -4,8 +4,10 @@
     using DuskProject.Source.Dialog;
     using DuskProject.Source.Enums;
     using DuskProject.Source.Maze;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
 
-    public class Avatar
+    public class Avatar : AvatarBase
     {
         private static Avatar instance;
         private static object instanceLock = new object();
@@ -14,44 +16,10 @@
         private SoundManager _soundManager;
         private MazeWorldManager _mazeWorldManager;
 
-        private AvatarFacing _facing;
-        private bool _moved;
-        private int _hp;
-        private int _maxHp;
-        private int _mp;
-        private int _maxMp;
-        private int _attack;
-        private int _defence;
-        private List<Item> _spellBook = new List<Item>();
-
         private Avatar()
         {
             Reset();
         }
-
-        public int PosX { get; set; } = 1;
-
-        public int PosY { get; set; } = 1;
-
-        public bool Moved { get => _moved; }
-
-        public AvatarFacing Facing { get => _facing; }
-
-        public string MazeWorld { get; set; } = "0-serf-quarters";
-
-        public string SleepMazeWorld { get; private set; } = "0-serf-quarters";
-
-        public int SleepPosX { get; private set; } = 1;
-
-        public int SleepPosY { get; private set; } = 1;
-
-        public int Gold { get; private set; } = 0;
-
-        public Item Weapon { get; private set; }
-
-        public Item Armor { get; private set; }
-
-        public int SpellBookLevel { get; set; } = 0;
 
         public static Avatar GetInstance()
         {
@@ -83,27 +51,83 @@
         {
             PosX = 1;
             PosY = 1;
-            _facing = AvatarFacing.South;
-            _moved = false;
-            _hp = 25;
-            _maxHp = 25;
-            _mp = 4;
-            _maxMp = 4;
-            _attack = 0;
-            _defence = 0;
+            Facing = AvatarFacing.South;
+            Moved = false;
+            HP = 25;
+            MaxHP = 25;
+            MP = 4;
+            MaxMP = 4;
+            Attack = 0;
+            Defence = 0;
             Gold = 0;
             SpellBookLevel = 0;
-            _spellBook.Clear();
+            SpellBook.Clear();
 
             SleepMazeWorld = "0-serf-quarters";
             SleepPosX = 1;
             SleepPosY = 1;
         }
 
+        public void Save()
+        {
+            Directory.CreateDirectory("Save");
+
+            using (StreamWriter streamWriter = new("Save/avatar.json"))
+            {
+                AvatarBase avatarBase = this;
+                string avatarData = JsonConvert.SerializeObject(avatarBase, new StringEnumConverter());
+                streamWriter.Write(avatarData);
+            }
+        }
+
+        public bool SaveExists()
+        {
+            return File.Exists("Save/avatar.json");
+        }
+
+        public void Load()
+        {
+            if (!SaveExists())
+            {
+                return;
+            }
+
+            using (StreamReader streamReader = new("Save/avatar.json"))
+            {
+                string jsonData = streamReader.ReadToEnd();
+                streamReader.Close();
+
+                var avatarBase = JsonConvert.DeserializeObject<AvatarBase>(jsonData, new StringEnumConverter());
+
+                if (avatarBase is not null)
+                {
+                    HP = avatarBase.HP;
+                    MaxHP = avatarBase.MaxHP;
+                    MP = avatarBase.MP;
+                    MaxMP = avatarBase.MaxMP;
+                    Attack = avatarBase.Attack;
+                    Defence = avatarBase.Defence;
+                    Gold = avatarBase.Gold;
+                    PosX = avatarBase.PosX;
+                    PosY = avatarBase.PosY;
+                    Facing = avatarBase.Facing;
+                    MazeWorld = avatarBase.MazeWorld;
+                    SleepPosX = avatarBase.SleepPosX;
+                    SleepPosY = avatarBase.SleepPosY;
+                    SleepMazeWorld = avatarBase.SleepMazeWorld;
+                    Weapon = avatarBase.Weapon;
+                    Armor = avatarBase.Armor;
+                    SpellBookLevel = avatarBase.SpellBookLevel;
+                    SpellBook = avatarBase.SpellBook;
+                    Campaign = avatarBase.Campaign;
+                }
+            }
+        }
+
         public void Sleep()
         {
-            _hp = _maxHp;
-            _mp = _maxMp;
+            HP = MaxHP;
+            MP = MaxMP;
 
             SleepMazeWorld = MazeWorld;
             SleepPosX = PosX;
@@ -114,8 +138,8 @@
         {
             Gold = 0;
 
-            _hp = _maxHp;
-            _mp = _maxMp;
+            HP = MaxHP;
+            MP = MaxMP;
 
             PosX = SleepPosX;
             PosY = SleepPosY;
@@ -125,7 +149,7 @@
 
         public bool IsBadlyHurt()
         {
-            return _hp <= (int)(_maxHp / 3);
+            return HP <= (int)(MaxHP / 3);
         }
 
         public void LearnSpell(Item spell)
@@ -135,7 +159,7 @@
                 return;
             }
 
-            _spellBook.Add(spell);
+            SpellBook.Add(spell);
 
             if (SpellBookLevel < spell.Level)
             {
@@ -192,7 +216,7 @@
 
             if (item.Type.Equals(ItemType.Spell))
             {
-                return _spellBook.Contains(item);
+                return SpellBook.Contains(item);
             }
 
             return false;
@@ -223,7 +247,7 @@
 
         public bool IsRested()
         {
-            return _hp.Equals(_maxHp) && _mp.Equals(_maxMp);
+            return HP.Equals(MaxHP) && MP.Equals(MaxMP);
         }
 
         public void AddGold(int gold)
@@ -245,7 +269,7 @@
             {
                 PosX += dX;
                 PosY += dY;
-                _moved = true;
+                Moved = true;
 
                 return;
             }
@@ -255,7 +279,7 @@
 
         public void StepForward()
         {
-            switch (_facing)
+            switch (Facing)
             {
                 case AvatarFacing.North:
                     Move(0, -1);
@@ -277,7 +301,7 @@
 
         public void StepBackward()
         {
-            switch (_facing)
+            switch (Facing)
             {
                 case AvatarFacing.North:
                     Move(0, 1);
@@ -299,51 +323,51 @@
 
         public void TurnLeft()
         {
-            switch (_facing)
+            switch (Facing)
             {
                 case AvatarFacing.North:
-                    _facing = AvatarFacing.West;
+                    Facing = AvatarFacing.West;
                     break;
 
                 case AvatarFacing.South:
-                    _facing = AvatarFacing.East;
+                    Facing = AvatarFacing.East;
                     break;
 
                 case AvatarFacing.East:
-                    _facing = AvatarFacing.North;
+                    Facing = AvatarFacing.North;
                     break;
 
                 case AvatarFacing.West:
-                    _facing = AvatarFacing.South;
+                    Facing = AvatarFacing.South;
                     break;
             }
         }
 
         public void TurnRight()
         {
-            switch (_facing)
+            switch (Facing)
             {
                 case AvatarFacing.North:
-                    _facing = AvatarFacing.East;
+                    Facing = AvatarFacing.East;
                     break;
 
                 case AvatarFacing.South:
-                    _facing = AvatarFacing.West;
+                    Facing = AvatarFacing.West;
                     break;
 
                 case AvatarFacing.East:
-                    _facing = AvatarFacing.South;
+                    Facing = AvatarFacing.South;
                     break;
 
                 case AvatarFacing.West:
-                    _facing = AvatarFacing.North;
+                    Facing = AvatarFacing.North;
                     break;
             }
         }
 
         public void Update()
         {
-            _moved = false;
+            Moved = false;
 
             if (_windowManager.KeyPressed(InputKey.KEY_UP))
             {

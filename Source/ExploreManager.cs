@@ -51,23 +51,35 @@
 
         public void Start()
         {
-            if (_dialogManager.GetItem("Bare Fists", out var weapon))
+            if (_avatar.SaveExists())
             {
-               _avatar.EquipItem(weapon);
+                _avatar.Load();
+            }
+            else
+            {
+                if (_dialogManager.GetItem("Bare Fists", out var weapon))
+                {
+                    _avatar.EquipItem(weapon);
+                }
+
+                if (_dialogManager.GetItem("Serf Rags", out var armor))
+                {
+                    _avatar.EquipItem(armor);
+                }
             }
 
-            if (_dialogManager.GetItem("Serf Rags", out var armor))
-            {
-                _avatar.EquipItem(armor);
-            }
-
-            _mazeWorldManager.LoadMazeWorld("0-serf-quarters");
+            _mazeWorldManager.LoadMazeWorld(_avatar.MazeWorld);
 
             // Test
             /*_mazeWorldManager.LoadMazeWorld("5-cedar-village");
             _avatar.PosX = 6;
             _avatar.PosY = 5;
             _avatar.AddGold(1000);*/
+        }
+
+        public void Save()
+        {
+            _avatar.Save();
         }
 
         public void Update()
