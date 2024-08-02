@@ -29,9 +29,9 @@
     {"X":6,"Y":1,"Destination":"1-monastery","DestX":4,"DestY":9},
     {"X":10,"Y":15,"Destination":"5-cedar-village","DestX":3,"DestY":1}
   ],
-  "Shops":
+  "Stores":
   [
-    {"X":5,"Y":13,"ShopId":"4-woodsman","DestX":5,"DestY":12}
+    {"X":5,"Y":13,"Store":"4-woodsman","DestX":5,"DestY":12}
   ],
   "Enemies":
   [

@@ -28,11 +28,11 @@
   [
     {"X":2,"Y":0,"Destination":"6-zuruth-plains","DestX":8,"DestY":14}
   ],
-  "Shops":
+  "Stores":
   [
-    {"X":2,"Y":15,"ShopId":"5-stonegate-entrance","DestX":2,"DestY":14},
-    {"X":11,"Y":9,"ShopId":"6-thomas-the-fence","DestX":12,"DestY":9},
-    {"X":13,"Y":7,"ShopId":"7-thieves-guild","DestX":13,"DestY":8}
+    {"X":2,"Y":15,"Store":"5-stonegate-entrance","DestX":2,"DestY":14},
+    {"X":11,"Y":9,"Store":"6-thomas-the-fence","DestX":12,"DestY":9},
+    {"X":13,"Y":7,"Store":"7-thieves-guild","DestX":13,"DestY":8}
   ],
   "Enemies":
   [

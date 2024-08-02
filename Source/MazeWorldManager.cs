@@ -128,25 +128,25 @@
             return false;
         }
 
-        public bool CheckShops(int posX, int posY, out ShopPortal shopPortal)
+        public bool CheckStores(int posX, int posY, out StorePortal storePortal)
         {
             if (_mazeWorld is null ||
-                _mazeWorld.Shops is null)
+                _mazeWorld.Stores is null)
             {
-                shopPortal = null;
+                storePortal = null;
                 return false;
             }
 
-            for (int i = 0; i < _mazeWorld.Shops.Count; i++)
+            for (int i = 0; i < _mazeWorld.Stores.Count; i++)
             {
-                if (_mazeWorld.Shops[i].CheckEnter(posX, posY))
+                if (_mazeWorld.Stores[i].CheckEnter(posX, posY))
                 {
-                    shopPortal = _mazeWorld.Shops[i];
+                    storePortal = _mazeWorld.Stores[i];
                     return true;
                 }
             }
 
-            shopPortal = null;
+            storePortal = null;
             return false;
         }
 
@@ -434,12 +434,12 @@
             mazeWorld.Enemies.Add("ENEMY_IMP");
             mazeWorld.Enemies.Add("ENEMY_SHADOW_SOUL");
 
-            mazeWorld.Shops = new();
-            mazeWorld.Shops.Add(new ShopPortal
+            mazeWorld.Stores = new();
+            mazeWorld.Stores.Add(new StorePortal
             {
                 X = 5,
                 Y = 13,
-                ShopId = "4",
+                Store = "4",
                 DestX = 5,
                 DestY = 12,
             });

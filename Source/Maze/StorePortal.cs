@@ -1,12 +1,12 @@
 ﻿namespace DuskProject.Source.Maze
 {
-    public class ShopPortal
+    public class StorePortal
     {
         public int X { get; set; }
 
         public int Y { get; set; }
 
-        public string ShopId { get; set; }
+        public string Store { get; set; }
 
         public int DestX { get; set; }
 

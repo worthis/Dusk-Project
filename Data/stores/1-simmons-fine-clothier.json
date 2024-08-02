@@ -1,0 +1,10 @@
+{
+  "Name":"Simmons Fine Clothier",
+  "Music":"",
+  "BackgroundImage":3,
+  "Lines":
+  [
+    {"Type":"Armor","Value":"Travel Cloak","Cost":0,"MessageFirst":"","MessageSecond":""},
+    {"Type":"Armor","Value":"Hide Cuirass","Cost":0,"MessageFirst":"","MessageSecond":""}
+  ]
+}

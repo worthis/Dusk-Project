@@ -18,7 +18,7 @@
 
         public List<MazePortal> Portals { get; set; }
 
-        public List<ShopPortal> Shops { get; set; }
+        public List<StorePortal> Stores { get; set; }
 
         public List<string> Enemies { get; set; }
     }

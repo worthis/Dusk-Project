@@ -12,7 +12,7 @@
         private WindowManager _windowManager;
         private ResourceManager _resourceManager;
         private TextManager _textManager;
-        private MazeWorldManager _mazeWorldManager;
+        private ExploreManager _exploreManager;
 
         private TitleState _state = TitleState.Main;
         private ImageResource _imageBackground;
@@ -46,7 +46,7 @@
             _windowManager = WindowManager.GetInstance();
             _resourceManager = ResourceManager.GetInstance();
             _textManager = TextManager.GetInstance();
-            _mazeWorldManager = MazeWorldManager.GetInstance();
+            _exploreManager = ExploreManager.GetInstance();
 
             _menuCount = Enum.GetValues(typeof(TitleState)).Length;
 
@@ -81,7 +81,7 @@
                 {
                     // Start
                     case 0:
-                        _mazeWorldManager.LoadMazeWorld("0-serf-quarters");
+                        _exploreManager.Start();
                         _gameStateManager.ChangeState(GameState.Explore);
                         break;
 

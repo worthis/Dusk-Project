@@ -1,5 +1,6 @@
 ﻿namespace DuskProject.Source
 {
+    using DuskProject.Source.Dialog;
     using DuskProject.Source.Enums;
     using DuskProject.Source.Maze;
 
@@ -14,7 +15,7 @@
         private DialogManager _dialogManager;
         private Avatar _avatar;
 
-        private string _message = string.Empty;
+        private TimedMessage _message = new TimedMessage(timeOut: 2500);
 
         private ExploreManager()
         {
@@ -48,11 +49,31 @@
             Console.WriteLine("ExploreManager initialized");
         }
 
+        public void Start()
+        {
+            if (_dialogManager.GetItem("Bare Fists", out var weapon))
+            {
+               _avatar.EquipItem(weapon);
+            }
+
+            if (_dialogManager.GetItem("Serf Rags", out var armor))
+            {
+                _avatar.EquipItem(armor);
+            }
+
+            _mazeWorldManager.LoadMazeWorld("0-serf-quarters");
+
+            // Test
+            /*_mazeWorldManager.LoadMazeWorld("5-cedar-village");
+            _avatar.PosX = 6;
+            _avatar.PosY = 5;
+            _avatar.AddGold(1000);*/
+        }
+
         public void Update()
         {
-            _message = string.Empty;
-
             _avatar.Update();
+            _message.Update();
 
             if (_avatar.Moved)
             {
@@ -61,21 +82,23 @@
                 {
                     _avatar.PosX = mazePortal.DestX;
                     _avatar.PosY = mazePortal.DestY;
+                    _avatar.MazeWorld = mazePortal.Destination;
 
                     _mazeWorldManager.LoadMazeWorld(mazePortal.Destination);
 
-                    _message = _mazeWorldManager.MazeWorldName;
+                    _message.Start(_mazeWorldManager.MazeWorldName);
 
                     return;
                 }
 
-                // Check shop entrance
-                if (_mazeWorldManager.CheckShops(_avatar.PosX, _avatar.PosY, out ShopPortal shopPortal))
+                // Check store entrance
+                if (_mazeWorldManager.CheckStores(_avatar.PosX, _avatar.PosY, out StorePortal storePortal))
                 {
-                    _avatar.PosX = shopPortal.DestX;
-                    _avatar.PosY = shopPortal.DestY;
+                    _avatar.PosX = storePortal.DestX;
+                    _avatar.PosY = storePortal.DestY;
 
-                    _dialogManager.LoadShop(shopPortal.ShopId);
+                    _dialogManager.LoadStore(storePortal.Store);
+
                     _gameStateManager.ChangeState(GameState.Dialog);
 
                     return;
@@ -115,7 +138,7 @@
 
             // Minimap
             // Messages
-            _textManager.Render(_message, 160, 200, TextJustify.JUSTIFY_CENTER);
+            _textManager.Render(_message.Text, 160, 200, TextJustify.JUSTIFY_CENTER);
         }
     }
 }

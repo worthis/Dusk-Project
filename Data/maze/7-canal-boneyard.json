@@ -22,7 +22,7 @@
   "Portals":
   [
     {"X":1,"Y":5,"Destination":"6-zuruth-plains","DestX":13,"DestY":7},
-    {"X":10,"Y":15,"Destination":"8-mausoleum","DestX":1,"DestY":7}
+    {"X":10,"Y":5,"Destination":"8-mausoleum","DestX":1,"DestY":7}
   ],
   "Enemies":
   [

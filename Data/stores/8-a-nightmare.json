@@ -1,0 +1,10 @@
+{
+  "Name":"A Nightmare",
+  "Music":"",
+  "BackgroundImage":2,
+  "Lines":
+  [
+    {"Type":"Message","Value":"","Cost":0,"MessageFirst":"Darkness has overtaken","MessageSecond":"the human realm."},
+    {"Type":"Message","Value":"","Cost":0,"MessageFirst":"The monastery is no","MessageSecond":"longer safe."}
+  ]
+}

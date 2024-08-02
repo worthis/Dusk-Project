@@ -6,7 +6,9 @@
     {
         public DialogType Type { get; set; }
 
-        public int Value { get; set; }
+        public string Value { get; set; }
+
+        public int Cost { get; set; }
 
         public string MessageFirst { get; set; }
 

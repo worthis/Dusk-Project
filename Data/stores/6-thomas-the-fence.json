@@ -1,0 +1,10 @@
+{
+  "Name":"Thomas the Fence",
+  "Music":"",
+  "BackgroundImage":3,
+  "Lines":
+  [
+    {"Type":"Message","Value":"","Cost":0,"MessageFirst":"Unlock magic opens doors","MessageSecond":"and harms automatons."},
+    {"Type":"Spell","Value":"Unlock","Cost":0,"MessageFirst":"","MessageSecond":""}
+  ]
+}

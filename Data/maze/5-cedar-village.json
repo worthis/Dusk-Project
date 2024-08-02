@@ -25,11 +25,11 @@
     {"X":3,"Y":0,"Destination":"4-monastery-trail","DestX":10,"DestY":14},
     {"X":9,"Y":11,"Destination":"6-zuruth-plains","DestX":4,"DestY":3}
   ],
-  "Shops":
+  "Stores":
   [
-    {"X":6,"Y":4,"ShopId":"0-cedar-arms","DestX":6,"DestY":5},
-    {"X":6,"Y":8,"ShopId":"1-simmons-fine-clothier","DestX":6,"DestY":7},
-    {"X":8,"Y":8,"ShopId":"2-the-pilgrim-inn","DestX":9,"DestY":8},
-    {"X":1,"Y":8,"ShopId":"3-sage-therel","DestX":2,"DestY":8}
+    {"X":6,"Y":4,"Store":"0-cedar-arms","DestX":6,"DestY":5},
+    {"X":6,"Y":8,"Store":"1-simmons-fine-clothier","DestX":6,"DestY":7},
+    {"X":8,"Y":8,"Store":"2-the-pilgrim-inn","DestX":9,"DestY":8},
+    {"X":1,"Y":8,"Store":"3-sage-therel","DestX":2,"DestY":8}
   ]
 }

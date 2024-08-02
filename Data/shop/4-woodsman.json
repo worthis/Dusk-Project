@@ -1,9 +1,0 @@
-{
-  "Name":"Woodsman",
-  "Music":"",
-  "BackgroundImage":3,
-  "Lines":
-  [
-    {"Type":"Message","Value":0,"MessageFirst":"I'm staying right here","MessageSecond":"until the sun comes back."}
-  ]
-}

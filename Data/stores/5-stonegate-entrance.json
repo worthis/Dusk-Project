@@ -1,0 +1,10 @@
+{
+  "Name":"Stonegate Entrance",
+  "Music":"",
+  "BackgroundImage":3,
+  "Lines":
+  [
+    {"Type":"Message","Value":"","Cost":0,"MessageFirst":"No one allowed in or","MessageSecond":"out of the city."},
+    {"Type":"Message","Value":"","Cost":0,"MessageFirst":"(The demo ends here.","MessageSecond":"Thanks for playing!)"}
+  ]
+}

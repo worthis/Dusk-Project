@@ -1,0 +1,10 @@
+{
+  "Name":"Cedar Arms",
+  "Music":"",
+  "BackgroundImage":3,
+  "Lines":
+  [
+    {"Type":"Weapon","Value":"Iron Knife","Cost":0,"MessageFirst":"","MessageSecond":""},
+    {"Type":"Weapon","Value":"Bronze Mace","Cost":0,"MessageFirst":"","MessageSecond":""}
+  ]
+}

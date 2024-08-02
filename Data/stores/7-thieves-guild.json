@@ -1,0 +1,10 @@
+{
+  "Name":"Thieves Guild",
+  "Music":"",
+  "BackgroundImage":3,
+  "Lines":
+  [
+    {"Type":"Message","Value":"","Cost":0,"MessageFirst":"For a small fee we can","MessageSecond":"sneak you to Stonegate."},
+    {"Type":"Message","Value":"","Cost":0,"MessageFirst":"(Support indie devs!","MessageSecond":"Full version soon!)"}
+  ]
+}
