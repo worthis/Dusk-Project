@@ -135,8 +135,6 @@
                 _music = _resourceManager.LoadMusic(fileName);
             }
 
-            Console.WriteLine("Playing music is {0}", SDL_mixer.Mix_PlayingMusic());
-
             if (_music is not null &&
                 _music.GetMusic() != IntPtr.Zero &&
                 SDL_mixer.Mix_PlayingMusic() <= 0)

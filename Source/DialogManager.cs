@@ -1,8 +1,8 @@
 ﻿namespace DuskProject.Source
 {
     using System;
+    using DuskProject.Source.Dialog;
     using DuskProject.Source.Enums;
-    using DuskProject.Source.MazeObjects;
     using DuskProject.Source.Resources;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
@@ -105,18 +105,18 @@
                 Name = "Cedar Arms",
                 BackgroundImage = 3,
                 Music = "m31",
-                Items = new ShopDialogItem[2]
+                Items = new DialogItem[2]
                 {
-                    new ShopDialogItem
+                    new DialogItem
                     {
-                        Type = ShopItemType.Weapon,
+                        Type = DialogType.Weapon,
                         Value = 2,
                         MessageFirst = string.Empty,
                         MessageSecond = string.Empty,
                     },
-                    new ShopDialogItem
+                    new DialogItem
                     {
-                        Type = ShopItemType.Weapon,
+                        Type = DialogType.Weapon,
                         Value = 3,
                         MessageFirst = "msg1",
                         MessageSecond = "msg2",

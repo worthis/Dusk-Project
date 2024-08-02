@@ -1,6 +1,6 @@
 ﻿namespace DuskProject.Source.Enums
 {
-    public enum ShopItemType : byte
+    public enum DialogType : byte
     {
         Weapon,
         Armor,

@@ -2,7 +2,7 @@
 {
     using System;
     using DuskProject.Source.Enums;
-    using DuskProject.Source.MazeObjects;
+    using DuskProject.Source.Maze;
 
     public class Avatar
     {

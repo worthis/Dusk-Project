@@ -1,10 +1,10 @@
-﻿namespace DuskProject.Source.MazeObjects
+﻿namespace DuskProject.Source.Dialog
 {
     using DuskProject.Source.Enums;
 
-    public class ShopDialogItem
+    public class DialogLine
     {
-        public ShopItemType Type { get; set; }
+        public DialogType Type { get; set; }
 
         public int Value { get; set; }
 

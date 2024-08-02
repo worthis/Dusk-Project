@@ -1,4 +1,4 @@
-﻿namespace DuskProject.Source.MazeObjects
+﻿namespace DuskProject.Source.Dialog
 {
     public class Shop
     {
@@ -8,6 +8,6 @@
 
         public int BackgroundImage { get; set; }
 
-        public ShopDialogItem[] Items { get; set; }
+        public DialogLine[] Lines { get; set; }
     }
 }

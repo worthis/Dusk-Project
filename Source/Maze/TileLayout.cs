@@ -1,4 +1,4 @@
-﻿namespace DuskProject.Source.MazeObjects
+﻿namespace DuskProject.Source.Maze
 {
     public class TileLayout
     {

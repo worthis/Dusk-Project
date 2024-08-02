@@ -1,6 +1,6 @@
 ﻿namespace DuskProject.Source.Enums
 {
-    public enum DialogButton : byte
+    public enum DialogButtonAction : byte
     {
         None,
         Buy,
