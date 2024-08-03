@@ -26,8 +26,9 @@
 
             // Initialization
             windowManager.CreateWindow("Dusk Project");
+            resourceManager.Init(windowManager.ScreenSurfacePtr);
             soundManager.Init();
-            textManager.Init();
+            textManager.Init(resourceManager.LoadImage("Data/images/interface/boxy_bold.png"));
             gameStateManager.Init();
             titleManager.Init();
             exploreManager.Init();
@@ -38,7 +39,7 @@
 
             _lastUpdateTime = SDL.SDL_GetTicks();
 
-            while (windowManager.WindowOpened())
+            while (windowManager.WindowOpened)
             {
                 /*Console.WriteLine("Game tick");*/
 

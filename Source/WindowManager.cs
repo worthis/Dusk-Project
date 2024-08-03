@@ -3,7 +3,6 @@
     using System;
     using System.Runtime.InteropServices;
     using DuskProject.Source.Enums;
-    using DuskProject.Source.Resources;
     using SDL2;
 
     public class WindowManager
@@ -31,11 +30,21 @@
 
         private WindowManager()
         {
-            if (_window == IntPtr.Zero)
-            {
-                CheckSDLErr(SDL.SDL_Init(SDL.SDL_INIT_VIDEO));
-            }
         }
+
+        public int WindowWidth { get => _windowWidth; }
+
+        public int WindowHeight { get => _windowHeight; }
+
+        public int RenderWidth { get => _renderWidth; }
+
+        public int RenderHeight { get => _renderHeight; }
+
+        public IntPtr Renderer { get => _renderer; }
+
+        public IntPtr ScreenSurfacePtr { get => _screenPtr; }
+
+        public bool WindowOpened { get => _windowOpened; }
 
         public static WindowManager GetInstance()
         {
@@ -54,23 +63,13 @@
             return instance;
         }
 
-        public int GetWindowWidth()
-        {
-            return _windowWidth;
-        }
-
-        public int GetWindowHeight()
-        {
-            return _windowHeight;
-        }
-
-        public IntPtr GetRenderer()
-        {
-            return _renderer;
-        }
-
         public void CreateWindow(string title)
         {
+            if (_window == IntPtr.Zero)
+            {
+                CheckSDLError(SDL.SDL_Init(SDL.SDL_INIT_VIDEO));
+            }
+
             SDL.SDL_ShowCursor(SDL.SDL_ENABLE);
 
             _window = SDL.SDL_CreateWindow(
@@ -106,7 +105,7 @@
             Console.WriteLine("Window created");
         }
 
-        public void Draw(ImageResource image, int srcX, int srcY, int srcW, int srcH, int dstX, int dstY)
+        /*public void Draw(ImageResource image, int srcX, int srcY, int srcW, int srcH, int dstX, int dstY)
         {
             SDL.SDL_Rect src = new()
             {
@@ -124,20 +123,20 @@
                 h = srcH,
             };
 
-            CheckSDLErr(SDL.SDL_BlitSurface(image.GetImage(), ref src, _screenPtr, ref dst));
+            CheckSDLErr(SDL.SDL_BlitSurface(image.Image, ref src, _screenPtr, ref dst));
         }
 
         public void Draw(ImageResource image)
         {
             Draw(image, 0, 0, image.Width, image.Height, 0, 0);
-        }
+        }*/
 
         public void Display()
         {
-            CheckSDLErr(SDL.SDL_UpdateTexture(_texture, IntPtr.Zero, _screenSurface.pixels, _screenSurface.pitch));
-            CheckSDLErr(SDL.SDL_RenderCopy(_renderer, _texture, ref _screenRect, IntPtr.Zero));
+            CheckSDLError(SDL.SDL_UpdateTexture(_texture, IntPtr.Zero, _screenSurface.pixels, _screenSurface.pitch));
+            CheckSDLError(SDL.SDL_RenderCopy(_renderer, _texture, ref _screenRect, IntPtr.Zero));
             SDL.SDL_RenderPresent(_renderer);
-            CheckSDLErr(SDL.SDL_RenderClear(_renderer));
+            CheckSDLError(SDL.SDL_RenderClear(_renderer));
         }
 
         public void Close()
@@ -157,11 +156,6 @@
             SDL.SDL_Quit();
 
             Console.WriteLine("WindowManager quit");
-        }
-
-        public bool WindowOpened()
-        {
-            return _windowOpened;
         }
 
         public void ProcessInput()
@@ -250,11 +244,11 @@
             return _keyPressed.Contains(key);
         }
 
-        private static void CheckSDLErr(int err)
+        private static void CheckSDLError(int error)
         {
-            if (err < 0)
+            if (error < 0)
             {
-                Console.WriteLine("SDL Error Occured: " + SDL.SDL_GetError());
+                Console.WriteLine("Error: (SDL Error) " + SDL.SDL_GetError());
             }
         }
     }

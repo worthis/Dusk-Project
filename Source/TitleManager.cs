@@ -100,7 +100,7 @@
 
         public void Render()
         {
-            _windowManager.Draw(_imageBackground);
+            _imageBackground.Render();
 
             switch (_state)
             {

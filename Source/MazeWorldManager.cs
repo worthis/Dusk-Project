@@ -27,7 +27,6 @@
             new() { Width = 320, Height = 240, SrcX = 960, SrcY = 240, DstX = 0, DstY = 0 },
         };
 
-        private WindowManager _windowManager;
         private ResourceManager _resourceManager;
         private SoundManager _soundManager;
 
@@ -61,7 +60,6 @@
 
         public void Init()
         {
-            _windowManager = WindowManager.GetInstance();
             _resourceManager = ResourceManager.GetInstance();
             _soundManager = SoundManager.GetInstance();
 
@@ -256,7 +254,7 @@
                 return;
             }
 
-            _windowManager.Draw(_backgrounds[_mazeWorld.BackgroundImage]);
+            _backgrounds[_mazeWorld.BackgroundImage].Render();
         }
 
         public void RenderBackground(int backgroundId)
@@ -267,7 +265,7 @@
                 return;
             }
 
-            _windowManager.Draw(_backgrounds[backgroundId]);
+            _backgrounds[backgroundId].Render();
         }
 
         public Tile GetTile(int posX, int posY)
@@ -313,8 +311,7 @@
                 return;
             }
 
-            _windowManager.Draw(
-                _tileSet[tileId].Image,
+            _tileSet[tileId].Image.Render(
                 _tileLayouts[position].SrcX,
                 _tileLayouts[position].SrcY,
                 _tileLayouts[position].Width,

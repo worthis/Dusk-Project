@@ -6,17 +6,20 @@
 
     public class ImageResource : CommonResource, IDisposable
     {
-        private IntPtr _image;
+        private IntPtr _image = IntPtr.Zero;
         private SDL.SDL_Surface _imageSurface;
+        private IntPtr _screenSurfacePtr = IntPtr.Zero;
         private bool _disposedValue;
 
-        public ImageResource(string filename, bool alpha)
+        public ImageResource(string filename, bool alpha, IntPtr screenSurfacePtr)
         {
             SetName(filename);
 
             _image = SDL_image.IMG_Load(Name);
+            _screenSurfacePtr = screenSurfacePtr;
 
-            if (_image == IntPtr.Zero)
+            if (_image == IntPtr.Zero ||
+                screenSurfacePtr == IntPtr.Zero)
             {
                 Console.WriteLine("Error: Failed to load image {0}", Name);
                 return;
@@ -58,15 +61,38 @@
             get { return _imageSurface.h; }
         }
 
+        public IntPtr Image { get => _image; }
+
+        public void Render(int srcX, int srcY, int srcW, int srcH, int dstX, int dstY)
+        {
+            SDL.SDL_Rect src = new()
+            {
+                x = srcX,
+                y = srcY,
+                w = srcW,
+                h = srcH,
+            };
+
+            SDL.SDL_Rect dst = new()
+            {
+                x = dstX,
+                y = dstY,
+                w = srcW,
+                h = srcH,
+            };
+
+            CheckSDLError(SDL.SDL_BlitSurface(_image, ref src, _screenSurfacePtr, ref dst));
+        }
+
+        public void Render()
+        {
+            Render(0, 0, Width, Height, 0, 0);
+        }
+
         public void Dispose()
         {
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
-        }
-
-        public IntPtr GetImage()
-        {
-            return _image;
         }
 
         protected virtual void Dispose(bool disposing)
@@ -85,6 +111,14 @@
                 }
 
                 _disposedValue = true;
+            }
+        }
+
+        private static void CheckSDLError(int error)
+        {
+            if (error < 0)
+            {
+                Console.WriteLine("Error: (SDL Error) " + SDL.SDL_GetError());
             }
         }
     }

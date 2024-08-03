@@ -7,6 +7,8 @@
         private static ResourceManager instance;
         private static object instanceLock = new object();
 
+        private IntPtr _screenSurfacePtr = IntPtr.Zero;
+
         private Dictionary<string, ImageResource> _imageResources = new Dictionary<string, ImageResource>();
         private Dictionary<string, SoundResource> _soundResources = new Dictionary<string, SoundResource>();
         private Dictionary<string, MusicResource> _musicResources = new Dictionary<string, MusicResource>();
@@ -32,6 +34,19 @@
             return instance;
         }
 
+        public void Init(IntPtr screenSurfacePtr)
+        {
+            if (screenSurfacePtr == IntPtr.Zero)
+            {
+                Console.WriteLine("Error: Unable to initialize ResourceManager");
+                return;
+            }
+
+            _screenSurfacePtr = screenSurfacePtr;
+
+            Console.WriteLine("ResourceManager initialized");
+        }
+
         public ImageResource LoadImage(string fileName, bool alpha = false)
         {
             ImageResource image;
@@ -42,7 +57,7 @@
                 return image;
             }
 
-            image = new ImageResource(fileName, alpha);
+            image = new ImageResource(fileName, alpha, _screenSurfacePtr);
             image.Load();
 
             _imageResources.Add(fileName, image);

@@ -377,8 +377,7 @@
 
                 if (_buttons[i].Selected)
                 {
-                    _windowManager.Draw(
-                        _buttonSelectedImage,
+                    _buttonSelectedImage.Render(
                         0,
                         0,
                         _buttonSelectedImage.Width,
@@ -387,8 +386,7 @@
                         _buttons[i].Position.Y);
                 }
 
-                _windowManager.Draw(
-                    _buttonsImage,
+                _buttonsImage.Render(
                     ((int)_buttons[i].Action - 1) * _buttons[i].Position.Width,
                     0,
                     _buttons[i].Position.Width,

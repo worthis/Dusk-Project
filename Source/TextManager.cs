@@ -11,15 +11,10 @@
         private static TextManager instance;
         private static object instanceLock = new object();
 
-        private WindowManager _windowManager;
-        private ResourceManager _resourceManager;
-
         private ImageResource _imageFont;
-
+        private Dictionary<char, TextGlyph> _glyphDictionary;
         private int _space = 3 * 2;
         private int _kerning = -1;
-
-        private Dictionary<char, TextGlyph> _glyphDictionary;
 
         private TextManager()
         {
@@ -42,13 +37,15 @@
             return instance;
         }
 
-        public void Init()
+        public void Init(ImageResource fontImage)
         {
-            _windowManager = WindowManager.GetInstance();
-            _resourceManager = ResourceManager.GetInstance();
+            if (fontImage is null)
+            {
+                Console.WriteLine("Error: Unable to initialize TextManager");
+                return;
+            }
 
-            _imageFont = _resourceManager.LoadImage("Data/images/interface/boxy_bold.png");
-
+            _imageFont = fontImage;
             LoadFontCharset("Data/font_320.json");
 
             Console.WriteLine("TextManager initialized");
@@ -85,8 +82,7 @@
 
                 if (_glyphDictionary.TryGetValue(textUpperCase[i], out TextGlyph glyph))
                 {
-                    _windowManager.Draw(
-                        _imageFont,
+                    _imageFont.Render(
                         glyph.SrcX,
                         glyph.SrcY,
                         glyph.Width,
