@@ -10,6 +10,7 @@
         private TitleManager _titleManager;
         private ExploreManager _exploreManager;
         private DialogManager _dialogManager;
+        private CombatManager _combatManager;
 
         private GameState _gameState = GameState.Title;
         private bool _redraw = false;
@@ -41,6 +42,7 @@
             _titleManager = TitleManager.GetInstance();
             _exploreManager = ExploreManager.GetInstance();
             _dialogManager = DialogManager.GetInstance();
+            _combatManager = CombatManager.GetInstance();
 
             Console.WriteLine("GameStateManager initialized");
         }
@@ -73,7 +75,7 @@
                     break;
 
                 case GameState.Combat:
-
+                    _combatManager.Update();
                     break;
 
                 case GameState.Dialog:
@@ -81,10 +83,6 @@
                     break;
 
                 case GameState.Info:
-
-                    break;
-
-                default:
 
                     break;
             }
@@ -103,7 +101,7 @@
                     break;
 
                 case GameState.Combat:
-
+                    _combatManager.Render();
                     break;
 
                 case GameState.Dialog:
@@ -111,10 +109,6 @@
                     break;
 
                 case GameState.Info:
-
-                    break;
-
-                default:
 
                     break;
             }

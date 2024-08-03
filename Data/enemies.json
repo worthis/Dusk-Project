@@ -1,0 +1,98 @@
+{
+  "Shadow Tendrils":
+  {
+    "Name":"Shadow Tendrils",
+    "ImageFile":"shadow_tendrils.png",
+    "HP":6,
+    "AttackMin":2,
+    "AttackMax":5,
+    "GoldMin":1,
+    "GoldMax":2,
+    "Category":"Shadow",
+    "Powers":["Attack"]
+  },
+  "Imp":
+  {
+    "Name":"Imp",
+    "ImageFile":"imp.png",
+    "HP":7,
+    "AttackMin":2,
+    "AttackMax":6,
+    "GoldMin":1,
+    "GoldMax":3,
+    "Category":"Demon",
+    "Powers":["Attack", "Attack", "Scorch"]
+  },
+  "Shadow Soul":
+  {
+    "Name":"Shadow Soul",
+    "ImageFile":"shadow_soul.png",
+    "HP":8,
+    "AttackMin":3,
+    "AttackMax":8,
+    "GoldMin":2,
+    "GoldMax":4,
+    "Category":"Shadow",
+    "Powers":["Attack", "Attack", "MPDrain"]
+  },
+  "Zombie":
+  {
+    "Name":"Zombie",
+    "ImageFile":"zombie.png",
+    "HP":12,
+    "AttackMin":4,
+    "AttackMax":10,
+    "GoldMin":3,
+    "GoldMax":6,
+    "Category":"Undead",
+    "Powers":["Attack", "Attack", "HPDrain"]
+  },
+  "Skeleton":
+  {
+    "Name":"Skeleton",
+    "ImageFile":"skeleton.png",
+    "HP":18,
+    "AttackMin":6,
+    "AttackMax":12,
+    "GoldMin":5,
+    "GoldMax":8,
+    "Category":"Undead",
+    "Powers":["Attack"]
+  },
+  "Druid":
+  {
+    "Name":"Druid",
+    "ImageFile":"druid.png",
+    "HP":16,
+    "AttackMin":7,
+    "AttackMax":14,
+    "GoldMin":7,
+    "GoldMax":12,
+    "Category":"Demon",
+    "Powers":["Attack", "Scorch", "HPDrain", "MPDrain"]
+  },
+  "Mimic":
+  {
+    "Name":"Mimic",
+    "ImageFile":"mimic.png",
+    "HP":30,
+    "AttackMin":10,
+    "AttackMax":16,
+    "GoldMin":16,
+    "GoldMax":25,
+    "Category":"Automaton",
+    "Powers":["Attack"]
+  },
+  "Death Speaker":
+  {
+    "Name":"Death Speaker",
+    "ImageFile":"death_speaker.png",
+    "HP":84,
+    "AttackMin":8,
+    "AttackMax":15,
+    "GoldMin":225,
+    "GoldMax":275,
+    "Category":"Demon",
+    "Powers":["Attack", "Scorch"]
+  }
+}

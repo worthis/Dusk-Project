@@ -1,22 +1,33 @@
 ﻿namespace DuskProject.Source.Dialog
 {
     using DuskProject.Source.Enums;
+    using Newtonsoft.Json;
 
     public class Item
     {
-        public string Name { get; set; } = string.Empty;
+        [JsonIgnore]
+        public string Id { get; protected set; }
 
-        public ItemType Type { get; set; }
+        [JsonProperty]
+        public string Name { get; protected set; } = string.Empty;
 
-        public int Gold { get; set; } = 0;
+        [JsonProperty]
+        public ItemType Type { get; protected set; }
 
-        public int AttackMin { get; set; } = 0;
+        [JsonProperty]
+        public int Gold { get; protected set; } = 0;
 
-        public int AttackMax { get; set; } = 0;
+        [JsonProperty]
+        public int AttackMin { get; protected set; } = 0;
 
-        public int Defence { get; set; } = 0;
+        [JsonProperty]
+        public int AttackMax { get; protected set; } = 0;
 
-        public int Level { get; set; } = 0;
+        [JsonProperty]
+        public int Defence { get; protected set; } = 0;
+
+        [JsonProperty]
+        public int Level { get; protected set; } = 0;
 
         public int AttackAvg()
         {

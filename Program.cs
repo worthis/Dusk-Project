@@ -21,6 +21,7 @@
             ExploreManager exploreManager = ExploreManager.GetInstance();
             MazeWorldManager mazeWorldManager = MazeWorldManager.GetInstance();
             DialogManager dialogManager = DialogManager.GetInstance();
+            CombatManager combatManager = CombatManager.GetInstance();
             Avatar avatar = Avatar.GetInstance();
 
             // Initialization
@@ -32,6 +33,7 @@
             exploreManager.Init();
             mazeWorldManager.Init();
             dialogManager.Init();
+            combatManager.Init();
             avatar.Init();
 
             _lastUpdateTime = SDL.SDL_GetTicks();
