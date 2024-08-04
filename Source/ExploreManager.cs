@@ -134,7 +134,7 @@
                     if (_randGen.Next(100) < _encounterChance)
                     {
                         _encounterChance = 0;
-
+                        _message.Clear();
                         var enemyIndex = _randGen.Next(_mazeWorldManager.Enemies.Count);
                         _gameStateManager.StartCombat(_mazeWorldManager.Enemies[enemyIndex]);
 

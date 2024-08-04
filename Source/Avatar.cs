@@ -132,6 +132,8 @@
             SleepMazeWorld = MazeWorld;
             SleepPosX = PosX;
             SleepPosY = PosY;
+
+            Save();
         }
 
         public void Respawn()
@@ -147,9 +149,9 @@
             _mazeWorldManager.LoadMazeWorld(SleepMazeWorld);
         }
 
-        public void Hit(int attackAmount)
+        public void Hit(int attackPoints)
         {
-            HP -= attackAmount;
+            HP -= attackPoints;
 
             if (HP <= 0)
             {
@@ -162,9 +164,24 @@
             }
         }
 
-        public void Heal(int healAmount)
+        public void Heal(int healPoints)
         {
-            Hit(-healAmount);
+            Hit(-healPoints);
+        }
+
+        public void DrainMP(int manaPoints)
+        {
+            MP -= manaPoints;
+
+            if (MP <= 0)
+            {
+                MP = 0;
+            }
+
+            if (MP > MaxMP)
+            {
+                MP = MaxMP;
+            }
         }
 
         public bool IsBadlyHurt()
@@ -408,6 +425,48 @@
             {
                 TurnRight();
             }
+        }
+
+        public void PushCampaignFlag(string flag)
+        {
+            if (string.IsNullOrWhiteSpace(flag))
+            {
+                return;
+            }
+
+            if (HasCampaignFlag(flag))
+            {
+                Console.WriteLine("Campaign already has flag {0}", flag.ToUpper());
+                return;
+            }
+
+            Campaign.Add(flag.ToUpper());
+        }
+
+        public void PopCampaignFlag(string flag)
+        {
+            if (string.IsNullOrWhiteSpace(flag))
+            {
+                return;
+            }
+
+            if (!HasCampaignFlag(flag))
+            {
+                Console.WriteLine("Campaign doesn't have flag {0}", flag.ToUpper());
+                return;
+            }
+
+            Campaign.Remove(flag.ToUpper());
+        }
+
+        public bool HasCampaignFlag(string flag)
+        {
+            if (string.IsNullOrWhiteSpace(flag))
+            {
+                return false;
+            }
+
+            return Campaign.Contains(flag.ToUpper());
         }
     }
 }

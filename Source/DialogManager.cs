@@ -276,6 +276,7 @@
 
                     if (_buttons[i].Action.Equals(DialogButtonAction.Exit))
                     {
+                        _message.Clear();
                         _gameStateManager.ChangeState(GameState.Explore);
                         return;
                     }
@@ -344,6 +345,7 @@
 
             if (_windowManager.KeyPressed(InputKey.KEY_B))
             {
+                _message.Clear();
                 _gameStateManager.ChangeState(GameState.Explore);
                 return;
             }

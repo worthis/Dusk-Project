@@ -124,7 +124,11 @@
             switch (_phase)
             {
                 case CombatPhase.Intro:
-                    _enemy.Render();
+                    if (_timer < 15)
+                    {
+                        _enemy.Render();
+                    }
+
                     break;
 
                 case CombatPhase.Input:
@@ -194,7 +198,6 @@
             if (_windowManager.KeyPressed(InputKey.KEY_A))
             {
                 usedAction = true;
-
                 _offenceAction = "Attack!";
 
                 /* todo: boss special */
@@ -204,27 +207,28 @@
                 {
                     _offenceResult = "Miss!";
                     _soundManager.PlaySound(SFX.Miss);
-                    return;
-                }
-
-                // Hit
-                var attackDamage = _randGen.Next(_avatar.Weapon.AttackDispersion() + 1) + _avatar.Weapon.AttackMin + _avatar.Attack;
-
-                // Critical Hit
-                if (_randGen.Next(100) < 10)
-                {
-                    attackDamage += _avatar.Weapon.AttackMax;
-                    _offenceAction = "Critical!";
-                    _soundManager.PlaySound(SFX.Critical);
                 }
                 else
                 {
-                    _soundManager.PlaySound(SFX.Attack);
-                }
+                    // Hit
+                    var attackDamage = _randGen.Next(_avatar.Weapon.AttackDispersion() + 1) + _avatar.Weapon.AttackMin + _avatar.Attack;
 
-                _enemyHurt = true;
-                _enemy.HP -= attackDamage;
-                _offenceResult = string.Format("{0} damage", attackDamage);
+                    // Critical Hit
+                    if (_randGen.Next(100) < 10)
+                    {
+                        attackDamage += _avatar.Weapon.AttackMax;
+                        _offenceAction = "Critical!";
+                        _soundManager.PlaySound(SFX.Critical);
+                    }
+                    else
+                    {
+                        _soundManager.PlaySound(SFX.Attack);
+                    }
+
+                    _enemyHurt = true;
+                    _enemy.HP -= attackDamage;
+                    _offenceResult = string.Format("{0} damage", attackDamage);
+                }
             }
 
             // Run
@@ -293,43 +297,16 @@
                 }
 
                 // Enemy attack
-                _defenceAction = "Attack!";
+                AttackResult attackResult = _enemy.Attack(_avatar.Armor.Defence + _avatar.Defence);
 
-                // Check Miss
-                if (_randGen.Next(100) < 30)
-                {
-                    _defenceResult = "Miss!";
-                    _soundManager.PlaySound(SFX.Miss);
-                }
-                else
-                {
-                    // Hit
-                    var attackDamage = _randGen.Next(_enemy.AttackDispersion() + 1) + _enemy.AttackMin;
+                _defenceAction = attackResult.Action;
+                _defenceResult = attackResult.Result;
+                _soundManager.PlaySound(attackResult.Sound);
+                _heroHurt = attackResult.IsHeroDamaged;
 
-                    // Critical Hit
-                    if (_randGen.Next(100) < 5)
-                    {
-                        attackDamage += _enemy.AttackMin;
-                        _defenceAction = "Critical!";
-                        _soundManager.PlaySound(SFX.Critical);
-                    }
-                    else
-                    {
-                        _soundManager.PlaySound(SFX.Attack);
-                    }
-
-                    // Armor adsorb
-                    attackDamage -= _avatar.Armor.Defence + _avatar.Defence;
-
-                    if (attackDamage <= 0)
-                    {
-                        attackDamage = 1;
-                    }
-
-                    _avatar.Hit(attackDamage);
-                    _defenceResult = string.Format("{0} damage", attackDamage);
-                    _heroHurt = true;
-                }
+                _avatar.Hit(attackResult.DamageToEnemyHP);
+                _avatar.DrainMP(attackResult.DamageToHeroMP);
+                _enemy.Hit(attackResult.DamageToEnemyHP);
 
                 _timer = 30;
                 _phase = CombatPhase.Defence;
@@ -425,8 +402,9 @@
 
         private void GiveReward()
         {
-            var goldReward = _randGen.Next(_enemy.GoldDispersion()) + _enemy.GoldMin;
+            var goldReward = _enemy.GoldReward();
             _avatar.AddGold(goldReward);
+            _avatar.PushCampaignFlag(_uniqueFlag);
             _rewardResult = string.Format("{0} Gold!", goldReward);
             _rewardGoldAmount = goldReward;
         }

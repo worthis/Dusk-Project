@@ -48,5 +48,11 @@
         {
             Start(text, _timeOut);
         }
+
+        public void Clear()
+        {
+            Text = string.Empty;
+            _started = false;
+        }
     }
 }
