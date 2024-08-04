@@ -20,6 +20,8 @@
         {
         }
 
+        public TextColor Color { get; set; } = TextColor.Default;
+
         public static TextManager GetInstance()
         {
             if (instance == null)
@@ -84,7 +86,7 @@
                 {
                     _imageFont.Render(
                         glyph.SrcX,
-                        glyph.SrcY,
+                        Color.Equals(TextColor.Red) ? glyph.SrcY + glyph.Height : glyph.SrcY,
                         glyph.Width,
                         glyph.Height,
                         currentPosX,

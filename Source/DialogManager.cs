@@ -22,7 +22,7 @@
 
         private Store _store;
         private bool _hasSellingItems = false;
-        private TimedMessage _message = new TimedMessage(timeOut: 2500);
+        private TimedMessage _message = new TimedMessage(timeOut: 2000);
         private Dictionary<string, Item> _items;
 
         private ImageResource _buttonsImage;

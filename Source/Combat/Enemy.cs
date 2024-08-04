@@ -10,6 +10,16 @@
 
         public ImageResource Image { get; set; }
 
+        public int AttackDispersion()
+        {
+            return AttackMax - AttackMin;
+        }
+
+        public int GoldDispersion()
+        {
+            return GoldMax - GoldMin;
+        }
+
         public void Render()
         {
             Image.Render(

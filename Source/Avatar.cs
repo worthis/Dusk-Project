@@ -147,6 +147,26 @@
             _mazeWorldManager.LoadMazeWorld(SleepMazeWorld);
         }
 
+        public void Hit(int attackAmount)
+        {
+            HP -= attackAmount;
+
+            if (HP <= 0)
+            {
+                HP = 0;
+            }
+
+            if (HP > MaxHP)
+            {
+                HP = MaxHP;
+            }
+        }
+
+        public void Heal(int healAmount)
+        {
+            Hit(-healAmount);
+        }
+
         public bool IsBadlyHurt()
         {
             return HP <= (int)(MaxHP / 3);

@@ -41,8 +41,6 @@
 
             while (windowManager.WindowOpened)
             {
-                /*Console.WriteLine("Game tick");*/
-
                 // FPS limiter
                 uint currentTime = SDL.SDL_GetTicks();
                 uint timeDelta = _lastUpdateTime - currentTime;
@@ -55,11 +53,9 @@
                 _lastUpdateTime = currentTime;
 
                 // Process input
-                /*Console.WriteLine("Game tick: process input");*/
                 windowManager.ProcessInput();
 
                 // Check quit conditions
-                /*Console.WriteLine("Game tick: check quit");*/
                 if (windowManager.KeyPressed(InputKey.KEY_MENU) ||
                     windowManager.KeyPressed(InputKey.KEY_QUIT) ||
                     gameStateManager.Quitting())
@@ -69,15 +65,12 @@
                 }
 
                 // Update game logic
-                /*Console.WriteLine("Game tick: logic");*/
                 gameStateManager.Update();
 
                 // Draw game state
-                /*Console.WriteLine("Game tick: render");*/
                 gameStateManager.Render();
 
                 // Render screen
-                /*Console.WriteLine("Game tick: display");*/
                 windowManager.Display();
             }
 

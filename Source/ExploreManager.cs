@@ -18,7 +18,7 @@
         private DialogManager _dialogManager;
         private Avatar _avatar;
 
-        private TimedMessage _message = new TimedMessage(timeOut: 2500);
+        private TimedMessage _message = new TimedMessage(timeOut: 2000);
 
         private Random _randGen;
         private int _encounterChance = 0;
@@ -95,6 +95,8 @@
         {
             _avatar.Update();
             _message.Update();
+
+            _textManager.Color = _avatar.IsBadlyHurt() ? TextColor.Red : TextColor.Default;
 
             if (_avatar.Moved)
             {

@@ -30,6 +30,8 @@
         private string _offenceResult = string.Empty;
         private string _defenceAction = string.Empty;
         private string _defenceResult = string.Empty;
+        private string _rewardResult = string.Empty;
+        private int _rewardGoldAmount = 0;
         private bool _enemyHurt = false;
         private bool _heroHurt = false;
         private bool _runSuccess = false;
@@ -83,6 +85,8 @@
 
         public void Update()
         {
+            _textManager.Color = _avatar.IsBadlyHurt() ? TextColor.Red : TextColor.Default;
+
             switch (_phase)
             {
                 case CombatPhase.Intro:
@@ -102,9 +106,11 @@
                     break;
 
                 case CombatPhase.Victory:
+                    UpdateVictory();
                     break;
 
                 case CombatPhase.Defeat:
+                    UpdateDefeat();
                     break;
             }
         }
@@ -148,8 +154,9 @@
                     RenderOffenceLog();
                     RenderHeroStats(true);
                     _textManager.Render("Victory!", 160, 120, TextJustify.JUSTIFY_CENTER);
+                    _textManager.Render(_rewardResult, 160, 140, TextJustify.JUSTIFY_CENTER);
 
-                    // todo: reward
+                    // todo: render gold coins
                     break;
 
                 case CombatPhase.Defeat:
@@ -273,8 +280,7 @@
                 {
                     _phase = CombatPhase.Victory;
                     _soundManager.PlaySound(SFX.Coin);
-
-                    // todo: reward
+                    GiveReward();
                     return;
                 }
 
@@ -286,7 +292,45 @@
                     return;
                 }
 
-                // todo: enemy attack
+                // Enemy attack
+                _defenceAction = "Attack!";
+
+                // Check Miss
+                if (_randGen.Next(100) < 30)
+                {
+                    _defenceResult = "Miss!";
+                    _soundManager.PlaySound(SFX.Miss);
+                }
+                else
+                {
+                    // Hit
+                    var attackDamage = _randGen.Next(_enemy.AttackDispersion() + 1) + _enemy.AttackMin;
+
+                    // Critical Hit
+                    if (_randGen.Next(100) < 5)
+                    {
+                        attackDamage += _enemy.AttackMin;
+                        _defenceAction = "Critical!";
+                        _soundManager.PlaySound(SFX.Critical);
+                    }
+                    else
+                    {
+                        _soundManager.PlaySound(SFX.Attack);
+                    }
+
+                    // Armor adsorb
+                    attackDamage -= _avatar.Armor.Defence + _avatar.Defence;
+
+                    if (attackDamage <= 0)
+                    {
+                        attackDamage = 1;
+                    }
+
+                    _avatar.Hit(attackDamage);
+                    _defenceResult = string.Format("{0} damage", attackDamage);
+                    _heroHurt = true;
+                }
+
                 _timer = 30;
                 _phase = CombatPhase.Defence;
             }
@@ -294,6 +338,54 @@
 
         private void UpdateDefence()
         {
+            _timer--;
+
+            if (_timer > 15 &&
+                _heroHurt)
+            {
+                _mazeWorldManager.TileSetRenderOffsetX = _randGen.Next(8) - 4;
+                _mazeWorldManager.TileSetRenderOffsetY = _randGen.Next(8) - 4;
+            }
+
+            if (_timer == 15)
+            {
+                _mazeWorldManager.TileSetRenderOffsetX = 0;
+                _mazeWorldManager.TileSetRenderOffsetY = 0;
+            }
+
+            if (_timer <= 0)
+            {
+                // Check Defeat
+                if (_avatar.HP <= 0)
+                {
+                    _phase = CombatPhase.Defeat;
+                    _soundManager.PlaySound(SFX.Defeat);
+                    return;
+                }
+
+                _phase = CombatPhase.Input;
+            }
+        }
+
+        private void UpdateVictory()
+        {
+            if (_windowManager.KeyPressed(InputKey.KEY_A) ||
+                _windowManager.KeyPressed(InputKey.KEY_B))
+            {
+                Reset();
+                _gameStateManager.ChangeState(GameState.Explore);
+            }
+        }
+
+        private void UpdateDefeat()
+        {
+            if (_windowManager.KeyPressed(InputKey.KEY_A) ||
+                _windowManager.KeyPressed(InputKey.KEY_B))
+            {
+                Reset();
+                _avatar.Respawn();
+                _gameStateManager.ChangeState(GameState.Explore);
+            }
         }
 
         private void RenderHeroStats(bool showGold = false)
@@ -303,7 +395,7 @@
 
             if (showGold)
             {
-                _textManager.Render(string.Format("{0} Gold", _avatar.Gold), 316, 220);
+                _textManager.Render(string.Format("{0} Gold", _avatar.Gold), 316, 220, TextJustify.JUSTIFY_RIGHT);
             }
         }
 
@@ -329,6 +421,14 @@
             _textManager.Render("Enemy:", 4, 120);
             _textManager.Render(_defenceAction, 4, 140);
             _textManager.Render(_defenceResult, 4, 160);
+        }
+
+        private void GiveReward()
+        {
+            var goldReward = _randGen.Next(_enemy.GoldDispersion()) + _enemy.GoldMin;
+            _avatar.AddGold(goldReward);
+            _rewardResult = string.Format("{0} Gold!", goldReward);
+            _rewardGoldAmount = goldReward;
         }
 
         private void LoadEnemy(string enemyId)
@@ -360,6 +460,7 @@
             _offenceResult = string.Empty;
             _defenceAction = string.Empty;
             _defenceResult = string.Empty;
+            _rewardResult = string.Empty;
             _enemyHurt = false;
             _heroHurt = false;
             _runSuccess = false;

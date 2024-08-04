@@ -39,6 +39,10 @@
         {
         }
 
+        public int TileSetRenderOffsetX { get; set; } = 0;
+
+        public int TileSetRenderOffsetY { get; set; } = 0;
+
         public string MazeWorldName { get => _mazeWorld.Name; }
 
         public List<string> Enemies { get => _mazeWorld.Enemies; }
@@ -100,6 +104,9 @@
                     _mazeWorld.Tiles.GetLength(0),
                     _mazeWorld.Tiles.GetLength(1));
             }
+
+            TileSetRenderOffsetX = 0;
+            TileSetRenderOffsetY = 0;
 
             _soundManager.PlayMusic(_mazeWorld.Music);
 
@@ -318,8 +325,8 @@
                 _tileLayouts[position].SrcY,
                 _tileLayouts[position].Width,
                 _tileLayouts[position].Height,
-                _tileLayouts[position].DstX,
-                _tileLayouts[position].DstY);
+                _tileLayouts[position].DstX + TileSetRenderOffsetX,
+                _tileLayouts[position].DstY = TileSetRenderOffsetY);
         }
 
         private void LoadTiles()
