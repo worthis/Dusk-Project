@@ -8,7 +8,7 @@
 
         public string Result { get; set; } = string.Empty;
 
-        public SFX Sound { get; set; }
+        public SoundFX Sound { get; set; }
 
         public bool IsHeroDamaged { get; set; } = false;
 

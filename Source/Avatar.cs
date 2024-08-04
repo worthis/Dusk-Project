@@ -311,7 +311,7 @@
                 return;
             }
 
-            _soundManager.PlaySound(SFX.Blocked);
+            _soundManager.PlaySound(SoundFX.Blocked);
         }
 
         public void StepForward()

@@ -1,8 +1,10 @@
 ﻿namespace DuskProject.Source
 {
+    using DuskProject.Source.Combat;
     using DuskProject.Source.Dialog;
     using DuskProject.Source.Enums;
     using DuskProject.Source.Maze;
+    using DuskProject.Source.Resources;
 
     public class ExploreManager
     {
@@ -12,7 +14,10 @@
         private static ExploreManager instance;
         private static object instanceLock = new object();
 
+        private WindowManager _windowManager;
+        private ResourceManager _resourceManager;
         private GameStateManager _gameStateManager;
+        private SoundManager _soundManager;
         private TextManager _textManager;
         private MazeWorldManager _mazeWorldManager;
         private DialogManager _dialogManager;
@@ -22,6 +27,22 @@
 
         private Random _randGen;
         private int _encounterChance = 0;
+
+        private ImageResource _avatarImage;
+        private ImageResource _buttonsImage;
+        private ImageResource _buttonSelectedImage;
+
+        private InfoButton[] _buttonsInfo = new InfoButton[8]
+        {
+            new InfoButton(InfoButtonType.Attack, 240, 40, 32, 32),
+            new InfoButton(InfoButtonType.Run, 280, 40, 32, 32),
+            new InfoButton(InfoButtonType.Heal, 240, 80, 32, 32),
+            new InfoButton(InfoButtonType.Burn, 280, 80, 32, 32),
+            new InfoButton(InfoButtonType.Unlock, 240, 120, 32, 32),
+            new InfoButton(InfoButtonType.Light, 280, 120, 32, 32),
+            new InfoButton(InfoButtonType.Freeze, 240, 160, 32, 32),
+            new InfoButton(InfoButtonType.Reflect, 280, 160, 32, 32),
+        };
 
         private ExploreManager()
         {
@@ -46,7 +67,10 @@
 
         public void Init()
         {
+            _windowManager = WindowManager.GetInstance();
+            _resourceManager = ResourceManager.GetInstance();
             _gameStateManager = GameStateManager.GetInstance();
+            _soundManager = SoundManager.GetInstance();
             _textManager = TextManager.GetInstance();
             _mazeWorldManager = MazeWorldManager.GetInstance();
             _dialogManager = DialogManager.GetInstance();
@@ -54,6 +78,17 @@
 
             // Miyoo Mini Plus does not have RTC time
             _randGen = new Random(Environment.TickCount);
+
+            _avatarImage = _resourceManager.LoadImage("Data/images/interface/heroine.png");
+            _buttonsImage = _resourceManager.LoadImage("Data/images/interface/action_buttons.png");
+            _buttonSelectedImage = _resourceManager.LoadImage("Data/images/interface/select.png");
+
+            foreach (var button in _buttonsInfo)
+            {
+                button.Enabled = true;
+            }
+
+            _buttonsInfo[0].Selected = true;
 
             Console.WriteLine("ExploreManager initialized");
         }
@@ -93,9 +128,27 @@
 
         public void Update()
         {
+            // Info Screen
+            if (_windowManager.KeyPressed(InputKey.KEY_SELECT))
+            {
+                _message.Clear();
+                _soundManager.PlaySound(SoundFX.Click);
+                _gameStateManager.ChangeState(GameState.Info);
+                return;
+            }
+
+            // Main Menu
+            if (_windowManager.KeyPressed(InputKey.KEY_START))
+            {
+                Save();
+                _message.Clear();
+                _soundManager.PlaySound(SoundFX.Click);
+                _gameStateManager.ChangeState(GameState.Title);
+                return;
+            }
+
             _avatar.Update();
             _message.Update();
-
             _textManager.Color = _avatar.IsBadlyHurt() ? TextColor.Red : TextColor.Default;
 
             if (_avatar.Moved)
@@ -152,6 +205,32 @@
             }
         }
 
+        public void UpdateInfo()
+        {
+            _message.Update();
+
+            // Spell selection
+            if (_windowManager.KeyPressed(InputKey.KEY_UP) ||
+                _windowManager.KeyPressed(InputKey.KEY_RIGHT))
+            {
+            }
+
+            if (_windowManager.KeyPressed(InputKey.KEY_DOWN) ||
+                _windowManager.KeyPressed(InputKey.KEY_LEFT))
+            {
+            }
+
+            // Return to Explore
+            if (_windowManager.KeyPressed(InputKey.KEY_SELECT) ||
+                _windowManager.KeyPressed(InputKey.KEY_B))
+            {
+                _message.Clear();
+                _soundManager.PlaySound(SoundFX.Click);
+                _gameStateManager.ChangeState(GameState.Explore);
+                return;
+            }
+        }
+
         public void Render()
         {
             // Maze Cell
@@ -160,6 +239,68 @@
 
             // UI
             // Compass
+            RenderCompass();
+
+            // Minimap
+            // Messages
+            _textManager.Render(_message.Text, 160, 200, TextJustify.JUSTIFY_CENTER);
+        }
+
+        public void RenderInfo()
+        {
+            // Maze Cell
+            _mazeWorldManager.RenderBackground(_avatar.Facing);
+            _mazeWorldManager.Render(_avatar.PosX, _avatar.PosY, _avatar.Facing);
+
+            _textManager.Render("INFO", 160, 4, TextJustify.JUSTIFY_CENTER);
+
+            if (_avatar.SpellBookLevel > 0)
+            {
+                _textManager.Render("SPELLS", 316, 60, TextJustify.JUSTIFY_RIGHT);
+            }
+
+            RenderHeroEquipment(ItemType.Armor, 0);                     // Base
+            RenderHeroEquipment(ItemType.Armor, _avatar.Armor.Level);   // Armor
+            RenderHeroEquipment(ItemType.Weapon, _avatar.Weapon.Level); // Weapon
+            RenderHeroStats(true);                                      // HP / MP / Gold
+            RenderSpells();
+
+            // Item List
+            // Armor
+            if (_avatar.Defence > 0)
+            {
+                _textManager.Render(
+                    string.Format(
+                        "{0} +{1}",
+                        _avatar.Armor.Name,
+                        _avatar.Defence),
+                    4,
+                    130);
+            }
+            else
+            {
+                _textManager.Render(_avatar.Armor.Name, 4, 130);
+            }
+
+            // Weapon
+            if (_avatar.Attack > 0)
+            {
+                _textManager.Render(
+                    string.Format(
+                        "{0} +{1}",
+                        _avatar.Weapon.Name,
+                        _avatar.Attack),
+                    4,
+                    150);
+            }
+            else
+            {
+                _textManager.Render(_avatar.Weapon.Name, 4, 150);
+            }
+        }
+
+        private void RenderCompass()
+        {
             switch (_avatar.Facing)
             {
                 case AvatarFacing.North:
@@ -178,10 +319,47 @@
                     _textManager.Render("SOUTH", 160, 4, TextJustify.JUSTIFY_CENTER);
                     break;
             }
+        }
 
-            // Minimap
-            // Messages
-            _textManager.Render(_message.Text, 160, 200, TextJustify.JUSTIFY_CENTER);
+        private void RenderHeroEquipment(ItemType itemType, int itemLevel)
+        {
+            _avatarImage.Render(
+                itemLevel * 160,
+                (int)itemType * 200,
+                160,
+                200,
+                80,
+                40);
+        }
+
+        private void RenderHeroStats(bool showGold = false)
+        {
+            _textManager.Render(string.Format("HP {0}/{1}", _avatar.HP, _avatar.MaxHP), 4, 200);
+            _textManager.Render(string.Format("MP {0}/{1}", _avatar.MP, _avatar.MaxMP), 4, 220);
+
+            if (showGold)
+            {
+                _textManager.Render(string.Format("{0} Gold", _avatar.Gold), 316, 220, TextJustify.JUSTIFY_RIGHT);
+            }
+        }
+
+        private void RenderSpells()
+        {
+            for (int i = 0; i < _buttonsInfo.Length; i++)
+            {
+                if (!_buttonsInfo[i].Enabled)
+                {
+                    continue;
+                }
+
+                _buttonsImage.Render(
+                    i * _buttonsInfo[i].Position.Width,
+                    0,
+                    _buttonsInfo[i].Position.Width,
+                    _buttonsInfo[i].Position.Height,
+                    _buttonsInfo[i].Position.X + 4,
+                    _buttonsInfo[i].Position.Y + 4);
+            }
         }
     }
 }

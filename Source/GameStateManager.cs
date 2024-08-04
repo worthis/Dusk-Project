@@ -83,7 +83,7 @@
                     break;
 
                 case GameState.Info:
-
+                    _exploreManager.UpdateInfo();
                     break;
             }
         }
@@ -109,7 +109,7 @@
                     break;
 
                 case GameState.Info:
-
+                    _exploreManager.RenderInfo();
                     break;
             }
         }

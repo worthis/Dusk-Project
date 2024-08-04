@@ -2,8 +2,8 @@
 {
     public enum ItemType : byte
     {
-        Weapon,
         Armor,
+        Weapon,
         Spell,
     }
 }

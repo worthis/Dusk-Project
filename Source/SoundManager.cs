@@ -76,7 +76,7 @@
             SDL_mixer.Mix_CloseAudio();
         }
 
-        public void PlaySound(SFX sound, int channel = -1)
+        public void PlaySound(SoundFX sound, int channel = -1)
         {
             if (!_useSound)
             {
@@ -165,21 +165,21 @@
 
         private void LoadSounds()
         {
-            _sounds = new SoundResource[Enum.GetValues(typeof(SFX)).Length];
-            _sounds[(int)SFX.Attack] = _resourceManager.LoadSound("Data/sounds/attack.wav");
-            _sounds[(int)SFX.Blocked] = _resourceManager.LoadSound("Data/sounds/blocked.wav");
-            _sounds[(int)SFX.BoneShield] = _resourceManager.LoadSound("Data/sounds/boneshield.wav");
-            _sounds[(int)SFX.Click] = _resourceManager.LoadSound("Data/sounds/click.wav");
-            _sounds[(int)SFX.Coin] = _resourceManager.LoadSound("Data/sounds/coin.wav");
-            _sounds[(int)SFX.Critical] = _resourceManager.LoadSound("Data/sounds/critical.wav");
-            _sounds[(int)SFX.Defeat] = _resourceManager.LoadSound("Data/sounds/defeat.wav");
-            _sounds[(int)SFX.Fire] = _resourceManager.LoadSound("Data/sounds/fire.wav");
-            _sounds[(int)SFX.Heal] = _resourceManager.LoadSound("Data/sounds/heal.wav");
-            _sounds[(int)SFX.HPDrain] = _resourceManager.LoadSound("Data/sounds/hpdrain.wav");
-            _sounds[(int)SFX.Miss] = _resourceManager.LoadSound("Data/sounds/miss.wav");
-            _sounds[(int)SFX.MPDrain] = _resourceManager.LoadSound("Data/sounds/mpdrain.wav");
-            _sounds[(int)SFX.Run] = _resourceManager.LoadSound("Data/sounds/run.wav");
-            _sounds[(int)SFX.Unlock] = _resourceManager.LoadSound("Data/sounds/unlock.wav");
+            _sounds = new SoundResource[Enum.GetValues(typeof(SoundFX)).Length];
+            _sounds[(int)SoundFX.Attack] = _resourceManager.LoadSound("Data/sounds/attack.wav");
+            _sounds[(int)SoundFX.Blocked] = _resourceManager.LoadSound("Data/sounds/blocked.wav");
+            _sounds[(int)SoundFX.BoneShield] = _resourceManager.LoadSound("Data/sounds/boneshield.wav");
+            _sounds[(int)SoundFX.Click] = _resourceManager.LoadSound("Data/sounds/click.wav");
+            _sounds[(int)SoundFX.Coin] = _resourceManager.LoadSound("Data/sounds/coin.wav");
+            _sounds[(int)SoundFX.Critical] = _resourceManager.LoadSound("Data/sounds/critical.wav");
+            _sounds[(int)SoundFX.Defeat] = _resourceManager.LoadSound("Data/sounds/defeat.wav");
+            _sounds[(int)SoundFX.Fire] = _resourceManager.LoadSound("Data/sounds/fire.wav");
+            _sounds[(int)SoundFX.Heal] = _resourceManager.LoadSound("Data/sounds/heal.wav");
+            _sounds[(int)SoundFX.HPDrain] = _resourceManager.LoadSound("Data/sounds/hpdrain.wav");
+            _sounds[(int)SoundFX.Miss] = _resourceManager.LoadSound("Data/sounds/miss.wav");
+            _sounds[(int)SoundFX.MPDrain] = _resourceManager.LoadSound("Data/sounds/mpdrain.wav");
+            _sounds[(int)SoundFX.Run] = _resourceManager.LoadSound("Data/sounds/run.wav");
+            _sounds[(int)SoundFX.Unlock] = _resourceManager.LoadSound("Data/sounds/unlock.wav");
         }
     }
 }

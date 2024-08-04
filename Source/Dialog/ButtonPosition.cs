@@ -1,6 +1,6 @@
 ﻿namespace DuskProject.Source.Dialog
 {
-    public class ButtonPosition
+    public record ButtonPosition
     {
         public ButtonPosition(int x, int y, int width, int height)
         {

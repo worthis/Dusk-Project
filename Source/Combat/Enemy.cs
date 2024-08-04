@@ -51,7 +51,7 @@
                         // Miss
                         if (_randGen.Next(100) < 30)
                         {
-                            return new AttackResult { Action = "Attack!", Result = "Miss!", Sound = SFX.Miss };
+                            return new AttackResult { Action = "Attack!", Result = "Miss!", Sound = SoundFX.Miss };
                         }
 
                         var attackDamage = _randGen.Next(AttackDispersion() + 1) + AttackMin;
@@ -72,7 +72,7 @@
                                 Result = string.Format("{0} damage", attackDamage),
                                 IsHeroDamaged = true,
                                 DamageToHeroHP = attackDamage,
-                                Sound = SFX.Critical,
+                                Sound = SoundFX.Critical,
                             };
                         }
 
@@ -89,7 +89,7 @@
                             Result = string.Format("{0} damage", attackDamage),
                             IsHeroDamaged = true,
                             DamageToHeroHP = attackDamage,
-                            Sound = SFX.Attack,
+                            Sound = SoundFX.Attack,
                         };
                     }
 
@@ -98,7 +98,7 @@
                         // Miss
                         if (_randGen.Next(100) < 30)
                         {
-                            return new AttackResult { Action = "Scorch!", Result = "Miss!", Sound = SFX.Miss };
+                            return new AttackResult { Action = "Scorch!", Result = "Miss!", Sound = SoundFX.Miss };
                         }
 
                         var attackDamage = _randGen.Next(AttackDispersion() + 1) + AttackMin;
@@ -116,7 +116,7 @@
                             Result = string.Format("{0} damage", attackDamage),
                             IsHeroDamaged = true,
                             DamageToHeroHP = attackDamage,
-                            Sound = SFX.Fire,
+                            Sound = SoundFX.Fire,
                         };
                     }
 
@@ -125,7 +125,7 @@
                         // Miss
                         if (_randGen.Next(100) < 30)
                         {
-                            return new AttackResult { Action = "HP Drain!", Result = "Miss!", Sound = SFX.Miss };
+                            return new AttackResult { Action = "HP Drain!", Result = "Miss!", Sound = SoundFX.Miss };
                         }
 
                         var attackDamage = _randGen.Next(AttackDispersion() + 1) + AttackMin;
@@ -143,7 +143,7 @@
                             IsHeroDamaged = true,
                             DamageToHeroHP = attackDamage,
                             DamageToEnemyHP = -attackDamage,
-                            Sound = SFX.HPDrain,
+                            Sound = SoundFX.HPDrain,
                         };
                     }
 
@@ -152,7 +152,7 @@
                         // Miss
                         if (_randGen.Next(100) < 30)
                         {
-                            return new AttackResult { Action = "MP Drain!", Result = "Miss!", Sound = SFX.Miss };
+                            return new AttackResult { Action = "MP Drain!", Result = "Miss!", Sound = SoundFX.Miss };
                         }
 
                         // Hit
@@ -162,7 +162,7 @@
                             Result = "-1 MP",
                             IsHeroDamaged = true,
                             DamageToHeroMP = 1,
-                            Sound = SFX.MPDrain,
+                            Sound = SoundFX.MPDrain,
                         };
                     }
             }

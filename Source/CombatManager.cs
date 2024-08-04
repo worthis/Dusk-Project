@@ -206,7 +206,7 @@
                 if (_randGen.Next(100) < 20)
                 {
                     _offenceResult = "Miss!";
-                    _soundManager.PlaySound(SFX.Miss);
+                    _soundManager.PlaySound(SoundFX.Miss);
                 }
                 else
                 {
@@ -218,11 +218,11 @@
                     {
                         attackDamage += _avatar.Weapon.AttackMax;
                         _offenceAction = "Critical!";
-                        _soundManager.PlaySound(SFX.Critical);
+                        _soundManager.PlaySound(SoundFX.Critical);
                     }
                     else
                     {
-                        _soundManager.PlaySound(SFX.Attack);
+                        _soundManager.PlaySound(SoundFX.Attack);
                     }
 
                     _enemyHurt = true;
@@ -237,7 +237,7 @@
                 usedAction = true;
 
                 _offenceAction = "Run!";
-                _soundManager.PlaySound(SFX.Run);
+                _soundManager.PlaySound(SoundFX.Run);
 
                 if (_randGen.Next(100) < 66)
                 {
@@ -283,7 +283,7 @@
                 if (_enemy.HP <= 0)
                 {
                     _phase = CombatPhase.Victory;
-                    _soundManager.PlaySound(SFX.Coin);
+                    _soundManager.PlaySound(SoundFX.Coin);
                     GiveReward();
                     return;
                 }
@@ -336,7 +336,7 @@
                 if (_avatar.HP <= 0)
                 {
                     _phase = CombatPhase.Defeat;
-                    _soundManager.PlaySound(SFX.Defeat);
+                    _soundManager.PlaySound(SoundFX.Defeat);
                     return;
                 }
 

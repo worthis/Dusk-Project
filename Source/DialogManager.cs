@@ -336,7 +336,7 @@
                         }
 
                         UpdateButtons();
-                        _soundManager.PlaySound(SFX.Coin);
+                        _soundManager.PlaySound(SoundFX.Coin);
 
                         return;
                     }
