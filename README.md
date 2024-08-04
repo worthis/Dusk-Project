@@ -15,7 +15,8 @@ Dusk Project (temp name) is basically a C# port of [Clint Bellanger](http://clin
 
 ### How to run on Windows
 
-- Just Build and Run :)
+- Build SDL2-CS
+- Build Dusk Project and Run :)
 
 ### How to run on Miyoo Mini Plus
 
@@ -33,5 +34,13 @@ Dusk Project (temp name) is basically a C# port of [Clint Bellanger](http://clin
 
 - Appends required libraries to the required enviroment variable
 
+## Credits & attribution
+
+- Used [original art](https://opengameart.org/content/first-person-dungeon-crawl-art-pack) was made by [Clint Bellanger](http://clintbellanger.net) for the original [Heroine Dusk](http://heroinedusk.com) game ([CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/))
+- The music is by [Yubatake](http://opengameart.org/users/yubatake) (CC-BY 3.0)
+- Used the great 16 color palette made by DawnBringer at [PixelJoint](http://www.pixeljoint.com/forum/forum_posts.asp?TID=12795)
+
 ## Thanks
+
+- [Clint Bellanger](http://clintbellanger.net) for [Heroine Dusk](http://heroinedusk.com) game
 - [LostQasar](https://github.com/LostQuasar) for SDL2 C# Example
