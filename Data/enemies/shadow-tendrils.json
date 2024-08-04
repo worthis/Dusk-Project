@@ -1,0 +1,11 @@
+{
+  "Name":"Shadow Tendrils",
+  "ImageFile":"shadow_tendrils.png",
+  "HP":6,
+  "AttackMin":2,
+  "AttackMax":5,
+  "GoldMin":1,
+  "GoldMax":2,
+  "Category":"Shadow",
+  "Powers":["Attack"]
+}

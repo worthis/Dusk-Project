@@ -1,0 +1,11 @@
+{
+  "Name":"Death Speaker",
+  "ImageFile":"death_speaker.png",
+  "HP":84,
+  "AttackMin":8,
+  "AttackMax":15,
+  "GoldMin":225,
+  "GoldMax":275,
+  "Category":"Demon",
+  "Powers":["Attack", "Scorch"]
+}

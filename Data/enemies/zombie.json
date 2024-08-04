@@ -1,0 +1,11 @@
+{
+  "Name":"Zombie",
+  "ImageFile":"zombie.png",
+  "HP":12,
+  "AttackMin":4,
+  "AttackMax":10,
+  "GoldMin":3,
+  "GoldMax":6,
+  "Category":"Undead",
+  "Powers":["Attack", "Attack", "HPDrain"]
+}

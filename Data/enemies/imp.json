@@ -1,0 +1,11 @@
+{
+  "Name":"Imp",
+  "ImageFile":"imp.png",
+  "HP":7,
+  "AttackMin":2,
+  "AttackMax":6,
+  "GoldMin":1,
+  "GoldMax":3,
+  "Category":"Demon",
+  "Powers":["Attack", "Attack", "Scorch"]
+}

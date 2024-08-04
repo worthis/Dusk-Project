@@ -1,0 +1,11 @@
+{
+  "Name":"Druid",
+  "ImageFile":"druid.png",
+  "HP":16,
+  "AttackMin":7,
+  "AttackMax":14,
+  "GoldMin":7,
+  "GoldMax":12,
+  "Category":"Demon",
+  "Powers":["Attack", "Scorch", "HPDrain", "MPDrain"]
+}

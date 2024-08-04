@@ -1,0 +1,11 @@
+{
+  "Name":"Mimic",
+  "ImageFile":"mimic.png",
+  "HP":30,
+  "AttackMin":10,
+  "AttackMax":16,
+  "GoldMin":16,
+  "GoldMax":25,
+  "Category":"Automaton",
+  "Powers":["Attack"]
+}

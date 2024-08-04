@@ -35,8 +35,8 @@
   ],
   "Enemies":
   [
-    "ENEMY_SHADOW_TENDRILS",
-    "ENEMY_IMP",
-    "ENEMY_SHADOW_SOUL"
+    "shadow-tendrils",
+    "imp",
+    "shadow-soul"
   ]
 }

@@ -1,0 +1,11 @@
+{
+  "Name":"Skeleton",
+  "ImageFile":"skeleton.png",
+  "HP":18,
+  "AttackMin":6,
+  "AttackMax":12,
+  "GoldMin":5,
+  "GoldMax":8,
+  "Category":"Undead",
+  "Powers":["Attack"]
+}

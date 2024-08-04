@@ -36,8 +36,8 @@
   ],
   "Enemies":
   [
-    "ENEMY_ZOMBIE",
-    "ENEMY_SKELETON",
-    "ENEMY_DRUID"
+    "zombie",
+    "skeleton",
+    "druid"
   ]
 }

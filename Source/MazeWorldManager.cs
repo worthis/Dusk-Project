@@ -41,6 +41,8 @@
 
         public string MazeWorldName { get => _mazeWorld.Name; }
 
+        public List<string> Enemies { get => _mazeWorld.Enemies; }
+
         public static MazeWorldManager GetInstance()
         {
             if (instance == null)

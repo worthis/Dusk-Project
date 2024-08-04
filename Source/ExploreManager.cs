@@ -6,6 +6,9 @@
 
     public class ExploreManager
     {
+        private const int _encounterIncrement = 5;
+        private const int _encounterChanceMax = 30;
+
         private static ExploreManager instance;
         private static object instanceLock = new object();
 
@@ -16,6 +19,9 @@
         private Avatar _avatar;
 
         private TimedMessage _message = new TimedMessage(timeOut: 2500);
+
+        private Random _randGen;
+        private int _encounterChance = 0;
 
         private ExploreManager()
         {
@@ -45,6 +51,9 @@
             _mazeWorldManager = MazeWorldManager.GetInstance();
             _dialogManager = DialogManager.GetInstance();
             _avatar = Avatar.GetInstance();
+
+            // Miyoo Mini Plus does not have RTC time
+            _randGen = new Random(Environment.TickCount);
 
             Console.WriteLine("ExploreManager initialized");
         }
@@ -116,8 +125,28 @@
                     return;
                 }
 
-                // Special scripts
                 // Encounters
+                if (_mazeWorldManager.Enemies is not null &&
+                    _mazeWorldManager.Enemies.Count > 0)
+                {
+                    if (_randGen.Next(100) < _encounterChance)
+                    {
+                        _encounterChance = 0;
+
+                        var enemyIndex = _randGen.Next(_mazeWorldManager.Enemies.Count);
+                        _gameStateManager.StartCombat(_mazeWorldManager.Enemies[enemyIndex]);
+
+                        return;
+                    }
+
+                    _encounterChance += _encounterIncrement;
+                    if (_encounterChance > _encounterChanceMax)
+                    {
+                        _encounterChance = _encounterChanceMax;
+                    }
+                }
+
+                // Special scripts
             }
         }
 

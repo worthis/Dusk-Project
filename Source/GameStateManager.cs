@@ -113,5 +113,11 @@
                     break;
             }
         }
+
+        public void StartCombat(string enemyId, string uniqueFlag = "")
+        {
+            _combatManager.StartCombat(enemyId, uniqueFlag);
+            ChangeState(GameState.Combat);
+        }
     }
 }

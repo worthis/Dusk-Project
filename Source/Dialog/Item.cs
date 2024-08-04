@@ -33,5 +33,10 @@
         {
             return (int)((AttackMin + AttackMax) * 0.5);
         }
+
+        public int AttackDispersion()
+        {
+            return AttackMax - AttackMin;
+        }
     }
 }

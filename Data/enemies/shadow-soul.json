@@ -1,0 +1,11 @@
+{
+  "Name":"Shadow Soul",
+  "ImageFile":"shadow_soul.png",
+  "HP":8,
+  "AttackMin":3,
+  "AttackMax":8,
+  "GoldMin":2,
+  "GoldMax":4,
+  "Category":"Shadow",
+  "Powers":["Attack", "Attack", "MPDrain"]
+}

@@ -32,8 +32,8 @@
   ],
   "Enemies":
   [
-    "ENEMY_IMP",
-    "ENEMY_SHADOW_SOUL",
-    "ENEMY_ZOMBIE"
+    "imp",
+    "shadow-soul",
+    "zombie"
   ]
 }

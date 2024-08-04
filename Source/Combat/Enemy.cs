@@ -9,5 +9,16 @@
         public int RenderOffsetY { get; set; } = 0;
 
         public ImageResource Image { get; set; }
+
+        public void Render()
+        {
+            Image.Render(
+                0,
+                0,
+                Image.Width,
+                Image.Height,
+                RenderOffsetX,
+                RenderOffsetY);
+        }
     }
 }

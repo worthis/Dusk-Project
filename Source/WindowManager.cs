@@ -105,32 +105,6 @@
             Console.WriteLine("Window created");
         }
 
-        /*public void Draw(ImageResource image, int srcX, int srcY, int srcW, int srcH, int dstX, int dstY)
-        {
-            SDL.SDL_Rect src = new()
-            {
-                x = srcX,
-                y = srcY,
-                w = srcW,
-                h = srcH,
-            };
-
-            SDL.SDL_Rect dst = new()
-            {
-                x = dstX,
-                y = dstY,
-                w = srcW,
-                h = srcH,
-            };
-
-            CheckSDLErr(SDL.SDL_BlitSurface(image.Image, ref src, _screenPtr, ref dst));
-        }
-
-        public void Draw(ImageResource image)
-        {
-            Draw(image, 0, 0, image.Width, image.Height, 0, 0);
-        }*/
-
         public void Display()
         {
             CheckSDLError(SDL.SDL_UpdateTexture(_texture, IntPtr.Zero, _screenSurface.pixels, _screenSurface.pitch));

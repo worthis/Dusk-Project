@@ -6,7 +6,7 @@
     public class EnemyBase
     {
         [JsonIgnore]
-        public string Id { get; protected set; } = string.Empty;
+        public string Id { get; set; } = string.Empty;
 
         [JsonProperty]
         public string Name { get; protected set; } = string.Empty;
@@ -18,7 +18,7 @@
         public EnemyCategory Category { get; protected set; }
 
         [JsonProperty]
-        public int HP { get; protected set; }
+        public int HP { get; set; }
 
         [JsonProperty]
         public int AttackMin { get; protected set; }
