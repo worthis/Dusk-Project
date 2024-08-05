@@ -1,10 +1,9 @@
 ﻿namespace DuskProject.Source
 {
-    using DuskProject.Source.Combat;
-    using DuskProject.Source.Dialog;
     using DuskProject.Source.Enums;
     using DuskProject.Source.Maze;
     using DuskProject.Source.Resources;
+    using DuskProject.Source.UI;
 
     public class ExploreManager
     {
@@ -29,20 +28,7 @@
         private int _encounterChance = 0;
 
         private ImageResource _avatarImage;
-        private ImageResource _buttonsImage;
-        private ImageResource _buttonSelectedImage;
-
-        private InfoButton[] _buttonsInfo = new InfoButton[8]
-        {
-            new InfoButton(InfoButtonType.Attack, 240, 40, 32, 32),
-            new InfoButton(InfoButtonType.Run, 280, 40, 32, 32),
-            new InfoButton(InfoButtonType.Heal, 240, 80, 32, 32),
-            new InfoButton(InfoButtonType.Burn, 280, 80, 32, 32),
-            new InfoButton(InfoButtonType.Unlock, 240, 120, 32, 32),
-            new InfoButton(InfoButtonType.Light, 280, 120, 32, 32),
-            new InfoButton(InfoButtonType.Freeze, 240, 160, 32, 32),
-            new InfoButton(InfoButtonType.Reflect, 280, 160, 32, 32),
-        };
+        private InfoButton[] _infoButtons;
 
         private ExploreManager()
         {
@@ -80,15 +66,31 @@
             _randGen = new Random(Environment.TickCount);
 
             _avatarImage = _resourceManager.LoadImage("Data/images/interface/heroine.png");
-            _buttonsImage = _resourceManager.LoadImage("Data/images/interface/action_buttons.png");
-            _buttonSelectedImage = _resourceManager.LoadImage("Data/images/interface/select.png");
+            ImageResource buttonsImage = _resourceManager.LoadImage("Data/images/interface/action_buttons.png");
+            ImageResource buttonSelectedImage = _resourceManager.LoadImage("Data/images/interface/select.png");
 
-            foreach (var button in _buttonsInfo)
+            _infoButtons = new InfoButton[8]
             {
-                button.Enabled = true;
-            }
+                new InfoButton(InfoButtonType.Attack, 240, 40, 32, 32, buttonsImage),
+                new InfoButton(InfoButtonType.Run, 280, 40, 32, 32, buttonsImage),
+                new InfoButton(InfoButtonType.Heal, 240, 80, 32, 32, buttonsImage),
+                new InfoButton(InfoButtonType.Burn, 280, 80, 32, 32, buttonsImage),
+                new InfoButton(InfoButtonType.Unlock, 240, 120, 32, 32, buttonsImage),
+                new InfoButton(InfoButtonType.Light, 280, 120, 32, 32, buttonsImage),
+                new InfoButton(InfoButtonType.Freeze, 240, 160, 32, 32, buttonsImage),
+                new InfoButton(InfoButtonType.Reflect, 280, 160, 32, 32, buttonsImage),
+            };
 
-            _buttonsInfo[0].Selected = true;
+            foreach (var button in _infoButtons)
+            {
+                button.SetSelectedImage(buttonSelectedImage, 40, 40, 4, 4);
+                button.Enabled = true;
+
+                if (button == _infoButtons.First())
+                {
+                    button.Selected = true;
+                }
+            }
 
             Console.WriteLine("ExploreManager initialized");
         }
@@ -345,21 +347,26 @@
 
         private void RenderSpells()
         {
-            for (int i = 0; i < _buttonsInfo.Length; i++)
+            foreach (var button in _infoButtons)
             {
-                if (!_buttonsInfo[i].Enabled)
+                button.Render();
+            }
+
+            /*for (int i = 0; i < _infoButtons.Length; i++)
+            {
+                if (!_infoButtons[i].Enabled)
                 {
                     continue;
                 }
 
                 _buttonsImage.Render(
-                    i * _buttonsInfo[i].Position.Width,
+                    i * _infoButtons[i].Width,
                     0,
-                    _buttonsInfo[i].Position.Width,
-                    _buttonsInfo[i].Position.Height,
-                    _buttonsInfo[i].Position.X + 4,
-                    _buttonsInfo[i].Position.Y + 4);
-            }
+                    _infoButtons[i].Width,
+                    _infoButtons[i].Height,
+                    _infoButtons[i].X + 4,
+                    _infoButtons[i].Y + 4);
+            }*/
         }
     }
 }

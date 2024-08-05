@@ -4,6 +4,7 @@
     using DuskProject.Source.Dialog;
     using DuskProject.Source.Enums;
     using DuskProject.Source.Resources;
+    using DuskProject.Source.UI;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
 
@@ -24,15 +25,7 @@
         private bool _hasSellingItems = false;
         private TimedMessage _message = new TimedMessage(timeOut: 2000);
         private Dictionary<string, Item> _items;
-
-        private ImageResource _buttonsImage;
-        private ImageResource _buttonSelectedImage;
-        private Button[] _buttons = new Button[3]
-        {
-            new Button(0, 120, 32, 32),
-            new Button(0, 160, 32, 32),
-            new Button(0, 200, 32, 32),
-        };
+        private DialogButton[] _buttons;
 
         private DialogManager()
         {
@@ -65,8 +58,20 @@
             _mazeWorldManager = MazeWorldManager.GetInstance();
             _avatar = Avatar.GetInstance();
 
-            _buttonsImage = _resourceManager.LoadImage("Data/images/interface/dialog_buttons.png");
-            _buttonSelectedImage = _resourceManager.LoadImage("Data/images/interface/select.png");
+            ImageResource buttonsImage = _resourceManager.LoadImage("Data/images/interface/dialog_buttons.png");
+            ImageResource buttonSelectedImage = _resourceManager.LoadImage("Data/images/interface/select.png");
+
+            _buttons = new DialogButton[3]
+            {
+                new DialogButton(8, 120, 32, 32, buttonsImage),
+                new DialogButton(8, 160, 32, 32, buttonsImage),
+                new DialogButton(8, 200, 32, 32, buttonsImage),
+            };
+
+            foreach (var button in _buttons)
+            {
+                button.SetSelectedImage(buttonSelectedImage, 40, 40, 4, 4);
+            }
 
             LoadItems("Data/items.json");
 
@@ -214,7 +219,7 @@
                     case DialogType.Room:
                         _hasSellingItems = true;
                         _buttons[i].Action = DialogButtonAction.Buy;
-                        _buttons[i].TextFirst = "Rent a room for the night";
+                        _buttons[i].TextFirst = "Rent a room for rest";
 
                         if (_avatar.IsRested())
                         {
@@ -234,6 +239,12 @@
 
                         break;
                 }
+
+                if (_buttons[i].Selected &&
+                    !_buttons[i].Enabled)
+                {
+                    _buttons[_buttons.Length - 1].Selected = true;
+                }
             }
         }
 
@@ -245,7 +256,10 @@
                 _windowManager.KeyPressed(InputKey.KEY_DOWN))
             {
                 var buttons = _buttons
-                    .Where(x => !x.Action.Equals(DialogButtonAction.None))
+                    .Where(x =>
+                    {
+                        return x.Enabled && !x.Action.Equals(DialogButtonAction.None);
+                    })
                     .ToList();
 
                 if (_windowManager.KeyPressed(InputKey.KEY_DOWN))
@@ -370,31 +384,9 @@
 
         private void RenderButtons()
         {
-            for (int i = 0; i < _buttons.Length; i++)
+            foreach (var button in _buttons)
             {
-                if (_buttons[i].Action == DialogButtonAction.None)
-                {
-                    continue;
-                }
-
-                if (_buttons[i].Selected)
-                {
-                    _buttonSelectedImage.Render(
-                        0,
-                        0,
-                        _buttonSelectedImage.Width,
-                        _buttonSelectedImage.Height,
-                        _buttons[i].Position.X,
-                        _buttons[i].Position.Y);
-                }
-
-                _buttonsImage.Render(
-                    ((int)_buttons[i].Action - 1) * _buttons[i].Position.Width,
-                    0,
-                    _buttons[i].Position.Width,
-                    _buttons[i].Position.Height,
-                    _buttons[i].Position.X + 4,
-                    _buttons[i].Position.Y + 4);
+                button.Render();
             }
         }
 
@@ -412,59 +404,26 @@
                 {
                     _textManager.Render(
                         _buttons[i].TextFirst,
-                        _buttons[i].Position.X + (_buttons[i].Action.Equals(DialogButtonAction.None) ? 4 : 44),
-                        _buttons[i].Position.Y + 12);
+                        _buttons[i].X + (_buttons[i].Action.Equals(DialogButtonAction.None) ? 4 : 44),
+                        _buttons[i].Y + 8);
 
                     continue;
                 }
 
                 _textManager.Render(
                         _buttons[i].TextFirst,
-                        _buttons[i].Position.X + (_buttons[i].Action.Equals(DialogButtonAction.None) ? 4 : 44),
-                        _buttons[i].Position.Y + 2);
+                        _buttons[i].X + (_buttons[i].Action.Equals(DialogButtonAction.None) ? 4 : 44),
+                        _buttons[i].Y - 2);
                 _textManager.Render(
                         _buttons[i].TextSecond,
-                        _buttons[i].Position.X + (_buttons[i].Action.Equals(DialogButtonAction.None) ? 4 : 44),
-                        _buttons[i].Position.Y + 22);
+                        _buttons[i].X + (_buttons[i].Action.Equals(DialogButtonAction.None) ? 4 : 44),
+                        _buttons[i].Y + 18);
             }
         }
 
         private void RenderGold()
         {
             _textManager.Render(string.Format("{0} Gold", _avatar.Gold), 316, 220, TextJustify.JUSTIFY_RIGHT);
-        }
-
-        private void Test()
-        {
-            Store store = new Store
-            {
-                Name = "Cedar Arms",
-                BackgroundImage = 3,
-                Music = "m31",
-                Lines = new DialogLine[2]
-                {
-                    new DialogLine
-                    {
-                        Type = DialogType.Weapon,
-                        Value = "2",
-                        MessageFirst = string.Empty,
-                        MessageSecond = string.Empty,
-                    },
-                    new DialogLine
-                    {
-                        Type = DialogType.Weapon,
-                        Value = "3",
-                        MessageFirst = "msg1",
-                        MessageSecond = "msg2",
-                    },
-                },
-            };
-
-            using (StreamWriter streamWriter = new("StoreTest.json"))
-            {
-                string storeData = JsonConvert.SerializeObject(store, new StringEnumConverter());
-                streamWriter.Write(storeData);
-            }
         }
     }
 }

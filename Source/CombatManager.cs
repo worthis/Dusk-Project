@@ -304,7 +304,7 @@
                 _soundManager.PlaySound(attackResult.Sound);
                 _heroHurt = attackResult.IsHeroDamaged;
 
-                _avatar.Hit(attackResult.DamageToEnemyHP);
+                _avatar.Hit(attackResult.DamageToHeroHP);
                 _avatar.DrainMP(attackResult.DamageToHeroMP);
                 _enemy.Hit(attackResult.DamageToEnemyHP);
 

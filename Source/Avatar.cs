@@ -153,7 +153,7 @@
         {
             HP -= attackPoints;
 
-            if (HP <= 0)
+            if (HP < 0)
             {
                 HP = 0;
             }
@@ -173,7 +173,7 @@
         {
             MP -= manaPoints;
 
-            if (MP <= 0)
+            if (MP < 0)
             {
                 MP = 0;
             }

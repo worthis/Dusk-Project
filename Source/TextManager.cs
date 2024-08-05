@@ -3,7 +3,7 @@
     using System;
     using DuskProject.Source.Enums;
     using DuskProject.Source.Resources;
-    using DuskProject.Source.Text;
+    using DuskProject.Source.UI;
     using Newtonsoft.Json;
 
     public class TextManager

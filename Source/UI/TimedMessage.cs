@@ -1,4 +1,4 @@
-﻿namespace DuskProject.Source.Dialog
+﻿namespace DuskProject.Source.UI
 {
     public class TimedMessage
     {
