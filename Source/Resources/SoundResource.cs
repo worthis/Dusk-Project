@@ -10,7 +10,7 @@
 
         public SoundResource(string fileName)
         {
-            SetName(fileName);
+            Name = fileName;
             _sound = SDL_mixer.Mix_LoadWAV(fileName);
             Console.WriteLine("Loaded sound {0}", fileName);
         }

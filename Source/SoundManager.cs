@@ -122,16 +122,10 @@
                 return;
             }
 
-            if (_music is not null &&
+            if (_music is null ||
                 !_music.Name.Equals(fileName))
             {
                 SDL_mixer.Mix_HaltMusic();
-                _resourceManager.Free(_music);
-                _music = null;
-            }
-
-            if (_music is null)
-            {
                 _music = _resourceManager.LoadMusic(fileName);
             }
 

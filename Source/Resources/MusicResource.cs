@@ -10,7 +10,7 @@
 
         public MusicResource(string fileName)
         {
-            SetName(fileName);
+            Name = fileName;
             _music = SDL_mixer.Mix_LoadMUS(fileName);
             Console.WriteLine("Loaded music {0}", fileName);
         }

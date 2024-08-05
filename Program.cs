@@ -76,7 +76,6 @@
 
             exploreManager.Save();
 
-            resourceManager.Quit();
             soundManager.Quit();
             windowManager.Quit();
         }

@@ -68,6 +68,7 @@
             if (_window == IntPtr.Zero)
             {
                 CheckSDLError(SDL.SDL_Init(SDL.SDL_INIT_VIDEO));
+                CheckSDLImageError(SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG));
             }
 
             SDL.SDL_ShowCursor(SDL.SDL_ENABLE);
@@ -127,6 +128,7 @@
 
         public void Quit()
         {
+            SDL_image.IMG_Quit();
             SDL.SDL_Quit();
 
             Console.WriteLine("WindowManager quit");
@@ -223,6 +225,14 @@
             if (error < 0)
             {
                 Console.WriteLine("Error: (SDL Error) " + SDL.SDL_GetError());
+            }
+        }
+
+        private static void CheckSDLImageError(int error)
+        {
+            if (error < 0)
+            {
+                Console.WriteLine("Error: (SDL Error) " + SDL_image.IMG_GetError());
             }
         }
     }

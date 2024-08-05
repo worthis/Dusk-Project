@@ -9,14 +9,16 @@
         private IntPtr _image = IntPtr.Zero;
         private SDL.SDL_Surface _imageSurface;
         private IntPtr _screenSurfacePtr = IntPtr.Zero;
+        private bool _alpha;
         private bool _disposedValue;
 
-        public ImageResource(string filename, bool alpha, IntPtr screenSurfacePtr)
+        public ImageResource(string fileName, bool alpha, IntPtr screenSurfacePtr)
         {
-            SetName(filename);
+            Name = fileName;
 
             _image = SDL_image.IMG_Load(Name);
             _screenSurfacePtr = screenSurfacePtr;
+            _alpha = alpha;
 
             if (_image == IntPtr.Zero ||
                 screenSurfacePtr == IntPtr.Zero)
@@ -31,7 +33,6 @@
             {
                 Console.WriteLine("Error: Failed to load image {0}, dimensions more than 1920x1080", Name);
                 SDL.SDL_FreeSurface(_image);
-
                 return;
             }
 
@@ -62,6 +63,8 @@
         }
 
         public IntPtr Image { get => _image; }
+
+        public SDL.SDL_Surface ImageSurface { get => _imageSurface; }
 
         public void Render(int srcX, int srcY, int srcW, int srcH, int dstX, int dstY)
         {
