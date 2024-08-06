@@ -28,7 +28,8 @@
         private int _encounterChance = 0;
 
         private ImageResource _avatarImage;
-        private InfoButton[] _infoButtons;
+        private List<InfoButton> _infoButtons = new List<InfoButton>();
+        private int _infoButtonsCursor = 0;
 
         private ExploreManager()
         {
@@ -69,27 +70,32 @@
             ImageResource buttonsImage = _resourceManager.LoadImage("Data/images/interface/action_buttons.png");
             ImageResource buttonSelectedImage = _resourceManager.LoadImage("Data/images/interface/select.png");
 
-            _infoButtons = new InfoButton[8]
+            /*_infoButtons = new InfoButton[8]
             {
-                new InfoButton(InfoButtonType.Attack, 240, 40, 32, 32, buttonsImage),
-                new InfoButton(InfoButtonType.Run, 280, 40, 32, 32, buttonsImage),
-                new InfoButton(InfoButtonType.Heal, 240, 80, 32, 32, buttonsImage),
-                new InfoButton(InfoButtonType.Burn, 280, 80, 32, 32, buttonsImage),
-                new InfoButton(InfoButtonType.Unlock, 240, 120, 32, 32, buttonsImage),
-                new InfoButton(InfoButtonType.Light, 280, 120, 32, 32, buttonsImage),
-                new InfoButton(InfoButtonType.Freeze, 240, 160, 32, 32, buttonsImage),
-                new InfoButton(InfoButtonType.Reflect, 280, 160, 32, 32, buttonsImage),
-            };
+                new InfoButton(ActionType.Attack, 238, 38, 32, 32, buttonsImage),
+                new InfoButton(ActionType.Heal, 238, 78, 32, 32, buttonsImage),
+                new InfoButton(ActionType.Unlock, 238, 118, 32, 32, buttonsImage),
+                new InfoButton(ActionType.Freeze, 238, 158, 32, 32, buttonsImage),
+                new InfoButton(ActionType.Run, 278, 38, 32, 32, buttonsImage),
+                new InfoButton(ActionType.Burn, 278, 78, 32, 32, buttonsImage),
+                new InfoButton(ActionType.Light, 278, 118, 32, 32, buttonsImage),
+                new InfoButton(ActionType.Reflect, 278, 158, 32, 32, buttonsImage),
+            };*/
+
+            _infoButtons.Add(new InfoButton(ActionType.Attack, 238, 38, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Heal, 238, 78, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Unlock, 238, 118, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Freeze, 238, 158, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Run, 278, 38, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Burn, 278, 78, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Light, 278, 118, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Reflect, 278, 158, 32, 32, buttonsImage));
 
             foreach (var button in _infoButtons)
             {
                 button.SetSelectedImage(buttonSelectedImage, 40, 40, 4, 4);
+                button.Selected = button == _infoButtons.First();
                 button.Enabled = true;
-
-                if (button == _infoButtons.First())
-                {
-                    button.Selected = true;
-                }
             }
 
             Console.WriteLine("ExploreManager initialized");
@@ -213,12 +219,49 @@
 
             // Spell selection
             if (_windowManager.KeyPressed(InputKey.KEY_UP) ||
-                _windowManager.KeyPressed(InputKey.KEY_RIGHT))
+                _windowManager.KeyPressed(InputKey.KEY_LEFT))
             {
+                var buttons = _infoButtons
+                    .Where(x => x.Enabled)
+                    .ToList();
+
+                var button = buttons.Where(x => x.Selected).First();
+                button.Selected = false;
+
+                var index = buttons.IndexOf(button);
+                if (index == buttons.Count - 1)
+                {
+                    buttons.First().Selected = true;
+                }
+                else
+                {
+                    buttons[index + 1].Selected = true;
+                }
             }
 
             if (_windowManager.KeyPressed(InputKey.KEY_DOWN) ||
-                _windowManager.KeyPressed(InputKey.KEY_LEFT))
+                _windowManager.KeyPressed(InputKey.KEY_RIGHT))
+            {
+                var buttons = _infoButtons
+                    .Where(x => x.Enabled)
+                    .ToList();
+
+                var button = buttons.Where(x => x.Selected).First();
+                button.Selected = false;
+
+                var index = buttons.IndexOf(button);
+                if (index == 0)
+                {
+                    buttons.Last().Selected = true;
+                }
+                else
+                {
+                    buttons[index - 1].Selected = true;
+                }
+            }
+
+            // Use spell
+            if (_windowManager.KeyPressed(InputKey.KEY_A))
             {
             }
 
@@ -231,6 +274,28 @@
                 _gameStateManager.ChangeState(GameState.Explore);
                 return;
             }
+        }
+
+        public void UpdateSpells()
+        {
+            foreach (var button in _infoButtons)
+            {
+                if (button.Action.Equals(ActionType.Attack) ||
+                    button.Action.Equals(ActionType.Run))
+                {
+                    continue;
+                }
+
+                if (_avatar.KnowsSpell(Enum.GetName(typeof(ActionType), button.Action)))
+                {
+                    button.Enabled = true;
+                    continue;
+                }
+
+                button.Enabled = false;
+            }
+
+            _infoButtons.Where(x => x.Enabled).First().Selected = true;
         }
 
         public void Render()
@@ -299,6 +364,9 @@
             {
                 _textManager.Render(_avatar.Weapon.Name, 4, 150);
             }
+
+            // Messages
+            _textManager.Render(_message.Text, 160, 200, TextJustify.JUSTIFY_CENTER);
         }
 
         private void RenderCompass()
@@ -351,22 +419,6 @@
             {
                 button.Render();
             }
-
-            /*for (int i = 0; i < _infoButtons.Length; i++)
-            {
-                if (!_infoButtons[i].Enabled)
-                {
-                    continue;
-                }
-
-                _buttonsImage.Render(
-                    i * _infoButtons[i].Width,
-                    0,
-                    _infoButtons[i].Width,
-                    _infoButtons[i].Height,
-                    _infoButtons[i].X + 4,
-                    _infoButtons[i].Y + 4);
-            }*/
         }
     }
 }

@@ -60,6 +60,13 @@
         public void ChangeState(GameState gameState)
         {
             _gameState = gameState;
+
+            switch (_gameState)
+            {
+                case GameState.Info:
+                    _exploreManager.UpdateSpells();
+                    break;
+            }
         }
 
         public void Update()

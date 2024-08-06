@@ -1,8 +1,7 @@
 ﻿namespace DuskProject.Source.Enums
 {
-    public enum InfoButtonType : byte
+    public enum ActionType : byte
     {
-        None,
         Attack,
         Run,
         Heal,

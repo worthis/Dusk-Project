@@ -5,24 +5,24 @@
 
     public class InfoButton : Button
     {
-        private InfoButtonType _spell;
+        private ActionType _action;
 
-        public InfoButton(InfoButtonType spellType, int x, int y, int width, int height, ImageResource image, int imageCoordX = 0, int imageCoordY = 0)
+        public InfoButton(ActionType action, int x, int y, int width, int height, ImageResource image, int imageCoordX = 0, int imageCoordY = 0)
             : base(x, y, width, height, image, imageCoordX, imageCoordY)
         {
-            Spell = spellType;
+            Action = action;
         }
 
-        public InfoButtonType Spell
+        public ActionType Action
         {
-            get { return _spell; }
-            set { SetSpell(value); }
+            get { return _action; }
+            set { SetAction(value); }
         }
 
-        private void SetSpell(InfoButtonType spell)
+        private void SetAction(ActionType action)
         {
-            _spell = spell;
-            ImageCoordX = ((int)spell - 1) * Width;
+            _action = action;
+            ImageCoordX = ((int)action) * Width;
             ImageCoordY = 0;
         }
     }

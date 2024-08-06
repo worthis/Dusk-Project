@@ -259,6 +259,24 @@
             return false;
         }
 
+        public bool KnowsSpell(string spellName)
+        {
+            if (spellName is null)
+            {
+                return false;
+            }
+
+            foreach (var spell in SpellBook)
+            {
+                if (spell.Name.Equals(spellName))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public bool IsBetterItem(Item item)
         {
             if (item is null)
