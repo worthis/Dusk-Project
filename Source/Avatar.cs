@@ -268,13 +268,31 @@
 
             foreach (var spell in SpellBook)
             {
-                if (spell.Name.Equals(spellName))
+                if (spell.Name.Equals(spellName, StringComparison.InvariantCultureIgnoreCase))
                 {
                     return true;
                 }
             }
 
             return false;
+        }
+
+        public Item GetSpell(string spellName)
+        {
+            if (spellName is null)
+            {
+                return null;
+            }
+
+            foreach (var spell in SpellBook)
+            {
+                if (spell.Name.Equals(spellName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return spell;
+                }
+            }
+
+            return null;
         }
 
         public bool IsBetterItem(Item item)

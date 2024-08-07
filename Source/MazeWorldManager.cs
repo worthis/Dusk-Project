@@ -45,6 +45,8 @@
 
         public string MazeWorldName { get => _mazeWorld.Name; }
 
+        public string MazeWorldId { get => _mazeWorld.Id; }
+
         public List<string> Enemies { get => _mazeWorld.Enemies; }
 
         public static MazeWorldManager GetInstance()
@@ -91,6 +93,7 @@
                 streamReader.Close();
 
                 _mazeWorld = JsonConvert.DeserializeObject<MazeWorld>(jsonData);
+                _mazeWorld.Id = mazeWorldName;
             }
 
             if (_mazeWorld.Width != _mazeWorld.Tiles.GetLength(1) &&

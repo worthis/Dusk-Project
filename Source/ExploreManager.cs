@@ -1,5 +1,6 @@
 ﻿namespace DuskProject.Source
 {
+    using DuskProject.Source.Combat;
     using DuskProject.Source.Enums;
     using DuskProject.Source.Maze;
     using DuskProject.Source.Resources;
@@ -26,10 +27,11 @@
 
         private Random _randGen;
         private int _encounterChance = 0;
+        private string _powerAction = string.Empty;
+        private string _powerResult = string.Empty;
 
         private ImageResource _avatarImage;
         private List<InfoButton> _infoButtons = new List<InfoButton>();
-        private int _infoButtonsCursor = 0;
 
         private ExploreManager()
         {
@@ -70,25 +72,13 @@
             ImageResource buttonsImage = _resourceManager.LoadImage("Data/images/interface/action_buttons.png");
             ImageResource buttonSelectedImage = _resourceManager.LoadImage("Data/images/interface/select.png");
 
-            /*_infoButtons = new InfoButton[8]
-            {
-                new InfoButton(ActionType.Attack, 238, 38, 32, 32, buttonsImage),
-                new InfoButton(ActionType.Heal, 238, 78, 32, 32, buttonsImage),
-                new InfoButton(ActionType.Unlock, 238, 118, 32, 32, buttonsImage),
-                new InfoButton(ActionType.Freeze, 238, 158, 32, 32, buttonsImage),
-                new InfoButton(ActionType.Run, 278, 38, 32, 32, buttonsImage),
-                new InfoButton(ActionType.Burn, 278, 78, 32, 32, buttonsImage),
-                new InfoButton(ActionType.Light, 278, 118, 32, 32, buttonsImage),
-                new InfoButton(ActionType.Reflect, 278, 158, 32, 32, buttonsImage),
-            };*/
-
             _infoButtons.Add(new InfoButton(ActionType.Attack, 238, 38, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Heal, 238, 78, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Unlock, 238, 118, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Freeze, 238, 158, 32, 32, buttonsImage));
             _infoButtons.Add(new InfoButton(ActionType.Run, 278, 38, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Heal, 238, 78, 32, 32, buttonsImage));
             _infoButtons.Add(new InfoButton(ActionType.Burn, 278, 78, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Unlock, 238, 118, 32, 32, buttonsImage));
             _infoButtons.Add(new InfoButton(ActionType.Light, 278, 118, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Freeze, 238, 158, 32, 32, buttonsImage));
             _infoButtons.Add(new InfoButton(ActionType.Reflect, 278, 158, 32, 32, buttonsImage));
 
             foreach (var button in _infoButtons)
@@ -188,6 +178,12 @@
                     return;
                 }
 
+                // Special scripts
+                if (MapScriptTriggered())
+                {
+                    return;
+                }
+
                 // Encounters
                 if (_mazeWorldManager.Enemies is not null &&
                     _mazeWorldManager.Enemies.Count > 0)
@@ -208,8 +204,6 @@
                         _encounterChance = _encounterChanceMax;
                     }
                 }
-
-                // Special scripts
             }
         }
 
@@ -218,8 +212,8 @@
             _message.Update();
 
             // Spell selection
-            if (_windowManager.KeyPressed(InputKey.KEY_UP) ||
-                _windowManager.KeyPressed(InputKey.KEY_LEFT))
+            if (_windowManager.KeyPressed(InputKey.KEY_DOWN) ||
+                _windowManager.KeyPressed(InputKey.KEY_RIGHT))
             {
                 var buttons = _infoButtons
                     .Where(x => x.Enabled)
@@ -239,8 +233,8 @@
                 }
             }
 
-            if (_windowManager.KeyPressed(InputKey.KEY_DOWN) ||
-                _windowManager.KeyPressed(InputKey.KEY_RIGHT))
+            if (_windowManager.KeyPressed(InputKey.KEY_UP) ||
+                _windowManager.KeyPressed(InputKey.KEY_LEFT))
             {
                 var buttons = _infoButtons
                     .Where(x => x.Enabled)
@@ -263,6 +257,22 @@
             // Use spell
             if (_windowManager.KeyPressed(InputKey.KEY_A))
             {
+                var buttonSelected = _infoButtons.Where(x => x.Selected).First();
+
+                switch (buttonSelected.Action)
+                {
+                    case ActionType.Heal:
+                        DoHealAction();
+                        break;
+
+                    case ActionType.Burn:
+                        DoBurnAction();
+                        break;
+
+                    case ActionType.Unlock:
+                        DoUnlockAction();
+                        break;
+                }
             }
 
             // Return to Explore
@@ -278,11 +288,17 @@
 
         public void UpdateSpells()
         {
+            _powerAction = string.Empty;
+            _powerResult = string.Empty;
+
             foreach (var button in _infoButtons)
             {
+                button.Selected = false;
+
                 if (button.Action.Equals(ActionType.Attack) ||
                     button.Action.Equals(ActionType.Run))
                 {
+                    button.Enabled = false;
                     continue;
                 }
 
@@ -419,6 +435,112 @@
             {
                 button.Render();
             }
+        }
+
+        private void DoHealAction()
+        {
+            if (_avatar.MP <= 0 ||
+                _avatar.HP >= _avatar.MaxHP)
+            {
+                return;
+            }
+
+            int healAmount = _randGen.Next((int)(_avatar.MaxHP * 0.5)) + (int)(_avatar.MaxHP * 0.5);
+            _avatar.Heal(healAmount);
+            _avatar.DrainMP(1);
+
+            _powerAction = "Heal!";
+            _powerResult = string.Format("+{0} HP", healAmount);
+            _soundManager.PlaySound(SoundFX.Heal);
+        }
+
+        private void DoBurnAction()
+        {
+            if (_avatar.MP <= 0 ||
+                !_avatar.KnowsSpell("Burn"))
+            {
+                return;
+            }
+
+            // todo: clear path
+            _avatar.DrainMP(1);
+
+            _powerAction = "Burn!";
+            _powerResult = "Cleared Path!";
+            _soundManager.PlaySound(SoundFX.Fire);
+        }
+
+        private void DoUnlockAction()
+        {
+            if (_avatar.MP <= 0 ||
+                !_avatar.KnowsSpell("Unlock"))
+            {
+                return;
+            }
+
+            // todo: unlock door
+            _avatar.DrainMP(1);
+
+            _powerAction = "Unlock!";
+            _powerResult = "Door Opened!";
+            _soundManager.PlaySound(SoundFX.Unlock);
+        }
+
+        private bool MapScriptTriggered()
+        {
+            bool result = false;
+
+            switch (_mazeWorldManager.MazeWorldId)
+            {
+                case "0-serf-quarters":
+                    result = CheckHayBale(1, 1);
+                    break;
+
+                case "2-monk-quarters":
+                    break;
+
+                case "3-meditation-point":
+                    break;
+
+                case "4-monastery-trail":
+                    break;
+
+                case "5-cedar-village":
+                    break;
+
+                case "6-zuruth-plains":
+                    break;
+
+                case "7-canal-boneyard":
+                    break;
+
+                case "8-mausoleum":
+                    result = CheckHayBale(11, 9);
+                    break;
+
+                case "9-dead-walkways":
+                    break;
+
+                case "10-trade-tunnel":
+                    break;
+            }
+
+            return result;
+        }
+
+        private bool CheckHayBale(int posX, int posY)
+        {
+            if (_avatar.PosX == posX &&
+                _avatar.PosY == posY)
+            {
+                _avatar.Sleep();
+                _avatar.Save();
+                _message.Start("You rest for awhile.");
+                _soundManager.PlaySound(SoundFX.Coin);
+                return true;
+            }
+
+            return false;
         }
     }
 }

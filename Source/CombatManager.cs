@@ -3,6 +3,8 @@
     using System;
     using DuskProject.Source.Combat;
     using DuskProject.Source.Enums;
+    using DuskProject.Source.Resources;
+    using DuskProject.Source.UI;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
 
@@ -25,6 +27,8 @@
         private string _uniqueFlag = string.Empty;
         private CombatPhase _phase = CombatPhase.Intro;
         private int _timer = 0;
+
+        private List<InfoButton> _actionButtons = new List<InfoButton>();
 
         private string _offenceAction = string.Empty;
         private string _offenceResult = string.Empty;
@@ -70,6 +74,25 @@
             // Miyoo Mini Plus does not have RTC time
             _randGen = new Random(Environment.TickCount);
 
+            ImageResource buttonsImage = _resourceManager.LoadImage("Data/images/interface/action_buttons.png");
+            ImageResource buttonSelectedImage = _resourceManager.LoadImage("Data/images/interface/select.png");
+
+            _actionButtons.Add(new InfoButton(ActionType.Attack, 238, 38, 32, 32, buttonsImage));
+            _actionButtons.Add(new InfoButton(ActionType.Run, 278, 38, 32, 32, buttonsImage));
+            _actionButtons.Add(new InfoButton(ActionType.Heal, 238, 78, 32, 32, buttonsImage));
+            _actionButtons.Add(new InfoButton(ActionType.Burn, 278, 78, 32, 32, buttonsImage));
+            _actionButtons.Add(new InfoButton(ActionType.Unlock, 238, 118, 32, 32, buttonsImage));
+            _actionButtons.Add(new InfoButton(ActionType.Light, 278, 118, 32, 32, buttonsImage));
+            _actionButtons.Add(new InfoButton(ActionType.Freeze, 238, 158, 32, 32, buttonsImage));
+            _actionButtons.Add(new InfoButton(ActionType.Reflect, 278, 158, 32, 32, buttonsImage));
+
+            foreach (var button in _actionButtons)
+            {
+                button.SetSelectedImage(buttonSelectedImage, 40, 40, 4, 4);
+                button.Selected = button == _actionButtons.First();
+                button.Enabled = true;
+            }
+
             Console.WriteLine("CombatManager initialized");
         }
 
@@ -77,10 +100,36 @@
         {
             Reset();
             LoadEnemy(enemyId);
+            UpdateSpells();
 
             _uniqueFlag = uniqueFlag;
             _phase = CombatPhase.Intro;
             _timer = 15;
+        }
+
+        public void UpdateSpells()
+        {
+            foreach (var button in _actionButtons)
+            {
+                button.Selected = false;
+
+                if (button.Action.Equals(ActionType.Attack) ||
+                    button.Action.Equals(ActionType.Run))
+                {
+                    button.Enabled = true;
+                    continue;
+                }
+
+                if (_avatar.KnowsSpell(Enum.GetName(typeof(ActionType), button.Action)))
+                {
+                    button.Enabled = true;
+                    continue;
+                }
+
+                button.Enabled = false;
+            }
+
+            _actionButtons.Where(x => x.Enabled).First().Selected = true;
         }
 
         public void Update()
@@ -136,6 +185,7 @@
                     RenderHeroStats();
                     RenderOffenceLog();
                     RenderDefenceLog();
+                    RenderActionButtons();
                     break;
 
                 case CombatPhase.Offence:
@@ -194,40 +244,80 @@
             _heroHurt = false;
             _runSuccess = false;
 
+            // Action selection
+            if (_windowManager.KeyPressed(InputKey.KEY_DOWN) ||
+                _windowManager.KeyPressed(InputKey.KEY_RIGHT))
+            {
+                var buttons = _actionButtons
+                    .Where(x => x.Enabled)
+                    .ToList();
+
+                var button = buttons.Where(x => x.Selected).First();
+                button.Selected = false;
+
+                var index = buttons.IndexOf(button);
+                if (index == buttons.Count - 1)
+                {
+                    buttons.First().Selected = true;
+                }
+                else
+                {
+                    buttons[index + 1].Selected = true;
+                }
+            }
+
+            if (_windowManager.KeyPressed(InputKey.KEY_UP) ||
+                _windowManager.KeyPressed(InputKey.KEY_LEFT))
+            {
+                var buttons = _actionButtons
+                    .Where(x => x.Enabled)
+                    .ToList();
+
+                var button = buttons.Where(x => x.Selected).First();
+                button.Selected = false;
+
+                var index = buttons.IndexOf(button);
+                if (index == 0)
+                {
+                    buttons.Last().Selected = true;
+                }
+                else
+                {
+                    buttons[index - 1].Selected = true;
+                }
+            }
+
             // Attack
             if (_windowManager.KeyPressed(InputKey.KEY_A))
             {
                 usedAction = true;
-                _offenceAction = "Attack!";
+                var buttonSelected = _actionButtons.Where(x => x.Selected).First();
 
-                /* todo: boss special */
-
-                // Check Miss
-                if (_randGen.Next(100) < 20)
+                switch (buttonSelected.Action)
                 {
-                    _offenceResult = "Miss!";
-                    _soundManager.PlaySound(SoundFX.Miss);
-                }
-                else
-                {
-                    // Hit
-                    var attackDamage = _randGen.Next(_avatar.Weapon.AttackDispersion() + 1) + _avatar.Weapon.AttackMin + _avatar.Attack;
+                    case ActionType.Attack:
+                        DoAttackAction();
+                        break;
 
-                    // Critical Hit
-                    if (_randGen.Next(100) < 10)
-                    {
-                        attackDamage += _avatar.Weapon.AttackMax;
-                        _offenceAction = "Critical!";
-                        _soundManager.PlaySound(SoundFX.Critical);
-                    }
-                    else
-                    {
-                        _soundManager.PlaySound(SoundFX.Attack);
-                    }
+                    case ActionType.Run:
+                        DoRunAction();
+                        break;
 
-                    _enemyHurt = true;
-                    _enemy.HP -= attackDamage;
-                    _offenceResult = string.Format("{0} damage", attackDamage);
+                    case ActionType.Heal:
+                        DoHealAction();
+                        break;
+
+                    case ActionType.Burn:
+                        DoBurnAction();
+                        break;
+
+                    case ActionType.Unlock:
+                        DoUnlockAction();
+                        break;
+
+                    default:
+                        usedAction = false;
+                        break;
                 }
             }
 
@@ -235,23 +325,7 @@
             if (_windowManager.KeyPressed(InputKey.KEY_B))
             {
                 usedAction = true;
-
-                _offenceAction = "Run!";
-                _soundManager.PlaySound(SoundFX.Run);
-
-                if (_randGen.Next(100) < 66)
-                {
-                    _runSuccess = true;
-                    _offenceResult = string.Empty;
-                }
-                else
-                {
-                    _offenceResult = "Blocked!";
-                }
-            }
-
-            // todo: Spells
-            {
+                DoRunAction();
             }
 
             if (usedAction)
@@ -400,6 +474,14 @@
             _textManager.Render(_defenceResult, 4, 160);
         }
 
+        private void RenderActionButtons()
+        {
+            foreach (var button in _actionButtons)
+            {
+                button.Render();
+            }
+        }
+
         private void GiveReward()
         {
             var goldReward = _enemy.GoldReward();
@@ -442,6 +524,132 @@
             _enemyHurt = false;
             _heroHurt = false;
             _runSuccess = false;
+        }
+
+        private void DoAttackAction()
+        {
+            _offenceAction = "Attack!";
+
+            /* todo: boss special */
+
+            // Check Miss
+            if (_randGen.Next(100) < 20)
+            {
+                _offenceResult = "Miss!";
+                _soundManager.PlaySound(SoundFX.Miss);
+                return;
+            }
+
+            // Hit
+            var attackDamage = _randGen.Next(_avatar.Weapon.AttackDispersion() + 1) + _avatar.Weapon.AttackMin + _avatar.Attack;
+
+            // Critical Hit
+            if (_randGen.Next(100) < 10)
+            {
+                attackDamage += _avatar.Weapon.AttackMax;
+                _offenceAction = "Critical!";
+                _soundManager.PlaySound(SoundFX.Critical);
+            }
+            else
+            {
+                _soundManager.PlaySound(SoundFX.Attack);
+            }
+
+            _enemyHurt = true;
+            _enemy.HP -= attackDamage;
+            _offenceResult = string.Format("{0} damage", attackDamage);
+        }
+
+        private void DoRunAction()
+        {
+            _offenceAction = "Run!";
+            _soundManager.PlaySound(SoundFX.Run);
+
+            if (_randGen.Next(100) < 66)
+            {
+                _runSuccess = true;
+                _offenceResult = string.Empty;
+                return;
+            }
+
+            _offenceResult = "Blocked!";
+        }
+
+        private void DoHealAction()
+        {
+            if (_avatar.MP <= 0 ||
+                _avatar.HP >= _avatar.MaxHP)
+            {
+                return;
+            }
+
+            int healAmount = _randGen.Next((int)(_avatar.MaxHP * 0.5)) + (int)(_avatar.MaxHP * 0.5);
+            _avatar.Heal(healAmount);
+            _avatar.DrainMP(1);
+
+            _offenceAction = "Heal!";
+            _offenceResult = string.Format("+{0} HP", healAmount);
+            _soundManager.PlaySound(SoundFX.Heal);
+        }
+
+        private void DoBurnAction()
+        {
+            if (_avatar.MP <= 0 ||
+                !_avatar.KnowsSpell("Burn"))
+            {
+                return;
+            }
+
+            var attackDamage = _randGen.Next(_avatar.Weapon.AttackDispersion() + 1) + _avatar.Weapon.AttackMin + _avatar.Attack;
+
+            // Against Undead burn does 2x crit
+            if (_enemy.Category.Equals(EnemyCategory.Undead))
+            {
+                attackDamage += _avatar.Weapon.AttackMax;
+                attackDamage += _avatar.Weapon.AttackMax;
+            }
+
+            // Against most creatures burn does 1x crit
+            // Against demons burn does regular weapon damage
+            if (!_enemy.Category.Equals(EnemyCategory.Demon))
+            {
+                attackDamage += _avatar.Weapon.AttackMax;
+            }
+
+            // todo: boss shield
+            _avatar.DrainMP(1);
+
+            _enemyHurt = true;
+            _enemy.Hit(attackDamage);
+            _offenceAction = "Burn!";
+            _offenceResult = string.Format("{0} damage", attackDamage);
+            _soundManager.PlaySound(SoundFX.Fire);
+        }
+
+        private void DoUnlockAction()
+        {
+            if (_avatar.MP <= 0 ||
+                !_avatar.KnowsSpell("Unlock") ||
+                !_enemy.Category.Equals(EnemyCategory.Automaton))
+            {
+                return;
+            }
+
+            var spell = _avatar.GetSpell("Unlock");
+            var attackDamage = _randGen.Next(_avatar.Weapon.AttackDispersion() + 1) + _avatar.Weapon.AttackMin + _avatar.Attack;
+
+            // Unlock can only be cast against Automatons
+            // so apply the full damage
+            attackDamage += _avatar.Weapon.AttackMax;
+            attackDamage += _avatar.Weapon.AttackMax;
+
+            _avatar.DrainMP(1);
+
+            _enemyHurt = true;
+            _enemy.Hit(attackDamage);
+            _offenceAction = "Unlock!";
+            _offenceResult = string.Format("{0} damage", attackDamage);
+            _soundManager.PlaySound(SoundFX.Unlock);
         }
     }
 }
