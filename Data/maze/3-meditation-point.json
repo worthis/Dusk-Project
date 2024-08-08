@@ -17,5 +17,9 @@
   "Portals":
   [
     {"X":2,"Y":5,"Destination":"1-monastery","DestX":4,"DestY":1}
+  ],
+  "Chests":
+  [
+    {"X":2,"Y":1,"UniqueId":"3-meditation-point@heal","CloseTileId":9,"OpenedTileId":1,"RewardType":"Spell","RewardItemId":"Heal"}
   ]
 }

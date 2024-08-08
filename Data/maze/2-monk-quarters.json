@@ -15,5 +15,9 @@
   "Portals":
   [
     {"X":2,"Y":2,"Destination":"1-monastery","DestX":2,"DestY":6}
+  ],
+  "Chests":
+  [
+    {"X":1,"Y":1,"UniqueId":"2-monk-quarters@stick","CloseTileId":8,"OpenedTileId":5,"RewardType":"Weapon","RewardItemId":"Wood Stick"}
   ]
 }

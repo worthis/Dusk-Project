@@ -1,6 +1,7 @@
 ﻿namespace DuskProject.Source
 {
     using DuskProject.Source.Combat;
+    using DuskProject.Source.Dialog;
     using DuskProject.Source.Enums;
     using DuskProject.Source.Maze;
     using DuskProject.Source.Resources;
@@ -132,6 +133,7 @@
                 _message.Clear();
                 _soundManager.PlaySound(SoundFX.Click);
                 _gameStateManager.ChangeState(GameState.Info);
+
                 return;
             }
 
@@ -142,6 +144,7 @@
                 _message.Clear();
                 _soundManager.PlaySound(SoundFX.Click);
                 _gameStateManager.ChangeState(GameState.Title);
+
                 return;
             }
 
@@ -157,9 +160,7 @@
                     _avatar.PosX = mazePortal.DestX;
                     _avatar.PosY = mazePortal.DestY;
                     _avatar.MazeWorld = mazePortal.Destination;
-
                     _mazeWorldManager.LoadMazeWorld(mazePortal.Destination);
-
                     _message.Start(_mazeWorldManager.MazeWorldName);
 
                     return;
@@ -170,18 +171,83 @@
                 {
                     _avatar.PosX = storePortal.DestX;
                     _avatar.PosY = storePortal.DestY;
-
                     _dialogManager.LoadStore(storePortal.Store);
-
                     _gameStateManager.ChangeState(GameState.Dialog);
 
                     return;
                 }
 
                 // Special scripts
-                if (MapScriptTriggered())
+                // Message Point
+                if (_mazeWorldManager.CheckMessagePoints(_avatar.PosX, _avatar.PosY, out MessagePoint messagePoint))
                 {
+                    if (!_avatar.HasCampaignFlag(messagePoint.UniqueId))
+                    {
+                        _message.Start(messagePoint.Message);
+                        _soundManager.PlaySound(messagePoint.Sound);
+                        _avatar.PushCampaignFlag(messagePoint.UniqueId);
+                    }
+                }
+
+                // Rest Points
+                if (_mazeWorldManager.CheckRestPoints(_avatar.PosX, _avatar.PosY, out RestPoint restPoint))
+                {
+                    _avatar.Sleep();
+                    _avatar.Save();
+                    _message.Start(restPoint.Message);
+                    _soundManager.PlaySound(restPoint.Sound);
+
                     return;
+                }
+
+                // Chests
+                if (_mazeWorldManager.CheckChests(_avatar.PosX, _avatar.PosY, out ChestPoint chestPoint))
+                {
+                    if (!_avatar.HasCampaignFlag(chestPoint.UniqueId))
+                    {
+                        switch (chestPoint.RewardType)
+                        {
+                            case ChestRewardType.Gold:
+                                _avatar.AddGold(chestPoint.RewardItemAmount);
+                                break;
+
+                            case ChestRewardType.Weapon:
+                            case ChestRewardType.Armor:
+                                if (_dialogManager.GetItem(chestPoint.RewardItemId, out Item item))
+                                {
+                                    if (_avatar.IsBetterItem(item))
+                                    {
+                                        _avatar.EquipItem(item);
+                                    }
+                                }
+
+                                break;
+
+                            case ChestRewardType.Spell:
+                                if (_dialogManager.GetItem(chestPoint.RewardItemId, out Item spell))
+                                {
+                                    _avatar.LearnSpell(spell);
+                                }
+
+                                break;
+
+                            case ChestRewardType.PowerUp:
+                                // todo
+                                break;
+                        }
+
+                        _avatar.PushCampaignFlag(chestPoint.UniqueId);
+                        if (chestPoint.RewardItemAmount > 1)
+                        {
+                            _message.Start(string.Format("Found {0} {1}!", chestPoint.RewardItemAmount, chestPoint.RewardItemId));
+                        }
+                        else
+                        {
+                            _message.Start(string.Format("Found {0}!", chestPoint.RewardItemId));
+                        }
+
+                        return;
+                    }
                 }
 
                 // Encounters
@@ -484,63 +550,6 @@
             _powerAction = "Unlock!";
             _powerResult = "Door Opened!";
             _soundManager.PlaySound(SoundFX.Unlock);
-        }
-
-        private bool MapScriptTriggered()
-        {
-            bool result = false;
-
-            switch (_mazeWorldManager.MazeWorldId)
-            {
-                case "0-serf-quarters":
-                    result = CheckHayBale(1, 1);
-                    break;
-
-                case "2-monk-quarters":
-                    break;
-
-                case "3-meditation-point":
-                    break;
-
-                case "4-monastery-trail":
-                    break;
-
-                case "5-cedar-village":
-                    break;
-
-                case "6-zuruth-plains":
-                    break;
-
-                case "7-canal-boneyard":
-                    break;
-
-                case "8-mausoleum":
-                    result = CheckHayBale(11, 9);
-                    break;
-
-                case "9-dead-walkways":
-                    break;
-
-                case "10-trade-tunnel":
-                    break;
-            }
-
-            return result;
-        }
-
-        private bool CheckHayBale(int posX, int posY)
-        {
-            if (_avatar.PosX == posX &&
-                _avatar.PosY == posY)
-            {
-                _avatar.Sleep();
-                _avatar.Save();
-                _message.Start("You rest for awhile.");
-                _soundManager.PlaySound(SoundFX.Coin);
-                return true;
-            }
-
-            return false;
         }
     }
 }

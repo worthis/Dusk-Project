@@ -1,6 +1,6 @@
 ﻿namespace DuskProject.Source.Maze
 {
-    public class TileLayout
+    public record TileLayout
     {
         public int Width { get; set; }
 

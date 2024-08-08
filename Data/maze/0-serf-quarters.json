@@ -15,5 +15,9 @@
   "Portals":
   [
     {"X":0,"Y":2,"Destination":"1-monastery","DestX":6,"DestY":6}
+  ],
+  "RestPoints":
+  [
+    {"X":1,"Y":1,"Message":"You rest for awhile."}
   ]
 }

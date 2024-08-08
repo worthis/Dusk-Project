@@ -5,33 +5,47 @@
     public class MazeWorld
     {
         [JsonIgnore]
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         [JsonProperty]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [JsonProperty]
-        public string Music { get; set; }
+        public string Music { get; set; } = string.Empty;
 
         [JsonProperty]
-        public int Width { get; set; }
+        public int Width { get; set; } = 0;
 
         [JsonProperty]
-        public int Height { get; set; }
+        public int Height { get; set; } = 0;
 
         [JsonProperty]
-        public int BackgroundImage { get; set; }
+        public int BackgroundImage { get; set; } = 0;
 
         [JsonProperty]
-        public int[,] Tiles { get; set; }
+        public int[,] Tiles { get; set; } = new int[0, 0];
 
         [JsonProperty]
-        public List<MazePortal> Portals { get; set; }
+        public List<MazePortal> Portals { get; set; } = new();
 
         [JsonProperty]
-        public List<StorePortal> Stores { get; set; }
+        public List<StorePortal> Stores { get; set; } = new();
 
         [JsonProperty]
-        public List<string> Enemies { get; set; }
+        public List<string> Enemies { get; set; } = new();
+
+        public List<RestPoint> RestPoints { get; set; } = new();
+
+        [JsonProperty]
+        public List<ChestPoint> Chests { get; set; } = new();
+
+        [JsonProperty]
+        public List<MessagePoint> MessagePoints { get; set; } = new();
+
+        [JsonProperty]
+        public List<ScriptedEnemy> ScriptedEnemies { get; set; } = new();
+
+        [JsonProperty]
+        public List<ScriptedTile> ScriptedTiles { get; set; } = new();
     }
 }

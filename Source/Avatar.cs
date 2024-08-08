@@ -191,7 +191,8 @@
 
         public void LearnSpell(Item spell)
         {
-            if (spell is null)
+            if (spell is null ||
+                KnowsSpell(spell))
             {
                 return;
             }

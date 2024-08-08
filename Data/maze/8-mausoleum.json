@@ -33,5 +33,9 @@
     "zombie",
     "skeleton",
     "druid"
+  ],
+  "RestPoints":
+  [
+    {"X":11,"Y":9,"Message":"You rest for awhile."}
   ]
 }

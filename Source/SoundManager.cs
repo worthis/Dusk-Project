@@ -78,7 +78,8 @@
 
         public void PlaySound(SoundFX sound, int channel = -1)
         {
-            if (!_useSound)
+            if (!_useSound ||
+                sound.Equals(SoundFX.None))
             {
                 return;
             }

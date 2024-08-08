@@ -1,6 +1,6 @@
 ﻿namespace DuskProject.Source.Maze
 {
-    public class StorePortal
+    public record StorePortal
     {
         public int X { get; set; }
 

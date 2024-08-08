@@ -2,7 +2,7 @@
 {
     using DuskProject.Source.Resources;
 
-    public class Tile
+    public record Tile
     {
         private ImageResource _image;
         private bool _walkable;

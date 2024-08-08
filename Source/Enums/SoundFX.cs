@@ -2,6 +2,7 @@
 {
     public enum SoundFX : byte
     {
+        None,
         Attack,
         Blocked,
         BoneShield,

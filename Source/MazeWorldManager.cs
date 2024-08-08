@@ -30,10 +30,9 @@
         private ResourceManager _resourceManager;
         private SoundManager _soundManager;
 
-        private MazeWorld _mazeWorld;
-
         private Tile[] _tileSet;
         private ImageResource[] _backgrounds;
+        private MazeWorld _mazeWorld;
 
         private MazeWorldManager()
         {
@@ -118,45 +117,111 @@
 
         public bool CheckPortals(int posX, int posY, out MazePortal mazePortal)
         {
+            mazePortal = null;
+
             if (_mazeWorld is null ||
                 _mazeWorld.Portals is null)
             {
-                mazePortal = null;
                 return false;
             }
 
-            for (int i = 0; i < _mazeWorld.Portals.Count; i++)
+            foreach (MazePortal item in _mazeWorld.Portals)
             {
-                if (_mazeWorld.Portals[i].CheckEnter(posX, posY))
+                if (item.CheckEnter(posX, posY))
                 {
-                    mazePortal = _mazeWorld.Portals[i];
+                    mazePortal = item;
                     return true;
                 }
             }
 
-            mazePortal = null;
             return false;
         }
 
         public bool CheckStores(int posX, int posY, out StorePortal storePortal)
         {
+            storePortal = null;
+
             if (_mazeWorld is null ||
                 _mazeWorld.Stores is null)
             {
-                storePortal = null;
                 return false;
             }
 
-            for (int i = 0; i < _mazeWorld.Stores.Count; i++)
+            foreach (StorePortal item in _mazeWorld.Stores)
             {
-                if (_mazeWorld.Stores[i].CheckEnter(posX, posY))
+                if (item.CheckEnter(posX, posY))
                 {
-                    storePortal = _mazeWorld.Stores[i];
+                    storePortal = item;
                     return true;
                 }
             }
 
-            storePortal = null;
+            return false;
+        }
+
+        public bool CheckMessagePoints(int posX, int posY, out MessagePoint messagePoint)
+        {
+            messagePoint = null;
+
+            if (_mazeWorld is null ||
+                _mazeWorld.MessagePoints is null)
+            {
+                return false;
+            }
+
+            foreach (MessagePoint item in _mazeWorld.MessagePoints)
+            {
+                if (item.CheckEnter(posX, posY))
+                {
+                    messagePoint = item;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool CheckRestPoints(int posX, int posY, out RestPoint restPoint)
+        {
+            restPoint = null;
+
+            if (_mazeWorld is null ||
+                _mazeWorld.RestPoints is null)
+            {
+                return false;
+            }
+
+            foreach (RestPoint item in _mazeWorld.RestPoints)
+            {
+                if (item.CheckEnter(posX, posY))
+                {
+                    restPoint = item;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool CheckChests(int posX, int posY, out ChestPoint chestPoint)
+        {
+            chestPoint = null;
+
+            if (_mazeWorld is null ||
+                _mazeWorld.Chests is null)
+            {
+                return false;
+            }
+
+            foreach (ChestPoint item in _mazeWorld.Chests)
+            {
+                if (item.CheckEnter(posX, posY))
+                {
+                    chestPoint = item;
+                    return true;
+                }
+            }
+
             return false;
         }
 
