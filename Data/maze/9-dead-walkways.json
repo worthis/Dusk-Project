@@ -9,10 +9,10 @@
   [
     [ 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
     [ 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 0, 0, 0],
-    [ 0, 4, 0, 0, 4, 0, 1, 5,16, 1, 0, 4, 0],
+    [ 0, 4, 0, 0, 4, 0, 1, 5, 5, 1, 0, 4, 0],
     [ 0, 0, 0, 1, 0, 0, 1, 2, 2, 1, 0, 0, 0],
     [ 2, 0, 0, 1, 2, 2, 1, 0, 0, 1,13,14,13],
-    [ 3, 1, 1, 1, 5,16, 1, 0, 0, 1, 6,19,14],
+    [ 3, 1, 1, 1, 5, 5, 1, 0, 0, 1, 6, 6,14],
     [ 2, 0, 0, 1, 2, 2, 1, 0, 0, 1,14,13,14],
     [ 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
     [ 0, 4, 0, 0, 0, 0, 1, 0, 0, 0, 0, 4, 0],
@@ -28,5 +28,16 @@
     "skeleton",
     "druid",
     "druid"
+  ],
+  "SriptedEnemies":
+  [
+	{"X":4,"Y":9,"EnemyId":"mimic"},
+	{"X":11,"Y":5,"UniqueId":"9-dead-walkways@death-speaker","EnemyId":"death-speaker"}
+  ],
+  "ScriptedTiles":
+  [
+	{"X":5,"Y":5,"UniqueId":"9-dead-walkways@bone1","RequiredAction":"Burn","BeforeTileId":16,"AfterTileId":5},
+	{"X":8,"Y":2,"UniqueId":"9-dead-walkways@bone2","RequiredAction":"Burn","BeforeTileId":16,"AfterTileId":5},
+	{"X":11,"Y":5,"UniqueId":"9-dead-walkways@death-speaker","BeforeTileId":19,"AfterTileId":6}
   ]
 }

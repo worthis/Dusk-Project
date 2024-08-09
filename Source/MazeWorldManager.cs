@@ -115,114 +115,85 @@
             Console.WriteLine("MazeWorld {0} loaded from {1}", mazeWorldName, fileName);
         }
 
+        public void InitScriptedEvents(Predicate<string> has)
+        {
+            _mazeWorld.MessagePoints.RemoveAll(x => has(x.UniqueId));
+            _mazeWorld.Chests.RemoveAll(x => has(x.UniqueId));
+            _mazeWorld.ScriptedEnemies.RemoveAll(x => has(x.UniqueId));
+            _mazeWorld.ScriptedTiles.RemoveAll(x => has(x.UniqueId));
+
+            foreach (var item in _mazeWorld.Chests)
+            {
+                SetTile(item.X, item.Y, item.ClosedTileId);
+            }
+
+            foreach (var item in _mazeWorld.ScriptedTiles)
+            {
+                SetTile(item.X, item.Y, item.BeforeTileId);
+            }
+        }
+
         public bool CheckPortals(int posX, int posY, out MazePortal mazePortal)
         {
-            mazePortal = null;
+            mazePortal = _mazeWorld.Portals
+                .Where(x => x.CheckEnter(posX, posY))
+                .FirstOrDefault();
 
-            if (_mazeWorld is null ||
-                _mazeWorld.Portals is null)
-            {
-                return false;
-            }
-
-            foreach (MazePortal item in _mazeWorld.Portals)
-            {
-                if (item.CheckEnter(posX, posY))
-                {
-                    mazePortal = item;
-                    return true;
-                }
-            }
-
-            return false;
+            return mazePortal is not null;
         }
 
         public bool CheckStores(int posX, int posY, out StorePortal storePortal)
         {
-            storePortal = null;
+            storePortal = _mazeWorld.Stores
+                .Where(x => x.CheckEnter(posX, posY))
+                .FirstOrDefault();
 
-            if (_mazeWorld is null ||
-                _mazeWorld.Stores is null)
-            {
-                return false;
-            }
-
-            foreach (StorePortal item in _mazeWorld.Stores)
-            {
-                if (item.CheckEnter(posX, posY))
-                {
-                    storePortal = item;
-                    return true;
-                }
-            }
-
-            return false;
+            return storePortal is not null;
         }
 
         public bool CheckMessagePoints(int posX, int posY, out MessagePoint messagePoint)
         {
-            messagePoint = null;
+            messagePoint = _mazeWorld.MessagePoints
+                .Where(x => x.CheckEnter(posX, posY))
+                .FirstOrDefault();
 
-            if (_mazeWorld is null ||
-                _mazeWorld.MessagePoints is null)
-            {
-                return false;
-            }
-
-            foreach (MessagePoint item in _mazeWorld.MessagePoints)
-            {
-                if (item.CheckEnter(posX, posY))
-                {
-                    messagePoint = item;
-                    return true;
-                }
-            }
-
-            return false;
+            return messagePoint is not null;
         }
 
         public bool CheckRestPoints(int posX, int posY, out RestPoint restPoint)
         {
-            restPoint = null;
+            restPoint = _mazeWorld.RestPoints
+                .Where(x => x.CheckEnter(posX, posY))
+                .FirstOrDefault();
 
-            if (_mazeWorld is null ||
-                _mazeWorld.RestPoints is null)
-            {
-                return false;
-            }
-
-            foreach (RestPoint item in _mazeWorld.RestPoints)
-            {
-                if (item.CheckEnter(posX, posY))
-                {
-                    restPoint = item;
-                    return true;
-                }
-            }
-
-            return false;
+            return restPoint is not null;
         }
 
         public bool CheckChests(int posX, int posY, out ChestPoint chestPoint)
         {
-            chestPoint = null;
+            chestPoint = _mazeWorld.Chests
+                .Where(x => x.CheckEnter(posX, posY))
+                .FirstOrDefault();
 
-            if (_mazeWorld is null ||
-                _mazeWorld.Chests is null)
-            {
-                return false;
-            }
+            return chestPoint is not null;
+        }
 
-            foreach (ChestPoint item in _mazeWorld.Chests)
-            {
-                if (item.CheckEnter(posX, posY))
-                {
-                    chestPoint = item;
-                    return true;
-                }
-            }
+        public bool CheckScriptedEnemies(int posX, int posY, out ScriptedEnemy scriptedEnemy)
+        {
+            scriptedEnemy = _mazeWorld.ScriptedEnemies
+                .Where(x => x.CheckEnter(posX, posY))
+                .FirstOrDefault();
 
-            return false;
+            return scriptedEnemy is not null;
+        }
+
+        public bool CheckScriptedTiles(int posX, int posY, out ScriptedTile scriptedTile)
+        {
+            scriptedTile = _mazeWorld.ScriptedTiles
+                .Where(x => x.CheckEnter(posX, posY))
+                .FirstOrDefault();
+
+            return scriptedTile is not null;
         }
 
         public void Render(int posX, int posY, AvatarFacing avatarFacing)
@@ -358,6 +329,17 @@
             return _tileSet[tileId];
         }
 
+        public void SetTile(int posX, int posY, int tileId)
+        {
+            if (!CheckBounds(posX, posY))
+            {
+                return;
+            }
+
+            // Note: x,y flipped to ease map making
+            _mazeWorld.Tiles[posY, posX] = tileId;
+        }
+
         private bool CheckBounds(int posX, int posY)
         {
             if (_mazeWorld is null)
@@ -442,17 +424,6 @@
 
             // Note: x,y flipped to ease map making
             return _mazeWorld.Tiles[posY, posX];
-        }
-
-        private void SetTile(int posX, int posY, int tileId)
-        {
-            if (!CheckBounds(posX, posY))
-            {
-                return;
-            }
-
-            // Note: x,y flipped to ease map making
-            _mazeWorld.Tiles[posY, posX] = tileId;
         }
 
         private void Test()

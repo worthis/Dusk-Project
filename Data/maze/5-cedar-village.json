@@ -17,7 +17,7 @@
     [ 2,10, 6,10,10, 1, 1, 1,10, 1,10, 2],
     [ 2,11, 6,10,10,10,11,10,11, 1,10, 2],
     [ 2,10, 6,10,10,10,10,10,10, 1, 6, 2],
-    [ 2,12, 6, 6, 6, 6, 6, 9,12, 1,12, 2],
+    [ 2,12, 6, 6, 6, 6, 6, 1,12, 1,12, 2],
     [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 2, 2]
   ],
   "Portals":
@@ -31,5 +31,9 @@
     {"X":6,"Y":8,"Store":"1-simmons-fine-clothier","DestX":6,"DestY":7},
     {"X":8,"Y":8,"Store":"2-the-pilgrim-inn","DestX":9,"DestY":8},
     {"X":1,"Y":8,"Store":"3-sage-therel","DestX":2,"DestY":8}
+  ],
+  "Chests":
+  [
+    {"X":7,"Y":10,"UniqueId":"5-cedar-village@gold","ClosedTileId":9,"OpenedTileId":1,"RewardType":"Gold","RewardAmount":10}
   ]
 }

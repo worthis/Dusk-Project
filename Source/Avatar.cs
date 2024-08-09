@@ -147,6 +147,7 @@
             PosY = SleepPosY;
 
             _mazeWorldManager.LoadMazeWorld(SleepMazeWorld);
+            _mazeWorldManager.InitScriptedEvents(HasCampaignFlag);
         }
 
         public void Hit(int attackPoints)
@@ -436,6 +437,31 @@
                 case AvatarFacing.West:
                     Facing = AvatarFacing.North;
                     break;
+            }
+        }
+
+        public void GetFacingTilePos(out int posX, out int posY)
+        {
+            posX = PosX;
+            posY = PosY;
+
+            switch (Facing)
+            {
+                case AvatarFacing.North:
+                    posY--;
+                    return;
+
+                case AvatarFacing.South:
+                    posY++;
+                    return;
+
+                case AvatarFacing.East:
+                    posX++;
+                    return;
+
+                case AvatarFacing.West:
+                    posX--;
+                    return;
             }
         }
 

@@ -112,6 +112,7 @@
             }
 
             _mazeWorldManager.LoadMazeWorld(_avatar.MazeWorld);
+            _mazeWorldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
 
             // Test
             /*_mazeWorldManager.LoadMazeWorld("5-cedar-village");
@@ -161,6 +162,7 @@
                     _avatar.PosY = mazePortal.DestY;
                     _avatar.MazeWorld = mazePortal.Destination;
                     _mazeWorldManager.LoadMazeWorld(mazePortal.Destination);
+                    _mazeWorldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
                     _message.Start(_mazeWorldManager.MazeWorldName);
 
                     return;
@@ -236,7 +238,10 @@
                                 break;
                         }
 
+                        _mazeWorldManager.SetTile(chestPoint.X, chestPoint.Y, chestPoint.OpenedTileId);
                         _avatar.PushCampaignFlag(chestPoint.UniqueId);
+                        _soundManager.PlaySound(chestPoint.Sound);
+
                         if (chestPoint.RewardItemAmount > 1)
                         {
                             _message.Start(string.Format("Found {0} {1}!", chestPoint.RewardItemAmount, chestPoint.RewardItemId));
@@ -250,6 +255,8 @@
                     }
                 }
 
+                // Scripted Enemies
+                // todo
                 // Encounters
                 if (_mazeWorldManager.Enemies is not null &&
                     _mazeWorldManager.Enemies.Count > 0)
@@ -528,12 +535,21 @@
                 return;
             }
 
-            // todo: clear path
-            _avatar.DrainMP(1);
+            _avatar.GetFacingTilePos(out int facingTileX, out int facingTileY);
 
-            _powerAction = "Burn!";
-            _powerResult = "Cleared Path!";
-            _soundManager.PlaySound(SoundFX.Fire);
+            if (_mazeWorldManager.CheckScriptedTiles(facingTileX, facingTileY, out ScriptedTile scriptedTile) &&
+                scriptedTile.RequiredAction.Equals("Burn"))
+            {
+                _avatar.DrainMP(1);
+                _avatar.PushCampaignFlag(scriptedTile.UniqueId);
+                _mazeWorldManager.SetTile(facingTileX, facingTileY, scriptedTile.AfterTileId);
+                _powerAction = "Burn!";
+                _powerResult = "Cleared Path!";
+                _soundManager.PlaySound(SoundFX.Fire);
+            }
+
+            _powerAction = "(No Target)";
+            _soundManager.PlaySound(SoundFX.Blocked);
         }
 
         private void DoUnlockAction()
@@ -544,12 +560,21 @@
                 return;
             }
 
-            // todo: unlock door
-            _avatar.DrainMP(1);
+            _avatar.GetFacingTilePos(out int facingTileX, out int facingTileY);
 
-            _powerAction = "Unlock!";
-            _powerResult = "Door Opened!";
-            _soundManager.PlaySound(SoundFX.Unlock);
+            if (_mazeWorldManager.CheckScriptedTiles(facingTileX, facingTileY, out ScriptedTile scriptedTile) &&
+                scriptedTile.RequiredAction.Equals("Unlock"))
+            {
+                _avatar.DrainMP(1);
+                _avatar.PushCampaignFlag(scriptedTile.UniqueId);
+                _mazeWorldManager.SetTile(facingTileX, facingTileY, scriptedTile.AfterTileId);
+                _powerAction = "Unlock!";
+                _powerResult = "Door Opened!";
+                _soundManager.PlaySound(SoundFX.Unlock);
+            }
+
+            _powerAction = "(No Target)";
+            _soundManager.PlaySound(SoundFX.Blocked);
         }
     }
 }
