@@ -1,6 +1,5 @@
 ﻿namespace DuskProject.Source
 {
-    using DuskProject.Source.Combat;
     using DuskProject.Source.Dialog;
     using DuskProject.Source.Enums;
     using DuskProject.Source.Maze;
@@ -113,12 +112,6 @@
 
             _mazeWorldManager.LoadMazeWorld(_avatar.MazeWorld);
             _mazeWorldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
-
-            // Test
-            /*_mazeWorldManager.LoadMazeWorld("5-cedar-village");
-            _avatar.PosX = 6;
-            _avatar.PosY = 5;
-            _avatar.AddGold(1000);*/
         }
 
         public void Save()
@@ -151,6 +144,7 @@
 
             _avatar.Update();
             _message.Update();
+
             _textManager.Color = _avatar.IsBadlyHurt() ? TextColor.Red : TextColor.Default;
 
             if (_avatar.Moved)
@@ -234,11 +228,32 @@
                                 break;
 
                             case ChestRewardType.PowerUp:
-                                // todo
+                                if (chestPoint.RewardItemId.Equals("Magic Sapphire (MP Up)"))
+                                {
+                                    _avatar.MaxMP += 2;
+                                    _avatar.DrainMP(-2);
+                                }
+
+                                if (chestPoint.RewardItemId.Equals("Magic Emerald (HP Up)"))
+                                {
+                                    _avatar.MaxHP += 5;
+                                    _avatar.Heal(5);
+                                }
+
+                                if (chestPoint.RewardItemId.Equals("Magic Ruby (Atk Up)"))
+                                {
+                                    _avatar.Attack++;
+                                }
+
+                                if (chestPoint.RewardItemId.Equals("Magic Diamond (Def Up)"))
+                                {
+                                    _avatar.Defence++;
+                                }
+
                                 break;
                         }
 
-                        _mazeWorldManager.SetTile(chestPoint.X, chestPoint.Y, chestPoint.OpenedTileId);
+                        _mazeWorldManager.SetTileId(chestPoint.X, chestPoint.Y, chestPoint.OpenedTileId);
                         _avatar.PushCampaignFlag(chestPoint.UniqueId);
                         _soundManager.PlaySound(chestPoint.Sound);
 
@@ -256,7 +271,18 @@
                 }
 
                 // Scripted Enemies
-                // todo
+                if (_mazeWorldManager.CheckScriptedEnemies(_avatar.PosX, _avatar.PosY, out ScriptedEnemy scriptedEnemy))
+                {
+                    if (!_avatar.HasCampaignFlag(scriptedEnemy.UniqueId))
+                    {
+                        _encounterChance = 0;
+                        _message.Clear();
+                        _gameStateManager.StartCombat(scriptedEnemy.EnemyId, scriptedEnemy.UniqueId);
+
+                        return;
+                    }
+                }
+
                 // Encounters
                 if (_mazeWorldManager.Enemies is not null &&
                     _mazeWorldManager.Enemies.Count > 0)
@@ -542,7 +568,7 @@
             {
                 _avatar.DrainMP(1);
                 _avatar.PushCampaignFlag(scriptedTile.UniqueId);
-                _mazeWorldManager.SetTile(facingTileX, facingTileY, scriptedTile.AfterTileId);
+                _mazeWorldManager.SetTileId(facingTileX, facingTileY, scriptedTile.AfterTileId);
                 _powerAction = "Burn!";
                 _powerResult = "Cleared Path!";
                 _soundManager.PlaySound(SoundFX.Fire);
@@ -567,7 +593,7 @@
             {
                 _avatar.DrainMP(1);
                 _avatar.PushCampaignFlag(scriptedTile.UniqueId);
-                _mazeWorldManager.SetTile(facingTileX, facingTileY, scriptedTile.AfterTileId);
+                _mazeWorldManager.SetTileId(facingTileX, facingTileY, scriptedTile.AfterTileId);
                 _powerAction = "Unlock!";
                 _powerResult = "Door Opened!";
                 _soundManager.PlaySound(SoundFX.Unlock);

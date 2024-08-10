@@ -10,13 +10,13 @@
         public int HP { get; protected set; } = 25;
 
         [JsonProperty]
-        public int MaxHP { get; protected set; } = 25;
+        public int MaxHP { get; set; } = 25;
 
         [JsonProperty]
         public int MP { get; protected set; } = 4;
 
         [JsonProperty]
-        public int MaxMP { get; protected set; } = 4;
+        public int MaxMP { get; set; } = 4;
 
         public int PosX { get; set; } = 1;
 
@@ -46,13 +46,13 @@
         public Item Weapon { get; protected set; }
 
         [JsonProperty]
-        public int Attack { get; protected set; } = 0;
+        public int Attack { get; set; } = 0;
 
         [JsonProperty]
         public Item Armor { get; protected set; }
 
         [JsonProperty]
-        public int Defence { get; protected set; } = 0;
+        public int Defence { get; set; } = 0;
 
         [JsonProperty]
         public int SpellBookLevel { get; protected set; } = 0;

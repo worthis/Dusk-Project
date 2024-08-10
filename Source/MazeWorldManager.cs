@@ -124,12 +124,12 @@
 
             foreach (var item in _mazeWorld.Chests)
             {
-                SetTile(item.X, item.Y, item.ClosedTileId);
+                SetTileId(item.X, item.Y, item.ClosedTileId);
             }
 
             foreach (var item in _mazeWorld.ScriptedTiles)
             {
-                SetTile(item.X, item.Y, item.BeforeTileId);
+                SetTileId(item.X, item.Y, item.BeforeTileId);
             }
         }
 
@@ -329,7 +329,7 @@
             return _tileSet[tileId];
         }
 
-        public void SetTile(int posX, int posY, int tileId)
+        public void SetTileId(int posX, int posY, int tileId)
         {
             if (!CheckBounds(posX, posY))
             {
@@ -360,7 +360,7 @@
             return false;
         }
 
-        private void RenderTile(int posX, int posY, int position)
+        private void RenderTile(int posX, int posY, int layoutId)
         {
             int tileId = GetTileId(posX, posY);
 
@@ -371,12 +371,12 @@
             }
 
             _tileSet[tileId].Image.Render(
-                _tileLayouts[position].SrcX,
-                _tileLayouts[position].SrcY,
-                _tileLayouts[position].Width,
-                _tileLayouts[position].Height,
-                _tileLayouts[position].DstX + TileSetRenderOffsetX,
-                _tileLayouts[position].DstY = TileSetRenderOffsetY);
+                _tileLayouts[layoutId].SrcX,
+                _tileLayouts[layoutId].SrcY,
+                _tileLayouts[layoutId].Width,
+                _tileLayouts[layoutId].Height,
+                _tileLayouts[layoutId].DstX + TileSetRenderOffsetX,
+                _tileLayouts[layoutId].DstY = TileSetRenderOffsetY);
         }
 
         private void LoadTiles()

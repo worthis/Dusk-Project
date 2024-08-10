@@ -42,7 +42,7 @@
   [
     {"X":3,"Y":2,"UniqueId":"8-mausoleum@atk1","ClosedTileId":8,"OpenedTileId":5,"RewardType":"PowerUp","RewardItemId":"Magic Ruby (Atk Up)"},
 	{"X":3,"Y":12,"UniqueId":"8-mausoleum@mp2","ClosedTileId":8,"OpenedTileId":5,"RewardType":"PowerUp","RewardItemId":"Magic Sapphire (MP Up)"},
-	{"X":6,"Y":9,"UniqueId":"8-mausoleum@gold","ClosedTileId":8,"OpenedTileId":5,"RewardType":"Gold","RewardAmount":25}
+	{"X":6,"Y":9,"UniqueId":"8-mausoleum@gold","ClosedTileId":8,"OpenedTileId":5,"RewardType":"Gold","RewardItemId":"Gold","RewardItemAmount":25}
   ],
   "ScriptedTiles":
   [

@@ -34,6 +34,6 @@
   ],
   "Chests":
   [
-    {"X":7,"Y":10,"UniqueId":"5-cedar-village@gold","ClosedTileId":9,"OpenedTileId":1,"RewardType":"Gold","RewardAmount":10}
+    {"X":7,"Y":10,"UniqueId":"5-cedar-village@gold","ClosedTileId":9,"OpenedTileId":1,"RewardType":"Gold","RewardItemId":"Gold","RewardItemAmount":10}
   ]
 }
