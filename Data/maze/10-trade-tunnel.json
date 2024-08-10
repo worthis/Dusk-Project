@@ -42,19 +42,19 @@
   ],
   "Chests":
   [
-	{"X":11,"Y":2,"UniqueId":"10-trade-tunnel@hp2","ClosedTileId":8,"OpenedTileId":5,"RewardType":"PowerUp","RewardItemId":"Magic Emerald (HP Up)"},
-	{"X":13,"Y":2,"UniqueId":"10-trade-tunnel@gold","ClosedTileId":8,"OpenedTileId":5,"RewardType":"Gold","RewardItemId":"Gold","RewardItemAmount":100}
+    {"X":11,"Y":2,"UniqueId":"10-trade-tunnel@hp2","ClosedTileId":8,"OpenedTileId":5,"RewardType":"PowerUp","RewardItemId":"Magic Emerald (HP Up)"},
+    {"X":13,"Y":2,"UniqueId":"10-trade-tunnel@gold","ClosedTileId":8,"OpenedTileId":5,"RewardType":"Gold","RewardItemId":"Gold","RewardItemAmount":100}
   ],
   "SriptedEnemies":
   [
-	{"X":14,"Y":9,"EnemyId":"mimic"},
-	{"X":6,"Y":4,"EnemyId":"mimic"}
+    {"X":14,"Y":9,"EnemyId":"mimic"},
+    {"X":6,"Y":4,"EnemyId":"mimic"}
   ],
   "ScriptedTiles":
   [
-	{"X":2,"Y":4,"UniqueId":"10-trade-tunnel@bone1","RequiredAction":"Burn","BeforeTileId":16,"AfterTileId":5},
-	{"X":4,"Y":2,"UniqueId":"10-trade-tunnel@bone2","RequiredAction":"Burn","BeforeTileId":16,"AfterTileId":5},
-	{"X":11,"Y":3,"UniqueId":"10-trade-tunnel@door1","RequiredAction":"Unlock","BeforeTileId":18,"AfterTileId":3},
-	{"X":13,"Y":3,"UniqueId":"10-trade-tunnel@door1","RequiredAction":"Unlock","BeforeTileId":18,"AfterTileId":3}
+    {"X":2,"Y":4,"UniqueId":"10-trade-tunnel@bone1","RequiredAction":"Burn","BeforeTileId":16,"AfterTileId":5},
+    {"X":4,"Y":2,"UniqueId":"10-trade-tunnel@bone2","RequiredAction":"Burn","BeforeTileId":16,"AfterTileId":5},
+    {"X":11,"Y":3,"UniqueId":"10-trade-tunnel@door1","RequiredAction":"Unlock","BeforeTileId":18,"AfterTileId":3},
+    {"X":13,"Y":3,"UniqueId":"10-trade-tunnel@door1","RequiredAction":"Unlock","BeforeTileId":18,"AfterTileId":3}
   ]
 }

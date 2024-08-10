@@ -41,15 +41,15 @@
   "Chests":
   [
     {"X":3,"Y":2,"UniqueId":"8-mausoleum@atk1","ClosedTileId":8,"OpenedTileId":5,"RewardType":"PowerUp","RewardItemId":"Magic Ruby (Atk Up)"},
-	{"X":3,"Y":12,"UniqueId":"8-mausoleum@mp2","ClosedTileId":8,"OpenedTileId":5,"RewardType":"PowerUp","RewardItemId":"Magic Sapphire (MP Up)"},
-	{"X":6,"Y":9,"UniqueId":"8-mausoleum@gold","ClosedTileId":8,"OpenedTileId":5,"RewardType":"Gold","RewardItemId":"Gold","RewardItemAmount":25}
+    {"X":3,"Y":12,"UniqueId":"8-mausoleum@mp2","ClosedTileId":8,"OpenedTileId":5,"RewardType":"PowerUp","RewardItemId":"Magic Sapphire (MP Up)"},
+    {"X":6,"Y":9,"UniqueId":"8-mausoleum@gold","ClosedTileId":8,"OpenedTileId":5,"RewardType":"Gold","RewardItemId":"Gold","RewardItemAmount":25}
   ],
   "ScriptedTiles":
   [
-	{"X":4,"Y":7,"UniqueId":"8-mausoleum@bone1","RequiredAction":"Burn","BeforeTileId":16,"AfterTileId":5},
-	{"X":4,"Y":2,"UniqueId":"8-mausoleum@bone2","RequiredAction":"Burn","BeforeTileId":16,"AfterTileId":5},
-	{"X":13,"Y":7,"UniqueId":"8-mausoleum@bone3","RequiredAction":"Burn","BeforeTileId":16,"AfterTileId":5},
-	{"X":11,"Y":5,"UniqueId":"8-mausoleum@bone4","RequiredAction":"Burn","BeforeTileId":16,"AfterTileId":5},
-	{"X":4,"Y":12,"UniqueId":"8-mausoleum@door1","RequiredAction":"Unlock","BeforeTileId":18,"AfterTileId":3}
+    {"X":4,"Y":7,"UniqueId":"8-mausoleum@bone1","RequiredAction":"Burn","BeforeTileId":16,"AfterTileId":5},
+    {"X":4,"Y":2,"UniqueId":"8-mausoleum@bone2","RequiredAction":"Burn","BeforeTileId":16,"AfterTileId":5},
+    {"X":13,"Y":7,"UniqueId":"8-mausoleum@bone3","RequiredAction":"Burn","BeforeTileId":16,"AfterTileId":5},
+    {"X":11,"Y":5,"UniqueId":"8-mausoleum@bone4","RequiredAction":"Burn","BeforeTileId":16,"AfterTileId":5},
+    {"X":4,"Y":12,"UniqueId":"8-mausoleum@door1","RequiredAction":"Unlock","BeforeTileId":18,"AfterTileId":3}
   ]
 }

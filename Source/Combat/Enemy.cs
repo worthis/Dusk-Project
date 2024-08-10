@@ -19,6 +19,8 @@
 
         public ImageResource Image { get; set; }
 
+        protected Random RandGen { get => _randGen; }
+
         public int AttackDispersion()
         {
             return AttackMax - AttackMin;
@@ -39,11 +41,9 @@
             }
         }
 
-        public virtual AttackResult Attack(int heroDefence)
+        public virtual AttackResult Attack(int heroDefence, CombatPowers combatPower)
         {
-            var powerId = _randGen.Next(Powers.Count);
-
-            switch (Powers[powerId])
+            switch (combatPower)
             {
                 default:
                 case CombatPowers.Attack:
@@ -168,12 +168,18 @@
             }
         }
 
+        public virtual AttackResult Attack(int heroDefence)
+        {
+            var powerId = _randGen.Next(Powers.Count);
+            return Attack(heroDefence, Powers[powerId]);
+        }
+
         public int GoldReward()
         {
             return _randGen.Next(GoldDispersion()) + GoldMin;
         }
 
-        public void Render()
+        public virtual void Render()
         {
             Image.Render(
                 0,

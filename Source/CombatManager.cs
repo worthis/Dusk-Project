@@ -99,7 +99,7 @@
         public void StartCombat(string enemyId, string uniqueFlag = "")
         {
             Reset();
-            LoadEnemy(enemyId);
+            LoadEnemy(enemyId, uniqueFlag);
             UpdateSpells();
 
             _uniqueFlag = uniqueFlag;
@@ -491,7 +491,7 @@
             _rewardGoldAmount = goldReward;
         }
 
-        private void LoadEnemy(string enemyId)
+        private void LoadEnemy(string enemyId, string uniqueFlag = "")
         {
             string fileName = string.Format("Data/enemies/{0}.json", enemyId);
 
@@ -506,7 +506,16 @@
                 string jsonData = streamReader.ReadToEnd();
                 streamReader.Close();
 
-                _enemy = JsonConvert.DeserializeObject<Enemy>(jsonData, new StringEnumConverter());
+                if (uniqueFlag.Equals("9-dead-walkways@death-speaker"))
+                {
+                    _enemy = JsonConvert.DeserializeObject<EnemyBoss>(jsonData, new StringEnumConverter());
+                    (_enemy as EnemyBoss).InitBoneShield(_resourceManager.LoadImage("Data/images/enemies/bone_shield.png"));
+                }
+                else
+                {
+                    _enemy = JsonConvert.DeserializeObject<Enemy>(jsonData, new StringEnumConverter());
+                }
+
                 _enemy.Id = enemyId;
                 _enemy.Image = _resourceManager.LoadImage(string.Format("Data/images/enemies/{0}", _enemy.ImageFile));
             }
@@ -530,7 +539,14 @@
         {
             _offenceAction = "Attack!";
 
-            /* todo: boss special */
+            // Boss bone shield
+            if (_enemy is EnemyBoss &&
+                (_enemy as EnemyBoss).BoneShieldActive)
+            {
+                _offenceResult = "Absorbed!";
+                _soundManager.PlaySound(SoundFX.Blocked);
+                return;
+            }
 
             // Check Miss
             if (_randGen.Next(100) < 20)
@@ -616,7 +632,12 @@
                 attackDamage += _avatar.Weapon.AttackMax;
             }
 
-            // todo: boss shield
+            // Burn boneshield of the boss
+            if (_enemy is EnemyBoss)
+            {
+                (_enemy as EnemyBoss).BurnBoneShield();
+            }
+
             _avatar.DrainMP(1);
 
             _enemyHurt = true;

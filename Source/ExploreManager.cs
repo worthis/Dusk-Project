@@ -199,6 +199,7 @@
                 // Chests
                 if (_mazeWorldManager.CheckChests(_avatar.PosX, _avatar.PosY, out ChestPoint chestPoint))
                 {
+                    // todo: render treasure icon
                     if (!_avatar.HasCampaignFlag(chestPoint.UniqueId))
                     {
                         switch (chestPoint.RewardType)
@@ -271,6 +272,7 @@
                 }
 
                 // Scripted Enemies
+                // todo: world update on boss kill
                 if (_mazeWorldManager.CheckScriptedEnemies(_avatar.PosX, _avatar.PosY, out ScriptedEnemy scriptedEnemy))
                 {
                     if (!_avatar.HasCampaignFlag(scriptedEnemy.UniqueId))
