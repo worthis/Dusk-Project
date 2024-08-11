@@ -42,6 +42,10 @@
 
         public int TileSetRenderOffsetY { get; set; } = 0;
 
+        public int Width { get => _world.Width; }
+
+        public int Height { get => _world.Height; }
+
         public string WorldId { get => _world.Id; }
 
         public string WorldName { get => _world.Name; }

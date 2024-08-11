@@ -34,6 +34,10 @@
         private ImageResource _avatarImage;
         private List<InfoButton> _infoButtons = new List<InfoButton>();
 
+        private bool _showMinimap = false;
+        private ImageResource _minimapIcons;
+        private ImageResource _minimapCursor;
+
         private ExploreManager()
         {
         }
@@ -70,6 +74,9 @@
             _randGen = new Random(Environment.TickCount);
 
             _avatarImage = _resourceManager.LoadImage("Data/images/interface/heroine.png");
+            _minimapIcons = _resourceManager.LoadImage("Data/images/interface/minimap.png");
+            _minimapCursor = _resourceManager.LoadImage("Data/images/interface/minimap_cursor.png");
+
             ImageResource buttonsImage = _resourceManager.LoadImage("Data/images/interface/action_buttons.png");
             ImageResource buttonSelectedImage = _resourceManager.LoadImage("Data/images/interface/select.png");
 
@@ -143,6 +150,12 @@
                 _gameStateManager.ChangeState(GameState.Title);
 
                 return;
+            }
+
+            // Minimap
+            if (_windowManager.KeyPressed(InputKey.KEY_X))
+            {
+                _showMinimap = !_showMinimap;
             }
 
             // Avatar Movement
@@ -362,6 +375,18 @@
         {
             _message.Update();
 
+            // Minimap
+            if (_windowManager.KeyPressed(InputKey.KEY_X))
+            {
+                _showMinimap = !_showMinimap;
+
+                if (_showMinimap)
+                {
+                    _powerAction = string.Empty;
+                    _powerResult = string.Empty;
+                }
+            }
+
             // Spell selection
             if (_windowManager.KeyPressed(InputKey.KEY_DOWN) ||
                 _windowManager.KeyPressed(InputKey.KEY_RIGHT))
@@ -474,7 +499,12 @@
             // Compass
             RenderCompass();
 
-            // todo: Minimap
+            // Minimap
+            if (_showMinimap)
+            {
+                RenderMinimap();
+            }
+
             // Messages
             _textManager.Render(_message.Text, 160, 200, TextJustify.JUSTIFY_CENTER);
         }
@@ -496,6 +526,12 @@
             RenderHeroEquipment(ItemType.Weapon, _avatar.Weapon.Level); // Weapon
             RenderHeroStats(true);                                      // HP / MP / Gold
             RenderSpells();
+
+            if (!string.IsNullOrWhiteSpace(_powerAction) ||
+                !string.IsNullOrWhiteSpace(_powerResult))
+            {
+                RenderMinimap();
+            }
 
             // Item List
             // Armor
@@ -532,6 +568,8 @@
 
             // Messages
             _textManager.Render(_message.Text, 160, 200, TextJustify.JUSTIFY_CENTER);
+            _textManager.Render(_powerAction, 4, 60);
+            _textManager.Render(_powerResult, 4, 80);
         }
 
         private void RenderCompass()
@@ -584,6 +622,96 @@
             {
                 button.Render();
             }
+        }
+
+        private void RenderMinimap()
+        {
+            for (int i = 0; i < _worldManager.Width; i++)
+            {
+                for (int j = 0; j < _worldManager.Height; j++)
+                {
+                    // Portals
+                    if (_worldManager.CheckPortals(i, j, out WorldPortal worldPortal))
+                    {
+                        _minimapIcons.Render(
+                            3 * 6,
+                            0,
+                            6,
+                            6,
+                            (i * 6) + 4,
+                            (j * 6) + 4);
+
+                        continue;
+                    }
+
+                    // Stores
+                    if (_worldManager.CheckStores(i, j, out StorePortal storePortal))
+                    {
+                        _minimapIcons.Render(
+                            3 * 6,
+                            0,
+                            6,
+                            6,
+                            (i * 6) + 4,
+                            (j * 6) + 4);
+
+                        continue;
+                    }
+
+                    // Tiles
+                    Tile tile = _worldManager.GetTile(i, j);
+                    if (tile.Walkable)
+                    {
+                        _minimapIcons.Render(
+                            1 * 6,
+                            0,
+                            6,
+                            6,
+                            (i * 6) + 4,
+                            (j * 6) + 4);
+                    }
+                    else
+                    {
+                        _minimapIcons.Render(
+                            0 * 6,
+                            0,
+                            6,
+                            6,
+                            (i * 6) + 4,
+                            (j * 6) + 4);
+                    }
+                }
+            }
+
+            // Hero Position
+            int cursorId = 0;
+
+            switch (_avatar.Facing)
+            {
+                case AvatarFacing.West:
+                    cursorId = 0;
+                    break;
+
+                case AvatarFacing.North:
+                    cursorId = 1;
+                    break;
+
+                case AvatarFacing.East:
+                    cursorId = 2;
+                    break;
+
+                case AvatarFacing.South:
+                    cursorId = 3;
+                    break;
+            }
+
+            _minimapCursor.Render(
+                cursorId * 6,
+                0,
+                6,
+                6,
+                (_avatar.X * 6) + 4,
+                (_avatar.Y * 6) + 4);
         }
 
         private void DoHealAction()
