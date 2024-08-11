@@ -126,5 +126,11 @@
             _combatManager.StartCombat(enemyId, uniqueFlag);
             ChangeState(GameState.Combat);
         }
+
+        public void StartDialog(string storeName)
+        {
+            _dialogManager.StartDialog(storeName);
+            ChangeState(GameState.Dialog);
+        }
     }
 }

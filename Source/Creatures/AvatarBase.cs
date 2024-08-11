@@ -12,10 +12,10 @@
         [JsonProperty]
         public AvatarFacing Facing { get; protected set; } = AvatarFacing.South;
 
-        public string MazeWorld { get; set; } = "0-serf-quarters";
+        public string World { get; set; } = "0-serf-quarters";
 
         [JsonProperty]
-        public string SleepMazeWorld { get; protected set; } = "0-serf-quarters";
+        public string SleepWorld { get; protected set; } = "0-serf-quarters";
 
         [JsonProperty]
         public int SleepPosX { get; protected set; } = 1;

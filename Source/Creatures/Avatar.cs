@@ -54,7 +54,7 @@
             SpellBookLevel = 0;
             SpellBook.Clear();
 
-            SleepMazeWorld = "0-serf-quarters";
+            SleepWorld = "0-serf-quarters";
             SleepPosX = 1;
             SleepPosY = 1;
         }
@@ -102,10 +102,10 @@
                     X = avatarBase.X;
                     Y = avatarBase.Y;
                     Facing = avatarBase.Facing;
-                    MazeWorld = avatarBase.MazeWorld;
+                    World = avatarBase.World;
                     SleepPosX = avatarBase.SleepPosX;
                     SleepPosY = avatarBase.SleepPosY;
-                    SleepMazeWorld = avatarBase.SleepMazeWorld;
+                    SleepWorld = avatarBase.SleepWorld;
                     Weapon = avatarBase.Weapon;
                     Armor = avatarBase.Armor;
                     SpellBookLevel = avatarBase.SpellBookLevel;
@@ -120,7 +120,7 @@
             HP = MaxHP;
             MP = MaxMP;
 
-            SleepMazeWorld = MazeWorld;
+            SleepWorld = World;
             SleepPosX = X;
             SleepPosY = Y;
 
@@ -137,7 +137,7 @@
             X = SleepPosX;
             Y = SleepPosY;
 
-            MazeWorld = SleepMazeWorld;
+            World = SleepWorld;
 
             Save();
         }

@@ -34,9 +34,7 @@
         private ImageResource _avatarImage;
         private List<InfoButton> _infoButtons = new List<InfoButton>();
 
-        private bool _showMinimap = false;
-        private ImageResource _minimapIcons;
-        private ImageResource _minimapCursor;
+        private Minimap _minimap;
 
         private ExploreManager()
         {
@@ -74,9 +72,6 @@
             _randGen = new Random(Environment.TickCount);
 
             _avatarImage = _resourceManager.LoadImage("Data/images/interface/heroine.png");
-            _minimapIcons = _resourceManager.LoadImage("Data/images/interface/minimap.png");
-            _minimapCursor = _resourceManager.LoadImage("Data/images/interface/minimap_cursor.png");
-
             ImageResource buttonsImage = _resourceManager.LoadImage("Data/images/interface/action_buttons.png");
             ImageResource buttonSelectedImage = _resourceManager.LoadImage("Data/images/interface/select.png");
 
@@ -104,6 +99,10 @@
             if (_avatar.SaveExists())
             {
                 _avatar.Load();
+                LoadWorld(_avatar.World);
+                _gameStateManager.ChangeState(GameState.Explore);
+
+                return;
             }
             else
             {
@@ -118,13 +117,62 @@
                 }
             }
 
-            _worldManager.LoadWorld(_avatar.MazeWorld);
+            LoadWorld(_avatar.World);
+            _gameStateManager.StartDialog("8-a-nightmare");
+        }
+
+        public void LoadWorld(string worldName)
+        {
+            _avatar.World = worldName;
+            _worldManager.LoadWorld(_avatar.World);
             _worldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
+
+            bool showMinimap = _minimap?.Enabled ?? false;
+
+            // Init minimap
+            _minimap = new Minimap(
+                _worldManager.Width,
+                _worldManager.Height,
+                _resourceManager.LoadImage("Data/images/interface/minimap.png"),
+                _resourceManager.LoadImage("Data/images/interface/minimap_cursor.png"));
+
+            _minimap.X = 4;
+            _minimap.Y = 4;
+            _minimap.Enabled = showMinimap;
+
+            for (int i = 0; i < _worldManager.Width; i++)
+            {
+                for (int j = 0; j < _worldManager.Height; j++)
+                {
+                    // Portals
+                    if (_worldManager.CheckPortals(i, j, out WorldPortal worldPortal))
+                    {
+                        _minimap.SetTileType(i, j, MinimapTileType.Portal);
+                        continue;
+                    }
+
+                    // Stores
+                    if (_worldManager.CheckStores(i, j, out StorePortal storePortal))
+                    {
+                        _minimap.SetTileType(i, j, MinimapTileType.Store);
+                        continue;
+                    }
+
+                    Tile tile = _worldManager.GetTile(i, j);
+                    _minimap.SetTileType(i, j, tile.Walkable ? MinimapTileType.Walkable : MinimapTileType.Blocked);
+                }
+            }
         }
 
         public void Save()
         {
             _avatar.Save();
+        }
+
+        public void SetWorldRenderOffset(int offsetX, int offsetY)
+        {
+            _worldManager.TileSetRenderOffsetX = offsetX;
+            _worldManager.TileSetRenderOffsetY = offsetY;
         }
 
         public void Update()
@@ -155,7 +203,7 @@
             // Minimap
             if (_windowManager.KeyPressed(InputKey.KEY_X))
             {
-                _showMinimap = !_showMinimap;
+                _minimap.Enabled = !_minimap.Enabled;
             }
 
             // Avatar Movement
@@ -217,9 +265,7 @@
                 {
                     _avatar.X = worldPortal.DestX;
                     _avatar.Y = worldPortal.DestY;
-                    _avatar.MazeWorld = worldPortal.Destination;
-                    _worldManager.LoadWorld(worldPortal.Destination);
-                    _worldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
+                    LoadWorld(worldPortal.Destination);
                     _message.Start(_worldManager.WorldName);
 
                     return;
@@ -230,8 +276,7 @@
                 {
                     _avatar.X = storePortal.DestX;
                     _avatar.Y = storePortal.DestY;
-                    _dialogManager.LoadStore(storePortal.Store);
-                    _gameStateManager.ChangeState(GameState.Dialog);
+                    _gameStateManager.StartDialog(storePortal.Store);
 
                     return;
                 }
@@ -378,9 +423,9 @@
             // Minimap
             if (_windowManager.KeyPressed(InputKey.KEY_X))
             {
-                _showMinimap = !_showMinimap;
+                _minimap.Enabled = !_minimap.Enabled;
 
-                if (_showMinimap)
+                if (_minimap.Enabled)
                 {
                     _powerAction = string.Empty;
                     _powerResult = string.Empty;
@@ -487,7 +532,11 @@
                 button.Enabled = false;
             }
 
-            _infoButtons.Where(x => x.Enabled).First().Selected = true;
+            var buttonFirst = _infoButtons.Where(x => x.Enabled).FirstOrDefault();
+            if (buttonFirst is not null)
+            {
+                buttonFirst.Selected = true;
+            }
         }
 
         public void Render()
@@ -500,10 +549,8 @@
             RenderCompass();
 
             // Minimap
-            if (_showMinimap)
-            {
-                RenderMinimap();
-            }
+            _minimap.Render();
+            _minimap.RenderHero(_avatar.X, _avatar.Y, _avatar.Facing);
 
             // Messages
             _textManager.Render(_message.Text, 160, 200, TextJustify.JUSTIFY_CENTER);
@@ -527,10 +574,11 @@
             RenderHeroStats(true);                                      // HP / MP / Gold
             RenderSpells();
 
-            if (!string.IsNullOrWhiteSpace(_powerAction) ||
-                !string.IsNullOrWhiteSpace(_powerResult))
+            if (string.IsNullOrWhiteSpace(_powerAction) ||
+                string.IsNullOrWhiteSpace(_powerResult))
             {
-                RenderMinimap();
+                _minimap.Render();
+                _minimap.RenderHero(_avatar.X, _avatar.Y, _avatar.Facing);
             }
 
             // Item List
@@ -570,6 +618,12 @@
             _textManager.Render(_message.Text, 160, 200, TextJustify.JUSTIFY_CENTER);
             _textManager.Render(_powerAction, 4, 60);
             _textManager.Render(_powerResult, 4, 80);
+        }
+
+        public void RenderWorld()
+        {
+            _worldManager.RenderBackground(_avatar.Facing);
+            _worldManager.RenderWorld(_avatar.X, _avatar.Y, _avatar.Facing);
         }
 
         private void RenderCompass()
@@ -622,96 +676,6 @@
             {
                 button.Render();
             }
-        }
-
-        private void RenderMinimap()
-        {
-            for (int i = 0; i < _worldManager.Width; i++)
-            {
-                for (int j = 0; j < _worldManager.Height; j++)
-                {
-                    // Portals
-                    if (_worldManager.CheckPortals(i, j, out WorldPortal worldPortal))
-                    {
-                        _minimapIcons.Render(
-                            3 * 6,
-                            0,
-                            6,
-                            6,
-                            (i * 6) + 4,
-                            (j * 6) + 4);
-
-                        continue;
-                    }
-
-                    // Stores
-                    if (_worldManager.CheckStores(i, j, out StorePortal storePortal))
-                    {
-                        _minimapIcons.Render(
-                            3 * 6,
-                            0,
-                            6,
-                            6,
-                            (i * 6) + 4,
-                            (j * 6) + 4);
-
-                        continue;
-                    }
-
-                    // Tiles
-                    Tile tile = _worldManager.GetTile(i, j);
-                    if (tile.Walkable)
-                    {
-                        _minimapIcons.Render(
-                            1 * 6,
-                            0,
-                            6,
-                            6,
-                            (i * 6) + 4,
-                            (j * 6) + 4);
-                    }
-                    else
-                    {
-                        _minimapIcons.Render(
-                            0 * 6,
-                            0,
-                            6,
-                            6,
-                            (i * 6) + 4,
-                            (j * 6) + 4);
-                    }
-                }
-            }
-
-            // Hero Position
-            int cursorId = 0;
-
-            switch (_avatar.Facing)
-            {
-                case AvatarFacing.West:
-                    cursorId = 0;
-                    break;
-
-                case AvatarFacing.North:
-                    cursorId = 1;
-                    break;
-
-                case AvatarFacing.East:
-                    cursorId = 2;
-                    break;
-
-                case AvatarFacing.South:
-                    cursorId = 3;
-                    break;
-            }
-
-            _minimapCursor.Render(
-                cursorId * 6,
-                0,
-                6,
-                6,
-                (_avatar.X * 6) + 4,
-                (_avatar.Y * 6) + 4);
         }
 
         private void DoHealAction()

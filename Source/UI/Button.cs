@@ -88,13 +88,18 @@
                 RenderSelected();
             }
 
+            Render(X, Y);
+        }
+
+        public virtual void Render(int posX, int posY)
+        {
             _image.Render(
                 ImageCoordX,
                 ImageCoordY,
                 Width,
                 Height,
-                X,
-                Y);
+                posX,
+                posY);
         }
 
         protected virtual void RenderSelected()

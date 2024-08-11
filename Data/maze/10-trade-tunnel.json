@@ -45,7 +45,7 @@
     {"X":11,"Y":2,"UniqueId":"10-trade-tunnel@hp2","ClosedTileId":8,"OpenedTileId":5,"RewardType":"PowerUp","RewardItemId":"Magic Emerald (HP Up)"},
     {"X":13,"Y":2,"UniqueId":"10-trade-tunnel@gold","ClosedTileId":8,"OpenedTileId":5,"RewardType":"Gold","RewardItemId":"Gold","RewardItemAmount":100}
   ],
-  "SriptedEnemies":
+  "ScriptedEnemies":
   [
     {"X":14,"Y":9,"EnemyId":"mimic"},
     {"X":6,"Y":4,"EnemyId":"mimic"}

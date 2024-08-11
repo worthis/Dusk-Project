@@ -11,10 +11,11 @@
         private GameStateManager _gameStateManager;
         private WindowManager _windowManager;
         private ResourceManager _resourceManager;
+        private SoundManager _soundManager;
         private TextManager _textManager;
         private ExploreManager _exploreManager;
 
-        private TitleState _state = TitleState.Main;
+        private TitleState _state = TitleState.Loading;
         private ImageResource _imageBackground;
         private int _menuSelected = 0;
         private int _menuCount;
@@ -45,6 +46,7 @@
             _gameStateManager = GameStateManager.GetInstance();
             _windowManager = WindowManager.GetInstance();
             _resourceManager = ResourceManager.GetInstance();
+            _soundManager = SoundManager.GetInstance();
             _textManager = TextManager.GetInstance();
             _exploreManager = ExploreManager.GetInstance();
 
@@ -81,17 +83,18 @@
                 {
                     // Start
                     case 0:
+                        _soundManager.PlaySound(SoundFX.Click);
                         _exploreManager.Start();
-                        _gameStateManager.ChangeState(GameState.Explore);
                         break;
 
                     // Options
                     case 1:
-
+                        _soundManager.PlaySound(SoundFX.Click);
                         break;
 
                     // Quit
                     case 2:
+                        _soundManager.PlaySound(SoundFX.Click);
                         _gameStateManager.RegisterQuit();
                         break;
                 }
@@ -126,12 +129,7 @@
 
         private static string GetMenuItemText(string menuItemText, int menuItemPos, int menuSelected)
         {
-            if (menuSelected == menuItemPos)
-            {
-                return string.Format("[ {0} ]", menuItemText);
-            }
-
-            return menuItemText;
+            return menuSelected.Equals(menuItemPos) ? string.Format("[ {0} ]", menuItemText) : menuItemText;
         }
     }
 }

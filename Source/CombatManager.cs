@@ -19,7 +19,7 @@
         private ResourceManager _resourceManager;
         private SoundManager _soundManager;
         private TextManager _textManager;
-        private WorldManager _worldManager;
+        private ExploreManager _exploreManager;
         private Avatar _avatar;
 
         private Random _randGen;
@@ -69,7 +69,7 @@
             _resourceManager = ResourceManager.GetInstance();
             _soundManager = SoundManager.GetInstance();
             _textManager = TextManager.GetInstance();
-            _worldManager = WorldManager.GetInstance();
+            _exploreManager = ExploreManager.GetInstance();
             _avatar = Avatar.GetInstance();
 
             // Miyoo Mini Plus does not have RTC time
@@ -167,8 +167,7 @@
 
         public void Render()
         {
-            _worldManager.RenderBackground(_avatar.Facing);
-            _worldManager.RenderWorld(_avatar.X, _avatar.Y, _avatar.Facing);
+            _exploreManager.RenderWorld();
 
             switch (_phase)
             {
@@ -394,14 +393,12 @@
             if (_timer > 15 &&
                 _heroHurt)
             {
-                _worldManager.TileSetRenderOffsetX = _randGen.Next(8) - 4;
-                _worldManager.TileSetRenderOffsetY = _randGen.Next(8) - 4;
+                _exploreManager.SetWorldRenderOffset(_randGen.Next(8) - 4, _randGen.Next(8) - 4);
             }
 
             if (_timer == 15)
             {
-                _worldManager.TileSetRenderOffsetX = 0;
-                _worldManager.TileSetRenderOffsetY = 0;
+                _exploreManager.SetWorldRenderOffset(0, 0);
             }
 
             if (_timer <= 0)
@@ -435,8 +432,7 @@
             {
                 Reset();
                 _avatar.Respawn();
-                _worldManager.LoadWorld(_avatar.MazeWorld);
-                _worldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
+                _exploreManager.LoadWorld(_avatar.World);
                 _gameStateManager.ChangeState(GameState.Explore);
             }
         }

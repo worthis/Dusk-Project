@@ -79,39 +79,6 @@
             Console.WriteLine("DialogManager initialized");
         }
 
-        public void LoadStore(string storeName)
-        {
-            // Loading store from file
-            string fileName = string.Format("Data/stores/{0}.json", storeName);
-
-            if (!File.Exists(fileName))
-            {
-                Console.WriteLine("Error: Unable to load store {0} from {1}", storeName, fileName);
-                return;
-            }
-
-            using (StreamReader streamReader = new(fileName))
-            {
-                string jsonData = streamReader.ReadToEnd();
-                streamReader.Close();
-
-                _store = JsonConvert.DeserializeObject<Store>(jsonData, new StringEnumConverter());
-            }
-
-            if (_store is null)
-            {
-                Console.WriteLine("Error: Unable to load broken store file {0}", fileName);
-                return;
-            }
-
-            ResetButtons();
-            UpdateButtons();
-
-            _soundManager.PlayMusic(_store.Music);
-
-            Console.WriteLine("Store {0} loaded from {1}", storeName, fileName);
-        }
-
         public void LoadItems(string fileName)
         {
             if (!File.Exists(fileName))
@@ -141,6 +108,11 @@
             return false;
         }
 
+        public void StartDialog(string storeName)
+        {
+            LoadStore(storeName);
+        }
+
         public void ResetButtons()
         {
             _hasSellingItems = false;
@@ -154,98 +126,6 @@
                 _buttons[i].TextFirst = i == lastButton ? "Exit" : string.Empty;
                 _buttons[i].TextSecond = string.Empty;
                 _buttons[i].Enabled = i == lastButton;
-            }
-        }
-
-        public void UpdateButtons()
-        {
-            _hasSellingItems = false;
-
-            int linesCount = _store.Lines.Length > _buttons.Length ? _buttons.Length : _store.Lines.Length;
-            for (int i = 0; i < linesCount; i++)
-            {
-                _buttons[i].Enabled = false;
-
-                switch (_store.Lines[i].Type)
-                {
-                    case DialogType.Weapon:
-                    case DialogType.Armor:
-                        if (GetItem(_store.Lines[i].Value, out var item))
-                        {
-                            _hasSellingItems = true;
-                            _buttons[i].Action = DialogButtonAction.Buy;
-                            _buttons[i].TextFirst = string.Format("Buy {0}", item.Name);
-
-                            if (_avatar.HasItem(item))
-                            {
-                                _buttons[i].TextSecond = "(You own this)";
-                            }
-                            else if (!_avatar.IsBetterItem(item))
-                            {
-                                _buttons[i].TextSecond = "(Yours is better)";
-                            }
-                            else
-                            {
-                                _buttons[i].TextSecond = string.Format("for {0} Gold", item.Gold);
-                                _buttons[i].Enabled = true;
-                            }
-                        }
-
-                        break;
-
-                    case DialogType.Spell:
-                        if (GetItem(_store.Lines[i].Value, out var spell))
-                        {
-                            _hasSellingItems = true;
-                            _buttons[i].Action = DialogButtonAction.Buy;
-                            _buttons[i].TextFirst = string.Format("Learn {0}", spell.Name);
-
-                            if (_avatar.KnowsSpell(spell.Name))
-                            {
-                                _buttons[i].TextSecond = "(You know this)";
-                            }
-                            else if (spell.Level > _avatar.SpellBookLevel + 1)
-                            {
-                                _buttons[i].TextSecond = "(Too advanced)";
-                            }
-                            else
-                            {
-                                _buttons[i].TextSecond = string.Format("for {0} Gold", spell.Gold);
-                                _buttons[i].Enabled = true;
-                            }
-                        }
-
-                        break;
-
-                    case DialogType.Room:
-                        _hasSellingItems = true;
-                        _buttons[i].Action = DialogButtonAction.Buy;
-                        _buttons[i].TextFirst = "Rent a room for rest";
-
-                        if (_avatar.IsRested())
-                        {
-                            _buttons[i].TextSecond = "(You are well rested)";
-                        }
-                        else
-                        {
-                            _buttons[i].TextSecond = string.Format("for {0} Gold", _store.Lines[i].Cost);
-                            _buttons[i].Enabled = true;
-                        }
-
-                        break;
-
-                    case DialogType.Message:
-                        _buttons[i].TextFirst = _store.Lines[i].MessageFirst;
-                        _buttons[i].TextSecond = _store.Lines[i].MessageSecond;
-
-                        break;
-                }
-
-                if (_buttons[i].Selected &&
-                    !_buttons[i].Enabled)
-                {
-                    _buttons[_buttons.Length - 1].Selected = true;
-                }
             }
         }
 
@@ -367,6 +247,98 @@
             }
         }
 
+        public void UpdateButtons()
+        {
+            _hasSellingItems = false;
+
+            int linesCount = _store.Lines.Length > _buttons.Length ? _buttons.Length : _store.Lines.Length;
+            for (int i = 0; i < linesCount; i++)
+            {
+                _buttons[i].Enabled = false;
+
+                switch (_store.Lines[i].Type)
+                {
+                    case DialogType.Weapon:
+                    case DialogType.Armor:
+                        if (GetItem(_store.Lines[i].Value, out var item))
+                        {
+                            _hasSellingItems = true;
+                            _buttons[i].Action = DialogButtonAction.Buy;
+                            _buttons[i].TextFirst = string.Format("Buy {0}", item.Name);
+
+                            if (_avatar.HasItem(item))
+                            {
+                                _buttons[i].TextSecond = "(You own this)";
+                            }
+                            else if (!_avatar.IsBetterItem(item))
+                            {
+                                _buttons[i].TextSecond = "(Yours is better)";
+                            }
+                            else
+                            {
+                                _buttons[i].TextSecond = string.Format("for {0} Gold", item.Gold);
+                                _buttons[i].Enabled = true;
+                            }
+                        }
+
+                        break;
+
+                    case DialogType.Spell:
+                        if (GetItem(_store.Lines[i].Value, out var spell))
+                        {
+                            _hasSellingItems = true;
+                            _buttons[i].Action = DialogButtonAction.Buy;
+                            _buttons[i].TextFirst = string.Format("Learn {0}", spell.Name);
+
+                            if (_avatar.KnowsSpell(spell.Name))
+                            {
+                                _buttons[i].TextSecond = "(You know this)";
+                            }
+                            else if (spell.Level > _avatar.SpellBookLevel + 1)
+                            {
+                                _buttons[i].TextSecond = "(Too advanced)";
+                            }
+                            else
+                            {
+                                _buttons[i].TextSecond = string.Format("for {0} Gold", spell.Gold);
+                                _buttons[i].Enabled = true;
+                            }
+                        }
+
+                        break;
+
+                    case DialogType.Room:
+                        _hasSellingItems = true;
+                        _buttons[i].Action = DialogButtonAction.Buy;
+                        _buttons[i].TextFirst = "Rent a room for rest";
+
+                        if (_avatar.IsRested())
+                        {
+                            _buttons[i].TextSecond = "(You are well rested)";
+                        }
+                        else
+                        {
+                            _buttons[i].TextSecond = string.Format("for {0} Gold", _store.Lines[i].Cost);
+                            _buttons[i].Enabled = true;
+                        }
+
+                        break;
+
+                    case DialogType.Message:
+                        _buttons[i].TextFirst = _store.Lines[i].MessageFirst;
+                        _buttons[i].TextSecond = _store.Lines[i].MessageSecond;
+
+                        break;
+                }
+
+                if (_buttons[i].Selected &&
+                    !_buttons[i].Enabled)
+                {
+                    _buttons[_buttons.Length - 1].Selected = true;
+                }
+            }
+        }
+
         public void Render()
         {
             _worldManager.RenderBackground(_store.BackgroundImage);
@@ -426,6 +398,39 @@
         private void RenderGold()
         {
             _textManager.Render(string.Format("{0} Gold", _avatar.Gold), 316, 220, TextJustify.JUSTIFY_RIGHT);
+        }
+
+        private void LoadStore(string storeName)
+        {
+            // Loading store from file
+            string fileName = string.Format("Data/stores/{0}.json", storeName);
+
+            if (!File.Exists(fileName))
+            {
+                Console.WriteLine("Error: Unable to load store {0} from {1}", storeName, fileName);
+                return;
+            }
+
+            using (StreamReader streamReader = new(fileName))
+            {
+                string jsonData = streamReader.ReadToEnd();
+                streamReader.Close();
+
+                _store = JsonConvert.DeserializeObject<Store>(jsonData, new StringEnumConverter());
+            }
+
+            if (_store is null)
+            {
+                Console.WriteLine("Error: Unable to load broken store file {0}", fileName);
+                return;
+            }
+
+            ResetButtons();
+            UpdateButtons();
+
+            _soundManager.PlayMusic(_store.Music);
+
+            Console.WriteLine("Store {0} loaded from {1}", storeName, fileName);
         }
     }
 }

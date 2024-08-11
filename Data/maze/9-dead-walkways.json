@@ -29,7 +29,7 @@
     "druid",
     "druid"
   ],
-  "SriptedEnemies":
+  "ScriptedEnemies":
   [
     {"X":4,"Y":9,"EnemyId":"mimic"},
     {"X":11,"Y":5,"UniqueId":"9-dead-walkways@death-speaker","EnemyId":"death-speaker"}
