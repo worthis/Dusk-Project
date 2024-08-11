@@ -1,6 +1,7 @@
 ﻿namespace DuskProject
 {
     using DuskProject.Source;
+    using DuskProject.Source.Creatures;
     using DuskProject.Source.Enums;
     using SDL2;
 
@@ -19,7 +20,7 @@
             GameStateManager gameStateManager = GameStateManager.GetInstance();
             TitleManager titleManager = TitleManager.GetInstance();
             ExploreManager exploreManager = ExploreManager.GetInstance();
-            MazeWorldManager mazeWorldManager = MazeWorldManager.GetInstance();
+            WorldManager worldManager = WorldManager.GetInstance();
             DialogManager dialogManager = DialogManager.GetInstance();
             CombatManager combatManager = CombatManager.GetInstance();
             Avatar avatar = Avatar.GetInstance();
@@ -32,7 +33,7 @@
             gameStateManager.Init();
             titleManager.Init();
             exploreManager.Init();
-            mazeWorldManager.Init();
+            worldManager.Init();
             dialogManager.Init();
             combatManager.Init();
             avatar.Init();

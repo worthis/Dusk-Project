@@ -1,8 +1,8 @@
-﻿namespace DuskProject.Source.Maze
+﻿namespace DuskProject.Source.World
 {
     using Newtonsoft.Json;
 
-    public class MazeWorld
+    public class WorldData
     {
         [JsonIgnore]
         public string Id { get; set; } = string.Empty;
@@ -26,7 +26,7 @@
         public int[,] Tiles { get; set; } = new int[0, 0];
 
         [JsonProperty]
-        public List<MazePortal> Portals { get; set; } = new();
+        public List<WorldPortal> Portals { get; set; } = new();
 
         [JsonProperty]
         public List<StorePortal> Stores { get; set; } = new();

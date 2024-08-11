@@ -1,6 +1,6 @@
-﻿namespace DuskProject.Source.Maze
+﻿namespace DuskProject.Source.World
 {
-    public record ScriptedEnemy : MazePointBase
+    public record ScriptedEnemy : WorldPoint
     {
         public string UniqueId { get; set; } = string.Empty;
 

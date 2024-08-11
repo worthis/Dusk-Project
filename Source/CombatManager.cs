@@ -2,6 +2,7 @@
 {
     using System;
     using DuskProject.Source.Combat;
+    using DuskProject.Source.Creatures;
     using DuskProject.Source.Enums;
     using DuskProject.Source.Resources;
     using DuskProject.Source.UI;
@@ -18,7 +19,7 @@
         private ResourceManager _resourceManager;
         private SoundManager _soundManager;
         private TextManager _textManager;
-        private MazeWorldManager _mazeWorldManager;
+        private WorldManager _worldManager;
         private Avatar _avatar;
 
         private Random _randGen;
@@ -68,7 +69,7 @@
             _resourceManager = ResourceManager.GetInstance();
             _soundManager = SoundManager.GetInstance();
             _textManager = TextManager.GetInstance();
-            _mazeWorldManager = MazeWorldManager.GetInstance();
+            _worldManager = WorldManager.GetInstance();
             _avatar = Avatar.GetInstance();
 
             // Miyoo Mini Plus does not have RTC time
@@ -166,9 +167,8 @@
 
         public void Render()
         {
-            // Maze Cell
-            _mazeWorldManager.RenderBackground(_avatar.Facing);
-            _mazeWorldManager.Render(_avatar.PosX, _avatar.PosY, _avatar.Facing);
+            _worldManager.RenderBackground(_avatar.Facing);
+            _worldManager.RenderWorld(_avatar.X, _avatar.Y, _avatar.Facing);
 
             switch (_phase)
             {
@@ -378,9 +378,9 @@
                 _soundManager.PlaySound(attackResult.Sound);
                 _heroHurt = attackResult.IsHeroDamaged;
 
-                _avatar.Hit(attackResult.DamageToHeroHP);
-                _avatar.DrainMP(attackResult.DamageToHeroMP);
-                _enemy.Hit(attackResult.DamageToEnemyHP);
+                _avatar.AddHP(-attackResult.DamageToHeroHP);
+                _avatar.AddMP(-attackResult.DamageToHeroMP);
+                _enemy.AddHP(-attackResult.DamageToEnemyHP);
 
                 _timer = 30;
                 _phase = CombatPhase.Defence;
@@ -394,14 +394,14 @@
             if (_timer > 15 &&
                 _heroHurt)
             {
-                _mazeWorldManager.TileSetRenderOffsetX = _randGen.Next(8) - 4;
-                _mazeWorldManager.TileSetRenderOffsetY = _randGen.Next(8) - 4;
+                _worldManager.TileSetRenderOffsetX = _randGen.Next(8) - 4;
+                _worldManager.TileSetRenderOffsetY = _randGen.Next(8) - 4;
             }
 
             if (_timer == 15)
             {
-                _mazeWorldManager.TileSetRenderOffsetX = 0;
-                _mazeWorldManager.TileSetRenderOffsetY = 0;
+                _worldManager.TileSetRenderOffsetX = 0;
+                _worldManager.TileSetRenderOffsetY = 0;
             }
 
             if (_timer <= 0)
@@ -435,6 +435,8 @@
             {
                 Reset();
                 _avatar.Respawn();
+                _worldManager.LoadWorld(_avatar.MazeWorld);
+                _worldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
                 _gameStateManager.ChangeState(GameState.Explore);
             }
         }
@@ -572,7 +574,7 @@
             }
 
             _enemyHurt = true;
-            _enemy.HP -= attackDamage;
+            _enemy.AddHP(-attackDamage);
             _offenceResult = string.Format("{0} damage", attackDamage);
         }
 
@@ -600,8 +602,8 @@
             }
 
             int healAmount = _randGen.Next((int)(_avatar.MaxHP * 0.5)) + (int)(_avatar.MaxHP * 0.5);
-            _avatar.Heal(healAmount);
-            _avatar.DrainMP(1);
+            _avatar.AddHP(healAmount);
+            _avatar.AddMP(-1);
 
             _offenceAction = "Heal!";
             _offenceResult = string.Format("+{0} HP", healAmount);
@@ -638,10 +640,10 @@
                 (_enemy as EnemyBoss).BurnBoneShield();
             }
 
-            _avatar.DrainMP(1);
+            _avatar.AddMP(-1);
 
             _enemyHurt = true;
-            _enemy.Hit(attackDamage);
+            _enemy.AddHP(-attackDamage);
             _offenceAction = "Burn!";
             _offenceResult = string.Format("{0} damage", attackDamage);
             _soundManager.PlaySound(SoundFX.Fire);
@@ -664,10 +666,10 @@
             attackDamage += _avatar.Weapon.AttackMax;
             attackDamage += _avatar.Weapon.AttackMax;
 
-            _avatar.DrainMP(1);
+            _avatar.AddMP(-1);
 
             _enemyHurt = true;
-            _enemy.Hit(attackDamage);
+            _enemy.AddHP(-attackDamage);
             _offenceAction = "Unlock!";
             _offenceResult = string.Format("{0} damage", attackDamage);
             _soundManager.PlaySound(SoundFX.Unlock);

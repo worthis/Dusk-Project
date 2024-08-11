@@ -1,5 +1,6 @@
-﻿namespace DuskProject.Source.Combat
+﻿namespace DuskProject.Source.Creatures
 {
+    using DuskProject.Source.Combat;
     using DuskProject.Source.Enums;
     using DuskProject.Source.Resources;
 
@@ -29,16 +30,6 @@
         public int GoldDispersion()
         {
             return GoldMax - GoldMin;
-        }
-
-        public void Hit(int attackPoints)
-        {
-            HP -= attackPoints;
-
-            if (HP <= 0)
-            {
-                HP = 0;
-            }
         }
 
         public virtual AttackResult Attack(int heroDefence, CombatPowers combatPower)

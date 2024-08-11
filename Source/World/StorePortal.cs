@@ -1,6 +1,6 @@
-﻿namespace DuskProject.Source.Maze
+﻿namespace DuskProject.Source.World
 {
-    public record StorePortal : MazePointBase
+    public record StorePortal : WorldPoint
     {
         public string Store { get; set; }
 

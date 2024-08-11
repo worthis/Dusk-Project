@@ -1,29 +1,13 @@
-﻿namespace DuskProject.Source
+﻿namespace DuskProject.Source.Creatures
 {
     using DuskProject.Source.Dialog;
     using DuskProject.Source.Enums;
     using Newtonsoft.Json;
 
-    public class AvatarBase
+    public class AvatarBase : CreatureBase
     {
-        [JsonProperty]
-        public int HP { get; protected set; } = 25;
-
-        [JsonProperty]
-        public int MaxHP { get; set; } = 25;
-
-        [JsonProperty]
-        public int MP { get; protected set; } = 4;
-
-        [JsonProperty]
-        public int MaxMP { get; set; } = 4;
-
-        public int PosX { get; set; } = 1;
-
-        public int PosY { get; set; } = 1;
-
         [JsonIgnore]
-        public bool Moved { get; protected set; } = false;
+        public bool Moved { get; set; } = false;
 
         [JsonProperty]
         public AvatarFacing Facing { get; protected set; } = AvatarFacing.South;

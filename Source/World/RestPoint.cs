@@ -1,8 +1,8 @@
-﻿namespace DuskProject.Source.Maze
+﻿namespace DuskProject.Source.World
 {
     using DuskProject.Source.Enums;
 
-    public record RestPoint : MazePointBase
+    public record RestPoint : WorldPoint
     {
         public string Message { get; set; } = string.Empty;
 

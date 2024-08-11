@@ -1,6 +1,6 @@
 ﻿namespace DuskProject.Source.Dialog
 {
-    public class Store
+    public record Store
     {
         public string Name { get; set; }
 

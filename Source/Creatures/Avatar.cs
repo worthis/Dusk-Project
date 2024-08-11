@@ -1,9 +1,8 @@
-﻿namespace DuskProject.Source
+﻿namespace DuskProject.Source.Creatures
 {
     using System;
     using DuskProject.Source.Dialog;
     using DuskProject.Source.Enums;
-    using DuskProject.Source.Maze;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
 
@@ -12,13 +11,8 @@
         private static Avatar instance;
         private static object instanceLock = new object();
 
-        private WindowManager _windowManager;
-        private SoundManager _soundManager;
-        private MazeWorldManager _mazeWorldManager;
-
         private Avatar()
         {
-            Reset();
         }
 
         public static Avatar GetInstance()
@@ -40,17 +34,14 @@
 
         public void Init()
         {
-            _windowManager = WindowManager.GetInstance();
-            _soundManager = SoundManager.GetInstance();
-            _mazeWorldManager = MazeWorldManager.GetInstance();
-
+            Reset();
             Console.WriteLine("Avatar initialized");
         }
 
         public void Reset()
         {
-            PosX = 1;
-            PosY = 1;
+            X = 1;
+            Y = 1;
             Facing = AvatarFacing.South;
             Moved = false;
             HP = 25;
@@ -75,7 +66,7 @@
             using (StreamWriter streamWriter = new("Save/avatar.json"))
             {
                 AvatarBase avatarBase = this;
-                string avatarData = JsonConvert.SerializeObject(avatarBase, new StringEnumConverter());
+                string avatarData = JsonConvert.SerializeObject(avatarBase, Formatting.Indented, new StringEnumConverter());
                 streamWriter.Write(avatarData);
             }
         }
@@ -108,8 +99,8 @@
                     Attack = avatarBase.Attack;
                     Defence = avatarBase.Defence;
                     Gold = avatarBase.Gold;
-                    PosX = avatarBase.PosX;
-                    PosY = avatarBase.PosY;
+                    X = avatarBase.X;
+                    Y = avatarBase.Y;
                     Facing = avatarBase.Facing;
                     MazeWorld = avatarBase.MazeWorld;
                     SleepPosX = avatarBase.SleepPosX;
@@ -130,8 +121,8 @@
             MP = MaxMP;
 
             SleepMazeWorld = MazeWorld;
-            SleepPosX = PosX;
-            SleepPosY = PosY;
+            SleepPosX = X;
+            SleepPosY = Y;
 
             Save();
         }
@@ -143,57 +134,23 @@
             HP = MaxHP;
             MP = MaxMP;
 
-            PosX = SleepPosX;
-            PosY = SleepPosY;
+            X = SleepPosX;
+            Y = SleepPosY;
 
-            _mazeWorldManager.LoadMazeWorld(SleepMazeWorld);
-            _mazeWorldManager.InitScriptedEvents(HasCampaignFlag);
-        }
+            MazeWorld = SleepMazeWorld;
 
-        public void Hit(int attackPoints)
-        {
-            HP -= attackPoints;
-
-            if (HP < 0)
-            {
-                HP = 0;
-            }
-
-            if (HP > MaxHP)
-            {
-                HP = MaxHP;
-            }
-        }
-
-        public void Heal(int healPoints)
-        {
-            Hit(-healPoints);
-        }
-
-        public void DrainMP(int manaPoints)
-        {
-            MP -= manaPoints;
-
-            if (MP < 0)
-            {
-                MP = 0;
-            }
-
-            if (MP > MaxMP)
-            {
-                MP = MaxMP;
-            }
+            Save();
         }
 
         public bool IsBadlyHurt()
         {
-            return HP <= (int)(MaxHP / 3);
+            return HP <= MaxHP / 3;
         }
 
         public void LearnSpell(Item spell)
         {
             if (spell is null ||
-                KnowsSpell(spell))
+                KnowsSpell(spell.Name))
             {
                 return;
             }
@@ -241,21 +198,6 @@
                 case ItemType.Armor:
                     return Armor is not null &&
                         Armor.Name.Equals(item.Name);
-            }
-
-            return false;
-        }
-
-        public bool KnowsSpell(Item item)
-        {
-            if (item is null)
-            {
-                return false;
-            }
-
-            if (item.Type.Equals(ItemType.Spell))
-            {
-                return SpellBook.Contains(item);
             }
 
             return false;
@@ -335,64 +277,53 @@
             }
         }
 
-        public void Move(int dX, int dY)
+        public void GetFrontTilePos(out int posX, out int posY)
         {
-            Tile tile = _mazeWorldManager.GetTile(PosX + dX, PosY + dY);
+            posX = X;
+            posY = Y;
 
-            if (tile is not null &&
-                tile.Walkable)
-            {
-                PosX += dX;
-                PosY += dY;
-                Moved = true;
-
-                return;
-            }
-
-            _soundManager.PlaySound(SoundFX.Blocked);
-        }
-
-        public void StepForward()
-        {
             switch (Facing)
             {
                 case AvatarFacing.North:
-                    Move(0, -1);
-                    break;
+                    posY--;
+                    return;
 
                 case AvatarFacing.South:
-                    Move(0, 1);
-                    break;
+                    posY++;
+                    return;
 
                 case AvatarFacing.East:
-                    Move(1, 0);
-                    break;
+                    posX++;
+                    return;
 
                 case AvatarFacing.West:
-                    Move(-1, 0);
-                    break;
+                    posX--;
+                    return;
             }
         }
 
-        public void StepBackward()
+        public void GetBehindTilePos(out int posX, out int posY)
         {
+            posX = X;
+            posY = Y;
+
             switch (Facing)
             {
                 case AvatarFacing.North:
-                    Move(0, 1);
-                    break;
+                    posY++;
+                    return;
 
                 case AvatarFacing.South:
-                    Move(0, -1);
-                    break;
+                    posY--;
+                    return;
 
                 case AvatarFacing.East:
-                    Move(-1, 0);
-                    break;
+                    posX--;
+                    return;
 
                 case AvatarFacing.West:
-                    Move(1, 0);
-                    break;
+                    posX++;
+                    return;
             }
         }
 
@@ -437,56 +368,6 @@
                 case AvatarFacing.West:
                     Facing = AvatarFacing.North;
                     break;
-            }
-        }
-
-        public void GetFacingTilePos(out int posX, out int posY)
-        {
-            posX = PosX;
-            posY = PosY;
-
-            switch (Facing)
-            {
-                case AvatarFacing.North:
-                    posY--;
-                    return;
-
-                case AvatarFacing.South:
-                    posY++;
-                    return;
-
-                case AvatarFacing.East:
-                    posX++;
-                    return;
-
-                case AvatarFacing.West:
-                    posX--;
-                    return;
-            }
-        }
-
-        public void Update()
-        {
-            Moved = false;
-
-            if (_windowManager.KeyPressed(InputKey.KEY_UP))
-            {
-                StepForward();
-            }
-
-            if (_windowManager.KeyPressed(InputKey.KEY_DOWN))
-            {
-                StepBackward();
-            }
-
-            if (_windowManager.KeyPressed(InputKey.KEY_LEFT))
-            {
-                TurnLeft();
-            }
-
-            if (_windowManager.KeyPressed(InputKey.KEY_RIGHT))
-            {
-                TurnRight();
             }
         }
 

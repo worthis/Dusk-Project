@@ -3,7 +3,7 @@
     using DuskProject.Source.Enums;
     using Newtonsoft.Json;
 
-    public class Item
+    public record Item
     {
         [JsonIgnore]
         public string Id { get; protected set; }

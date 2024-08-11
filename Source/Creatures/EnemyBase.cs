@@ -1,9 +1,9 @@
-﻿namespace DuskProject.Source.Combat
+﻿namespace DuskProject.Source.Creatures
 {
     using DuskProject.Source.Enums;
     using Newtonsoft.Json;
 
-    public class EnemyBase
+    public class EnemyBase : CreatureBase
     {
         [JsonIgnore]
         public string Id { get; set; } = string.Empty;
@@ -16,9 +16,6 @@
 
         [JsonProperty]
         public EnemyCategory Category { get; protected set; }
-
-        [JsonProperty]
-        public int HP { get; set; }
 
         [JsonProperty]
         public int AttackMin { get; protected set; }

@@ -1,4 +1,4 @@
-﻿namespace DuskProject.Source.Maze
+﻿namespace DuskProject.Source.World
 {
     using DuskProject.Source.Resources;
 

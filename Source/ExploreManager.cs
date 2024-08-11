@@ -1,10 +1,11 @@
 ﻿namespace DuskProject.Source
 {
+    using DuskProject.Source.Creatures;
     using DuskProject.Source.Dialog;
     using DuskProject.Source.Enums;
-    using DuskProject.Source.Maze;
     using DuskProject.Source.Resources;
     using DuskProject.Source.UI;
+    using DuskProject.Source.World;
 
     public class ExploreManager
     {
@@ -19,7 +20,7 @@
         private GameStateManager _gameStateManager;
         private SoundManager _soundManager;
         private TextManager _textManager;
-        private MazeWorldManager _mazeWorldManager;
+        private WorldManager _worldManager;
         private DialogManager _dialogManager;
         private Avatar _avatar;
 
@@ -61,7 +62,7 @@
             _gameStateManager = GameStateManager.GetInstance();
             _soundManager = SoundManager.GetInstance();
             _textManager = TextManager.GetInstance();
-            _mazeWorldManager = MazeWorldManager.GetInstance();
+            _worldManager = WorldManager.GetInstance();
             _dialogManager = DialogManager.GetInstance();
             _avatar = Avatar.GetInstance();
 
@@ -72,14 +73,14 @@
             ImageResource buttonsImage = _resourceManager.LoadImage("Data/images/interface/action_buttons.png");
             ImageResource buttonSelectedImage = _resourceManager.LoadImage("Data/images/interface/select.png");
 
-            _infoButtons.Add(new InfoButton(ActionType.Attack, 238, 38, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Run, 278, 38, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Heal, 238, 78, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Burn, 278, 78, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Unlock, 238, 118, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Light, 278, 118, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Freeze, 238, 158, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Reflect, 278, 158, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Attack, 242, 42, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Run, 282, 42, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Heal, 242, 82, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Burn, 282, 82, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Unlock, 242, 122, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Light, 282, 122, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Freeze, 242, 162, 32, 32, buttonsImage));
+            _infoButtons.Add(new InfoButton(ActionType.Reflect, 282, 162, 32, 32, buttonsImage));
 
             foreach (var button in _infoButtons)
             {
@@ -110,8 +111,8 @@
                 }
             }
 
-            _mazeWorldManager.LoadMazeWorld(_avatar.MazeWorld);
-            _mazeWorldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
+            _worldManager.LoadWorld(_avatar.MazeWorld);
+            _worldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
         }
 
         public void Save()
@@ -121,6 +122,7 @@
 
         public void Update()
         {
+            // Update Input
             // Info Screen
             if (_windowManager.KeyPressed(InputKey.KEY_SELECT))
             {
@@ -136,37 +138,85 @@
             {
                 Save();
                 _message.Clear();
+                _soundManager.StopMusic();
                 _soundManager.PlaySound(SoundFX.Click);
                 _gameStateManager.ChangeState(GameState.Title);
 
                 return;
             }
 
-            _avatar.Update();
-            _message.Update();
+            // Avatar Movement
+            _avatar.Moved = false;
 
+            if (_windowManager.KeyPressed(InputKey.KEY_UP))
+            {
+                _avatar.GetFrontTilePos(out int posX, out int posY);
+                Tile tile = _worldManager.GetTile(posX, posY);
+
+                if (tile is not null &&
+                    tile.Walkable)
+                {
+                    _avatar.X = posX;
+                    _avatar.Y = posY;
+                    _avatar.Moved = true;
+                }
+                else
+                {
+                    _soundManager.PlaySound(SoundFX.Blocked);
+                }
+            }
+
+            if (_windowManager.KeyPressed(InputKey.KEY_DOWN))
+            {
+                _avatar.GetBehindTilePos(out int posX, out int posY);
+                Tile tile = _worldManager.GetTile(posX, posY);
+
+                if (tile is not null &&
+                    tile.Walkable)
+                {
+                    _avatar.X = posX;
+                    _avatar.Y = posY;
+                    _avatar.Moved = true;
+                }
+                else
+                {
+                    _soundManager.PlaySound(SoundFX.Blocked);
+                }
+            }
+
+            if (_windowManager.KeyPressed(InputKey.KEY_LEFT))
+            {
+                _avatar.TurnLeft();
+            }
+
+            if (_windowManager.KeyPressed(InputKey.KEY_RIGHT))
+            {
+                _avatar.TurnRight();
+            }
+
+            _message.Update();
             _textManager.Color = _avatar.IsBadlyHurt() ? TextColor.Red : TextColor.Default;
 
             if (_avatar.Moved)
             {
                 // Check exit portals
-                if (_mazeWorldManager.CheckPortals(_avatar.PosX, _avatar.PosY, out MazePortal mazePortal))
+                if (_worldManager.CheckPortals(_avatar.X, _avatar.Y, out WorldPortal worldPortal))
                 {
-                    _avatar.PosX = mazePortal.DestX;
-                    _avatar.PosY = mazePortal.DestY;
-                    _avatar.MazeWorld = mazePortal.Destination;
-                    _mazeWorldManager.LoadMazeWorld(mazePortal.Destination);
-                    _mazeWorldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
-                    _message.Start(_mazeWorldManager.MazeWorldName);
+                    _avatar.X = worldPortal.DestX;
+                    _avatar.Y = worldPortal.DestY;
+                    _avatar.MazeWorld = worldPortal.Destination;
+                    _worldManager.LoadWorld(worldPortal.Destination);
+                    _worldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
+                    _message.Start(_worldManager.WorldName);
 
                     return;
                 }
 
                 // Check store entrance
-                if (_mazeWorldManager.CheckStores(_avatar.PosX, _avatar.PosY, out StorePortal storePortal))
+                if (_worldManager.CheckStores(_avatar.X, _avatar.Y, out StorePortal storePortal))
                 {
-                    _avatar.PosX = storePortal.DestX;
-                    _avatar.PosY = storePortal.DestY;
+                    _avatar.X = storePortal.DestX;
+                    _avatar.Y = storePortal.DestY;
                     _dialogManager.LoadStore(storePortal.Store);
                     _gameStateManager.ChangeState(GameState.Dialog);
 
@@ -175,7 +225,7 @@
 
                 // Special scripts
                 // Message Point
-                if (_mazeWorldManager.CheckMessagePoints(_avatar.PosX, _avatar.PosY, out MessagePoint messagePoint))
+                if (_worldManager.CheckMessagePoints(_avatar.X, _avatar.Y, out MessagePoint messagePoint))
                 {
                     if (!_avatar.HasCampaignFlag(messagePoint.UniqueId))
                     {
@@ -186,7 +236,7 @@
                 }
 
                 // Rest Points
-                if (_mazeWorldManager.CheckRestPoints(_avatar.PosX, _avatar.PosY, out RestPoint restPoint))
+                if (_worldManager.CheckRestPoints(_avatar.X, _avatar.Y, out RestPoint restPoint))
                 {
                     _avatar.Sleep();
                     _avatar.Save();
@@ -197,7 +247,7 @@
                 }
 
                 // Chests
-                if (_mazeWorldManager.CheckChests(_avatar.PosX, _avatar.PosY, out ChestPoint chestPoint))
+                if (_worldManager.CheckChests(_avatar.X, _avatar.Y, out ChestPoint chestPoint))
                 {
                     // todo: render treasure icon
                     if (!_avatar.HasCampaignFlag(chestPoint.UniqueId))
@@ -232,13 +282,13 @@
                                 if (chestPoint.RewardItemId.Equals("Magic Sapphire (MP Up)"))
                                 {
                                     _avatar.MaxMP += 2;
-                                    _avatar.DrainMP(-2);
+                                    _avatar.AddMP(2);
                                 }
 
                                 if (chestPoint.RewardItemId.Equals("Magic Emerald (HP Up)"))
                                 {
                                     _avatar.MaxHP += 5;
-                                    _avatar.Heal(5);
+                                    _avatar.AddHP(5);
                                 }
 
                                 if (chestPoint.RewardItemId.Equals("Magic Ruby (Atk Up)"))
@@ -254,7 +304,7 @@
                                 break;
                         }
 
-                        _mazeWorldManager.SetTileId(chestPoint.X, chestPoint.Y, chestPoint.OpenedTileId);
+                        _worldManager.SetTileId(chestPoint.X, chestPoint.Y, chestPoint.OpenedTileId);
                         _avatar.PushCampaignFlag(chestPoint.UniqueId);
                         _soundManager.PlaySound(chestPoint.Sound);
 
@@ -273,7 +323,7 @@
 
                 // Scripted Enemies
                 // todo: world update on boss kill
-                if (_mazeWorldManager.CheckScriptedEnemies(_avatar.PosX, _avatar.PosY, out ScriptedEnemy scriptedEnemy))
+                if (_worldManager.CheckScriptedEnemies(_avatar.X, _avatar.Y, out ScriptedEnemy scriptedEnemy))
                 {
                     if (!_avatar.HasCampaignFlag(scriptedEnemy.UniqueId))
                     {
@@ -286,15 +336,15 @@
                 }
 
                 // Encounters
-                if (_mazeWorldManager.Enemies is not null &&
-                    _mazeWorldManager.Enemies.Count > 0)
+                if (_worldManager.Enemies is not null &&
+                    _worldManager.Enemies.Count > 0)
                 {
                     if (_randGen.Next(100) < _encounterChance)
                     {
                         _encounterChance = 0;
                         _message.Clear();
-                        var enemyIndex = _randGen.Next(_mazeWorldManager.Enemies.Count);
-                        _gameStateManager.StartCombat(_mazeWorldManager.Enemies[enemyIndex]);
+                        var enemyIndex = _randGen.Next(_worldManager.Enemies.Count);
+                        _gameStateManager.StartCombat(_worldManager.Enemies[enemyIndex]);
 
                         return;
                     }
@@ -417,24 +467,22 @@
 
         public void Render()
         {
-            // Maze Cell
-            _mazeWorldManager.RenderBackground(_avatar.Facing);
-            _mazeWorldManager.Render(_avatar.PosX, _avatar.PosY, _avatar.Facing);
+            _worldManager.RenderBackground(_avatar.Facing);
+            _worldManager.RenderWorld(_avatar.X, _avatar.Y, _avatar.Facing);
 
             // UI
             // Compass
             RenderCompass();
 
-            // Minimap
+            // todo: Minimap
             // Messages
             _textManager.Render(_message.Text, 160, 200, TextJustify.JUSTIFY_CENTER);
         }
 
         public void RenderInfo()
         {
-            // Maze Cell
-            _mazeWorldManager.RenderBackground(_avatar.Facing);
-            _mazeWorldManager.Render(_avatar.PosX, _avatar.PosY, _avatar.Facing);
+            _worldManager.RenderBackground(_avatar.Facing);
+            _worldManager.RenderWorld(_avatar.X, _avatar.Y, _avatar.Facing);
 
             _textManager.Render("INFO", 160, 4, TextJustify.JUSTIFY_CENTER);
 
@@ -547,8 +595,8 @@
             }
 
             int healAmount = _randGen.Next((int)(_avatar.MaxHP * 0.5)) + (int)(_avatar.MaxHP * 0.5);
-            _avatar.Heal(healAmount);
-            _avatar.DrainMP(1);
+            _avatar.AddHP(healAmount);
+            _avatar.AddMP(-1);
 
             _powerAction = "Heal!";
             _powerResult = string.Format("+{0} HP", healAmount);
@@ -563,14 +611,14 @@
                 return;
             }
 
-            _avatar.GetFacingTilePos(out int facingTileX, out int facingTileY);
+            _avatar.GetFrontTilePos(out int facingTileX, out int facingTileY);
 
-            if (_mazeWorldManager.CheckScriptedTiles(facingTileX, facingTileY, out ScriptedTile scriptedTile) &&
+            if (_worldManager.CheckScriptedTiles(facingTileX, facingTileY, out ScriptedTile scriptedTile) &&
                 scriptedTile.RequiredAction.Equals("Burn"))
             {
-                _avatar.DrainMP(1);
+                _avatar.AddMP(-1);
                 _avatar.PushCampaignFlag(scriptedTile.UniqueId);
-                _mazeWorldManager.SetTileId(facingTileX, facingTileY, scriptedTile.AfterTileId);
+                _worldManager.SetTileId(facingTileX, facingTileY, scriptedTile.AfterTileId);
                 _powerAction = "Burn!";
                 _powerResult = "Cleared Path!";
                 _soundManager.PlaySound(SoundFX.Fire);
@@ -588,14 +636,14 @@
                 return;
             }
 
-            _avatar.GetFacingTilePos(out int facingTileX, out int facingTileY);
+            _avatar.GetFrontTilePos(out int facingTileX, out int facingTileY);
 
-            if (_mazeWorldManager.CheckScriptedTiles(facingTileX, facingTileY, out ScriptedTile scriptedTile) &&
+            if (_worldManager.CheckScriptedTiles(facingTileX, facingTileY, out ScriptedTile scriptedTile) &&
                 scriptedTile.RequiredAction.Equals("Unlock"))
             {
-                _avatar.DrainMP(1);
+                _avatar.AddMP(-1);
                 _avatar.PushCampaignFlag(scriptedTile.UniqueId);
-                _mazeWorldManager.SetTileId(facingTileX, facingTileY, scriptedTile.AfterTileId);
+                _worldManager.SetTileId(facingTileX, facingTileY, scriptedTile.AfterTileId);
                 _powerAction = "Unlock!";
                 _powerResult = "Door Opened!";
                 _soundManager.PlaySound(SoundFX.Unlock);

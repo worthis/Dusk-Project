@@ -2,7 +2,7 @@
 {
     using DuskProject.Source.Enums;
 
-    public class DialogLine
+    public record DialogLine
     {
         public DialogType Type { get; set; }
 

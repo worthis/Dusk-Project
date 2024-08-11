@@ -1,13 +1,13 @@
 ﻿namespace DuskProject.Source
 {
     using DuskProject.Source.Enums;
-    using DuskProject.Source.Maze;
     using DuskProject.Source.Resources;
+    using DuskProject.Source.World;
     using Newtonsoft.Json;
 
-    public class MazeWorldManager
+    public class WorldManager
     {
-        private static MazeWorldManager instance;
+        private static WorldManager instance;
         private static object instanceLock = new object();
 
         private readonly TileLayout[] _tileLayouts =
@@ -32,9 +32,9 @@
 
         private Tile[] _tileSet;
         private ImageResource[] _backgrounds;
-        private MazeWorld _mazeWorld;
+        private World.WorldData _world;
 
-        private MazeWorldManager()
+        private WorldManager()
         {
         }
 
@@ -42,13 +42,13 @@
 
         public int TileSetRenderOffsetY { get; set; } = 0;
 
-        public string MazeWorldName { get => _mazeWorld.Name; }
+        public string WorldId { get => _world.Id; }
 
-        public string MazeWorldId { get => _mazeWorld.Id; }
+        public string WorldName { get => _world.Name; }
 
-        public List<string> Enemies { get => _mazeWorld.Enemies; }
+        public List<string> Enemies { get => _world.Enemies; }
 
-        public static MazeWorldManager GetInstance()
+        public static WorldManager GetInstance()
         {
             if (instance == null)
             {
@@ -56,8 +56,8 @@
                 {
                     if (instance == null)
                     {
-                        instance = new MazeWorldManager();
-                        Console.WriteLine("MazeWorldManager created");
+                        instance = new WorldManager();
+                        Console.WriteLine("WorldManager created");
                     }
                 }
             }
@@ -73,16 +73,16 @@
             LoadTiles();
             LoadBackgrounds();
 
-            Console.WriteLine("MazeWorldManager initialized");
+            Console.WriteLine("WorldManager initialized");
         }
 
-        public void LoadMazeWorld(string mazeWorldName)
+        public void LoadWorld(string worldName)
         {
-            string fileName = string.Format("Data/maze/{0}.json", mazeWorldName);
+            string fileName = string.Format("Data/maze/{0}.json", worldName);
 
             if (!File.Exists(fileName))
             {
-                Console.WriteLine("Error: Unable to load MazeWorld {0} from {1}", mazeWorldName, fileName);
+                Console.WriteLine("Error: Unable to load World {0} from {1}", worldName, fileName);
                 return;
             }
 
@@ -91,61 +91,61 @@
                 string jsonData = streamReader.ReadToEnd();
                 streamReader.Close();
 
-                _mazeWorld = JsonConvert.DeserializeObject<MazeWorld>(jsonData);
-                _mazeWorld.Id = mazeWorldName;
+                _world = JsonConvert.DeserializeObject<WorldData>(jsonData);
+                _world.Id = worldName;
             }
 
-            if (_mazeWorld.Width != _mazeWorld.Tiles.GetLength(1) &&
-                _mazeWorld.Height != _mazeWorld.Tiles.GetLength(0))
+            if (_world.Width != _world.Tiles.GetLength(1) &&
+                _world.Height != _world.Tiles.GetLength(0))
             {
                 Console.WriteLine(
-                    "Error: MazeWorld {0} dimensions {1}x{2} do not match the tiles dimensions {3}x{4}",
-                    MazeWorldName,
-                    _mazeWorld.Width,
-                    _mazeWorld.Height,
-                    _mazeWorld.Tiles.GetLength(0),
-                    _mazeWorld.Tiles.GetLength(1));
+                    "Error: World {0} dimensions {1}x{2} do not match the tiles dimensions {3}x{4}",
+                    WorldName,
+                    _world.Width,
+                    _world.Height,
+                    _world.Tiles.GetLength(0),
+                    _world.Tiles.GetLength(1));
             }
 
             TileSetRenderOffsetX = 0;
             TileSetRenderOffsetY = 0;
 
-            _soundManager.PlayMusic(_mazeWorld.Music);
+            _soundManager.PlayMusic(_world.Music);
 
-            Console.WriteLine("MazeWorld {0} loaded from {1}", mazeWorldName, fileName);
+            Console.WriteLine("World {0} loaded from {1}", worldName, fileName);
         }
 
         public void InitScriptedEvents(Predicate<string> has)
         {
-            _mazeWorld.MessagePoints.RemoveAll(x => has(x.UniqueId));
-            _mazeWorld.Chests.RemoveAll(x => has(x.UniqueId));
-            _mazeWorld.ScriptedEnemies.RemoveAll(x => has(x.UniqueId));
-            _mazeWorld.ScriptedTiles.RemoveAll(x => has(x.UniqueId));
+            _world.MessagePoints.RemoveAll(x => has(x.UniqueId));
+            _world.Chests.RemoveAll(x => has(x.UniqueId));
+            _world.ScriptedEnemies.RemoveAll(x => has(x.UniqueId));
+            _world.ScriptedTiles.RemoveAll(x => has(x.UniqueId));
 
-            foreach (var item in _mazeWorld.Chests)
+            foreach (var item in _world.Chests)
             {
                 SetTileId(item.X, item.Y, item.ClosedTileId);
             }
 
-            foreach (var item in _mazeWorld.ScriptedTiles)
+            foreach (var item in _world.ScriptedTiles)
             {
                 SetTileId(item.X, item.Y, item.BeforeTileId);
             }
         }
 
-        public bool CheckPortals(int posX, int posY, out MazePortal mazePortal)
+        public bool CheckPortals(int posX, int posY, out WorldPortal worldPortal)
         {
-            mazePortal = _mazeWorld.Portals
-                .Where(x => x.CheckEnter(posX, posY))
+            worldPortal = _world.Portals
+                .Where(x => x.MatchPos(posX, posY))
                 .FirstOrDefault();
 
-            return mazePortal is not null;
+            return worldPortal is not null;
         }
 
         public bool CheckStores(int posX, int posY, out StorePortal storePortal)
         {
-            storePortal = _mazeWorld.Stores
-                .Where(x => x.CheckEnter(posX, posY))
+            storePortal = _world.Stores
+                .Where(x => x.MatchPos(posX, posY))
                 .FirstOrDefault();
 
             return storePortal is not null;
@@ -153,8 +153,8 @@
 
         public bool CheckMessagePoints(int posX, int posY, out MessagePoint messagePoint)
         {
-            messagePoint = _mazeWorld.MessagePoints
-                .Where(x => x.CheckEnter(posX, posY))
+            messagePoint = _world.MessagePoints
+                .Where(x => x.MatchPos(posX, posY))
                 .FirstOrDefault();
 
             return messagePoint is not null;
@@ -162,8 +162,8 @@
 
         public bool CheckRestPoints(int posX, int posY, out RestPoint restPoint)
         {
-            restPoint = _mazeWorld.RestPoints
-                .Where(x => x.CheckEnter(posX, posY))
+            restPoint = _world.RestPoints
+                .Where(x => x.MatchPos(posX, posY))
                 .FirstOrDefault();
 
             return restPoint is not null;
@@ -171,8 +171,8 @@
 
         public bool CheckChests(int posX, int posY, out ChestPoint chestPoint)
         {
-            chestPoint = _mazeWorld.Chests
-                .Where(x => x.CheckEnter(posX, posY))
+            chestPoint = _world.Chests
+                .Where(x => x.MatchPos(posX, posY))
                 .FirstOrDefault();
 
             return chestPoint is not null;
@@ -180,8 +180,8 @@
 
         public bool CheckScriptedEnemies(int posX, int posY, out ScriptedEnemy scriptedEnemy)
         {
-            scriptedEnemy = _mazeWorld.ScriptedEnemies
-                .Where(x => x.CheckEnter(posX, posY))
+            scriptedEnemy = _world.ScriptedEnemies
+                .Where(x => x.MatchPos(posX, posY))
                 .FirstOrDefault();
 
             return scriptedEnemy is not null;
@@ -189,14 +189,14 @@
 
         public bool CheckScriptedTiles(int posX, int posY, out ScriptedTile scriptedTile)
         {
-            scriptedTile = _mazeWorld.ScriptedTiles
-                .Where(x => x.CheckEnter(posX, posY))
+            scriptedTile = _world.ScriptedTiles
+                .Where(x => x.MatchPos(posX, posY))
                 .FirstOrDefault();
 
             return scriptedTile is not null;
         }
 
-        public void Render(int posX, int posY, AvatarFacing avatarFacing)
+        public void RenderWorld(int posX, int posY, AvatarFacing avatarFacing)
         {
             if (avatarFacing == AvatarFacing.North)
             {
@@ -297,12 +297,12 @@
 
         public void RenderBackground(AvatarFacing avatarFacing)
         {
-            if (_mazeWorld is null)
+            if (_world is null)
             {
                 return;
             }
 
-            _backgrounds[_mazeWorld.BackgroundImage].Render();
+            _backgrounds[_world.BackgroundImage].Render();
         }
 
         public void RenderBackground(int backgroundId)
@@ -337,12 +337,12 @@
             }
 
             // Note: x,y flipped to ease map making
-            _mazeWorld.Tiles[posY, posX] = tileId;
+            _world.Tiles[posY, posX] = tileId;
         }
 
         private bool CheckBounds(int posX, int posY)
         {
-            if (_mazeWorld is null)
+            if (_world is null)
             {
                 Console.WriteLine("Error: Unable to check bounds for ({0};{1})", posX, posY);
                 return false;
@@ -350,14 +350,25 @@
 
             // Note: x,y flipped to ease map making
             if (posX >= 0 &&
-                posX < _mazeWorld.Width &&
+                posX < _world.Width &&
                 posY >= 0 &&
-                posY < _mazeWorld.Height)
+                posY < _world.Height)
             {
                 return true;
             }
 
             return false;
+        }
+
+        private int GetTileId(int posX, int posY)
+        {
+            if (!CheckBounds(posX, posY))
+            {
+                return 0;
+            }
+
+            // Note: x,y flipped to ease map making
+            return _world.Tiles[posY, posX];
         }
 
         private void RenderTile(int posX, int posY, int layoutId)
@@ -413,87 +424,6 @@
             _backgrounds[1] = _resourceManager.LoadImage("Data/images/backgrounds/nightsky.png");
             _backgrounds[2] = _resourceManager.LoadImage("Data/images/backgrounds/tempest.png");
             _backgrounds[3] = _resourceManager.LoadImage("Data/images/backgrounds/interior.png");
-        }
-
-        private int GetTileId(int posX, int posY)
-        {
-            if (!CheckBounds(posX, posY))
-            {
-                return 0;
-            }
-
-            // Note: x,y flipped to ease map making
-            return _mazeWorld.Tiles[posY, posX];
-        }
-
-        private void Test()
-        {
-            MazeWorld mazeWorld = new MazeWorld();
-            mazeWorld.Name = "Monastery Trail";
-            mazeWorld.Id = "Monastery Trail ID";
-            mazeWorld.BackgroundImage = 1;
-            mazeWorld.Music = "m31";
-
-            mazeWorld.Width = 14;
-            mazeWorld.Height = 16;
-            mazeWorld.Tiles = new int[,]
-            {
-                { 0, 12, 12, 2, 0, 0, 0, 0, 0, 2, 12, 0, 0, 0 },
-                { 12, 12, 12, 2, 2, 2, 3, 2, 2, 2, 12, 0, 0, 0 },
-                { 12, 12, 9, 6, 12, 6, 1, 6, 6, 12, 12, 12, 0, 0 },
-                { 12, 12, 12, 6, 6, 6, 1, 12, 6, 6, 12, 12, 0, 0 },
-                { 0, 12, 12, 12, 12, 6, 1, 6, 6, 12, 12, 12, 0, 0 },
-                { 0, 0, 12, 12, 12, 12, 6, 6, 12, 12, 12, 12, 0, 0 },
-                { 0, 0, 0, 12, 12, 6, 6, 6, 6, 12, 12, 12, 12, 0 },
-                { 0, 0, 12, 12, 12, 6, 6, 12, 6, 6, 6, 12, 12, 0 },
-                { 0, 12, 12, 12, 6, 6, 12, 12, 12, 6, 12, 12, 12, 0 },
-                { 0, 12, 12, 6, 6, 6, 12, 12, 6, 6, 6, 12, 12, 0 },
-                { 0, 12, 12, 12, 6, 6, 6, 6, 6, 6, 12, 12, 12, 0 },
-                { 0, 0, 12, 12, 6, 6, 6, 12, 6, 6, 6,  12, 12, 12 },
-                { 0, 0, 12, 12, 12, 6, 12, 12, 12, 6, 1, 6, 12, 12 },
-                { 0, 0, 0, 12, 10, 11, 12, 12, 12, 12, 1, 6, 12, 12 },
-                { 0, 0, 0, 0, 12, 12, 12, 12, 12, 6, 1, 6, 12, 12 },
-                { 0, 0, 0, 0, 0, 0, 0, 12, 12, 2, 3, 2, 12, 12 },
-            };
-
-            mazeWorld.Portals = new();
-            mazeWorld.Portals.Add(new MazePortal
-            {
-                X = 6,
-                Y = 1,
-                Destination = "1",
-                DestX = 4,
-                DestY = 9,
-            });
-            mazeWorld.Portals.Add(new MazePortal
-            {
-                X = 10,
-                Y = 15,
-                Destination = "5",
-                DestX = 3,
-                DestY = 1,
-            });
-
-            mazeWorld.Enemies = new();
-            mazeWorld.Enemies.Add("ENEMY_SHADOW_TENDRILS");
-            mazeWorld.Enemies.Add("ENEMY_IMP");
-            mazeWorld.Enemies.Add("ENEMY_SHADOW_SOUL");
-
-            mazeWorld.Stores = new();
-            mazeWorld.Stores.Add(new StorePortal
-            {
-                X = 5,
-                Y = 13,
-                Store = "4",
-                DestX = 5,
-                DestY = 12,
-            });
-
-            using (StreamWriter streamWriter = new("mazeWorldTest.json"))
-            {
-                string mazeWorldData = JsonConvert.SerializeObject(mazeWorld);
-                streamWriter.Write(mazeWorldData);
-            }
         }
     }
 }

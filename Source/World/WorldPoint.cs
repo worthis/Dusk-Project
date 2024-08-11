@@ -1,12 +1,12 @@
-﻿namespace DuskProject.Source.Maze
+﻿namespace DuskProject.Source.World
 {
-    public record MazePointBase
+    public record WorldPoint
     {
         public int X { get; set; } = 0;
 
         public int Y { get; set; } = 0;
 
-        public bool CheckEnter(int posX, int posY)
+        public bool MatchPos(int posX, int posY)
         {
             return posX.Equals(X) &&
                 posY.Equals(Y);

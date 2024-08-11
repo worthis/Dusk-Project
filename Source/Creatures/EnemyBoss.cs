@@ -1,5 +1,6 @@
-﻿namespace DuskProject.Source.Combat
+﻿namespace DuskProject.Source.Creatures
 {
+    using DuskProject.Source.Combat;
     using DuskProject.Source.Enums;
     using DuskProject.Source.Resources;
 

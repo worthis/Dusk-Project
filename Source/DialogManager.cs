@@ -1,6 +1,7 @@
 ﻿namespace DuskProject.Source
 {
     using System;
+    using DuskProject.Source.Creatures;
     using DuskProject.Source.Dialog;
     using DuskProject.Source.Enums;
     using DuskProject.Source.Resources;
@@ -18,7 +19,7 @@
         private GameStateManager _gameStateManager;
         private SoundManager _soundManager;
         private TextManager _textManager;
-        private MazeWorldManager _mazeWorldManager;
+        private WorldManager _worldManager;
         private Avatar _avatar;
 
         private Store _store;
@@ -55,7 +56,7 @@
             _gameStateManager = GameStateManager.GetInstance();
             _soundManager = SoundManager.GetInstance();
             _textManager = TextManager.GetInstance();
-            _mazeWorldManager = MazeWorldManager.GetInstance();
+            _worldManager = WorldManager.GetInstance();
             _avatar = Avatar.GetInstance();
 
             ImageResource buttonsImage = _resourceManager.LoadImage("Data/images/interface/dialog_buttons.png");
@@ -199,7 +200,7 @@
                             _buttons[i].Action = DialogButtonAction.Buy;
                             _buttons[i].TextFirst = string.Format("Learn {0}", spell.Name);
 
-                            if (_avatar.KnowsSpell(spell))
+                            if (_avatar.KnowsSpell(spell.Name))
                             {
                                 _buttons[i].TextSecond = "(You know this)";
                             }
@@ -251,6 +252,7 @@
         public void Update()
         {
             _message.Update();
+            _textManager.Color = _avatar.IsBadlyHurt() ? TextColor.Red : TextColor.Default;
 
             if (_windowManager.KeyPressed(InputKey.KEY_UP) ||
                 _windowManager.KeyPressed(InputKey.KEY_DOWN))
@@ -367,7 +369,7 @@
 
         public void Render()
         {
-            _mazeWorldManager.RenderBackground(_store.BackgroundImage);
+            _worldManager.RenderBackground(_store.BackgroundImage);
 
             _textManager.Render(_store.Name, 160, 4, TextJustify.JUSTIFY_CENTER);
 
