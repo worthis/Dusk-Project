@@ -12,8 +12,6 @@
 
         public static void Main()
         {
-            Console.WriteLine("Game started: {0} msecs", Environment.TickCount);
-
             // Create singletons
             WindowManager windowManager = WindowManager.GetInstance();
             ResourceManager resourceManager = ResourceManager.GetInstance();
@@ -22,6 +20,7 @@
             GameStateManager gameStateManager = GameStateManager.GetInstance();
             TitleManager titleManager = TitleManager.GetInstance();
             ExploreManager exploreManager = ExploreManager.GetInstance();
+            InGameMenuManager inGameMenuManager = InGameMenuManager.GetInstance();
             WorldManager worldManager = WorldManager.GetInstance();
             DialogManager dialogManager = DialogManager.GetInstance();
             CombatManager combatManager = CombatManager.GetInstance();
@@ -35,14 +34,13 @@
             gameStateManager.Init();
             titleManager.Init();
             exploreManager.Init();
+            inGameMenuManager.Init();
             worldManager.Init();
             dialogManager.Init();
             combatManager.Init();
             avatar.Init();
 
             _lastUpdateTime = SDL.SDL_GetTicks();
-
-            Console.WriteLine("Main loop started: {0} msecs", Environment.TickCount);
 
             while (windowManager.WindowOpened)
             {
@@ -65,7 +63,7 @@
                     windowManager.KeyPressed(InputKey.KEY_QUIT) ||
                     gameStateManager.Quitting())
                 {
-                    exploreManager.Save();
+                    _ = exploreManager.Save();
                     windowManager.Close();
                     continue;
                 }

@@ -3,12 +3,13 @@
     using DuskProject.Source.Creatures;
     using DuskProject.Source.Dialog;
     using DuskProject.Source.Enums;
-    using DuskProject.Source.Resources;
     using DuskProject.Source.UI;
     using DuskProject.Source.World;
 
     public class ExploreManager
     {
+        private const string _saveFile = "Save/avatar.json";
+
         private const int _encounterIncrement = 5;
         private const int _encounterChanceMax = 30;
 
@@ -28,11 +29,7 @@
 
         private Random _randGen;
         private int _encounterChance = 0;
-        private string _powerAction = string.Empty;
-        private string _powerResult = string.Empty;
-
-        private ImageResource _avatarImage;
-        private List<InfoButton> _infoButtons = new List<InfoButton>();
+        private bool _gameStarted = false;
 
         private Minimap _minimap;
 
@@ -68,58 +65,42 @@
             _dialogManager = DialogManager.GetInstance();
             _avatar = Avatar.GetInstance();
 
+            Directory.CreateDirectory(Path.GetDirectoryName(_saveFile));
+
             // Miyoo Mini Plus does not have RTC time
             _randGen = new Random(Environment.TickCount);
-
-            _avatarImage = _resourceManager.LoadImage("Data/images/interface/heroine.png");
-            ImageResource buttonsImage = _resourceManager.LoadImage("Data/images/interface/action_buttons.png");
-            ImageResource buttonSelectedImage = _resourceManager.LoadImage("Data/images/interface/select.png");
-
-            _infoButtons.Add(new InfoButton(ActionType.Attack, 242, 42, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Run, 282, 42, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Heal, 242, 82, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Burn, 282, 82, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Unlock, 242, 122, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Light, 282, 122, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Freeze, 242, 162, 32, 32, buttonsImage));
-            _infoButtons.Add(new InfoButton(ActionType.Reflect, 282, 162, 32, 32, buttonsImage));
-
-            foreach (var button in _infoButtons)
-            {
-                button.SetSelectedImage(buttonSelectedImage, 40, 40, 4, 4);
-                button.Selected = button == _infoButtons.First();
-                button.Enabled = true;
-            }
 
             Console.WriteLine("ExploreManager initialized");
         }
 
         public void Start()
         {
-            if (_avatar.SaveExists())
+            if (SaveFileExists())
             {
-                _avatar.Load();
+                Load();
                 LoadWorld(_avatar.World);
-                _gameStateManager.ChangeState(GameState.Explore);
+                _gameStarted = true;
 
                 return;
             }
-            else
-            {
-                if (_dialogManager.GetItem("Bare Fists", out var weapon))
-                {
-                    _avatar.EquipItem(weapon);
-                }
 
-                if (_dialogManager.GetItem("Serf Rags", out var armor))
-                {
-                    _avatar.EquipItem(armor);
-                }
+            _avatar.Reset();
+
+            if (_dialogManager.GetItem("Bare Fists", out var weapon))
+            {
+                _avatar.EquipItem(weapon);
             }
 
+            if (_dialogManager.GetItem("Serf Rags", out var armor))
+            {
+                _avatar.EquipItem(armor);
+            }
+
+            _ = Save();
+
             LoadWorld(_avatar.World);
-            _avatar.Save();
             _gameStateManager.StartDialog("8-a-nightmare");
+            _gameStarted = true;
         }
 
         public void LoadWorld(string worldName)
@@ -165,9 +146,39 @@
             }
         }
 
-        public void Save()
+        public async Task Save()
         {
-            _avatar.Save();
+            if (!_gameStarted)
+            {
+                return;
+            }
+
+            string avatarSerialized = _avatar.Serialize();
+
+            using (StreamWriter streamWriter = new StreamWriter(_saveFile))
+            {
+                await streamWriter.WriteAsync(avatarSerialized);
+                await streamWriter.FlushAsync();
+            }
+        }
+
+        public bool SaveFileExists()
+        {
+            return File.Exists(_saveFile);
+        }
+
+        public void Load()
+        {
+            if (!SaveFileExists())
+            {
+                return;
+            }
+
+            using (StreamReader streamReader = new(_saveFile))
+            {
+                string jsonData = streamReader.ReadToEnd();
+                _avatar.Deserialize(jsonData);
+            }
         }
 
         public void SetWorldRenderOffset(int offsetX, int offsetY)
@@ -182,9 +193,8 @@
             // Info Screen
             if (_windowManager.KeyPressed(InputKey.KEY_SELECT))
             {
-                _message.Clear();
                 _soundManager.PlaySound(SoundFX.Click);
-                _gameStateManager.ChangeState(GameState.Info);
+                _gameStateManager.InGameMenu();
 
                 return;
             }
@@ -192,11 +202,11 @@
             // Main Menu
             if (_windowManager.KeyPressed(InputKey.KEY_START))
             {
-                Save();
-                _message.Clear();
+                _ = Save();
                 _soundManager.StopMusic();
                 _soundManager.PlaySound(SoundFX.Click);
-                _gameStateManager.ChangeState(GameState.Title);
+                _gameStateManager.MainMenu();
+                _gameStarted = false;
 
                 return;
             }
@@ -298,7 +308,7 @@
                 if (_worldManager.CheckRestPoints(_avatar.X, _avatar.Y, out RestPoint restPoint))
                 {
                     _avatar.Sleep();
-                    _avatar.Save();
+                    _ = Save();
                     _message.Start(restPoint.Message);
                     _soundManager.PlaySound(restPoint.Sound);
 
@@ -417,129 +427,6 @@
             }
         }
 
-        public void UpdateInfo()
-        {
-            _message.Update();
-
-            // Minimap
-            if (_windowManager.KeyPressed(InputKey.KEY_X))
-            {
-                _minimap.Enabled = !_minimap.Enabled;
-
-                if (_minimap.Enabled)
-                {
-                    _powerAction = string.Empty;
-                    _powerResult = string.Empty;
-                }
-            }
-
-            // Spell selection
-            if (_windowManager.KeyPressed(InputKey.KEY_DOWN) ||
-                _windowManager.KeyPressed(InputKey.KEY_RIGHT))
-            {
-                var buttons = _infoButtons
-                    .Where(x => x.Enabled)
-                    .ToList();
-
-                var button = buttons.Where(x => x.Selected).First();
-                button.Selected = false;
-
-                var index = buttons.IndexOf(button);
-                if (index == buttons.Count - 1)
-                {
-                    buttons.First().Selected = true;
-                }
-                else
-                {
-                    buttons[index + 1].Selected = true;
-                }
-            }
-
-            if (_windowManager.KeyPressed(InputKey.KEY_UP) ||
-                _windowManager.KeyPressed(InputKey.KEY_LEFT))
-            {
-                var buttons = _infoButtons
-                    .Where(x => x.Enabled)
-                    .ToList();
-
-                var button = buttons.Where(x => x.Selected).First();
-                button.Selected = false;
-
-                var index = buttons.IndexOf(button);
-                if (index == 0)
-                {
-                    buttons.Last().Selected = true;
-                }
-                else
-                {
-                    buttons[index - 1].Selected = true;
-                }
-            }
-
-            // Use spell
-            if (_windowManager.KeyPressed(InputKey.KEY_A))
-            {
-                var buttonSelected = _infoButtons.Where(x => x.Selected).First();
-
-                switch (buttonSelected.Action)
-                {
-                    case ActionType.Heal:
-                        DoHealAction();
-                        break;
-
-                    case ActionType.Burn:
-                        DoBurnAction();
-                        break;
-
-                    case ActionType.Unlock:
-                        DoUnlockAction();
-                        break;
-                }
-            }
-
-            // Return to Explore
-            if (_windowManager.KeyPressed(InputKey.KEY_SELECT) ||
-                _windowManager.KeyPressed(InputKey.KEY_B))
-            {
-                _message.Clear();
-                _soundManager.PlaySound(SoundFX.Click);
-                _gameStateManager.ChangeState(GameState.Explore);
-                return;
-            }
-        }
-
-        public void UpdateSpells()
-        {
-            _powerAction = string.Empty;
-            _powerResult = string.Empty;
-
-            foreach (var button in _infoButtons)
-            {
-                button.Selected = false;
-
-                if (button.Action.Equals(ActionType.Attack) ||
-                    button.Action.Equals(ActionType.Run))
-                {
-                    button.Enabled = false;
-                    continue;
-                }
-
-                if (_avatar.KnowsSpell(Enum.GetName(typeof(ActionType), button.Action)))
-                {
-                    button.Enabled = true;
-                    continue;
-                }
-
-                button.Enabled = false;
-            }
-
-            var buttonFirst = _infoButtons.Where(x => x.Enabled).FirstOrDefault();
-            if (buttonFirst is not null)
-            {
-                buttonFirst.Selected = true;
-            }
-        }
-
         public void Render()
         {
             _worldManager.RenderBackground(_avatar.Facing);
@@ -555,70 +442,6 @@
 
             // Messages
             _textManager.Render(_message.Text, 160, 200, TextJustify.JUSTIFY_CENTER);
-        }
-
-        public void RenderInfo()
-        {
-            _worldManager.RenderBackground(_avatar.Facing);
-            _worldManager.RenderWorld(_avatar.X, _avatar.Y, _avatar.Facing);
-
-            _textManager.Render("INFO", 160, 4, TextJustify.JUSTIFY_CENTER);
-
-            if (_avatar.SpellBookLevel > 0)
-            {
-                _textManager.Render("SPELLS", 316, 60, TextJustify.JUSTIFY_RIGHT);
-            }
-
-            RenderHeroEquipment(ItemType.Armor, 0);                             // Base
-            RenderHeroEquipment(ItemType.Armor, _avatar.Armor?.Level ?? 0);     // Armor
-            RenderHeroEquipment(ItemType.Weapon, _avatar.Weapon?.Level ?? 0);   // Weapon
-            RenderHeroStats(true);                                              // HP / MP / Gold
-            RenderSpells();
-
-            if (string.IsNullOrWhiteSpace(_powerAction) ||
-                string.IsNullOrWhiteSpace(_powerResult))
-            {
-                _minimap.Render();
-                _minimap.RenderHero(_avatar.X, _avatar.Y, _avatar.Facing);
-            }
-
-            // Item List
-            // Armor
-            if (_avatar.Defence > 0)
-            {
-                _textManager.Render(
-                    string.Format(
-                        "{0} +{1}",
-                        _avatar.Armor.Name,
-                        _avatar.Defence),
-                    4,
-                    130);
-            }
-            else
-            {
-                _textManager.Render(_avatar.Armor?.Name, 4, 130);
-            }
-
-            // Weapon
-            if (_avatar.Attack > 0)
-            {
-                _textManager.Render(
-                    string.Format(
-                        "{0} +{1}",
-                        _avatar.Weapon.Name,
-                        _avatar.Attack),
-                    4,
-                    150);
-            }
-            else
-            {
-                _textManager.Render(_avatar.Weapon?.Name, 4, 150);
-            }
-
-            // Messages
-            _textManager.Render(_message.Text, 160, 200, TextJustify.JUSTIFY_CENTER);
-            _textManager.Render(_powerAction, 4, 60);
-            _textManager.Render(_powerResult, 4, 80);
         }
 
         public void RenderWorld()
@@ -647,103 +470,6 @@
                     _textManager.Render("SOUTH", 160, 4, TextJustify.JUSTIFY_CENTER);
                     break;
             }
-        }
-
-        private void RenderHeroEquipment(ItemType itemType, int itemLevel)
-        {
-            _avatarImage.Render(
-                itemLevel * 160,
-                (int)itemType * 200,
-                160,
-                200,
-                80,
-                40);
-        }
-
-        private void RenderHeroStats(bool showGold = false)
-        {
-            _textManager.Render(string.Format("HP {0}/{1}", _avatar.HP, _avatar.MaxHP), 4, 200);
-            _textManager.Render(string.Format("MP {0}/{1}", _avatar.MP, _avatar.MaxMP), 4, 220);
-
-            if (showGold)
-            {
-                _textManager.Render(string.Format("{0} Gold", _avatar.Gold), 316, 220, TextJustify.JUSTIFY_RIGHT);
-            }
-        }
-
-        private void RenderSpells()
-        {
-            foreach (var button in _infoButtons)
-            {
-                button.Render();
-            }
-        }
-
-        private void DoHealAction()
-        {
-            if (_avatar.MP <= 0 ||
-                _avatar.HP >= _avatar.MaxHP)
-            {
-                return;
-            }
-
-            int healAmount = _randGen.Next((int)(_avatar.MaxHP * 0.5)) + (int)(_avatar.MaxHP * 0.5);
-            _avatar.AddHP(healAmount);
-            _avatar.AddMP(-1);
-
-            _powerAction = "Heal!";
-            _powerResult = string.Format("+{0} HP", healAmount);
-            _soundManager.PlaySound(SoundFX.Heal);
-        }
-
-        private void DoBurnAction()
-        {
-            if (_avatar.MP <= 0 ||
-                !_avatar.KnowsSpell("Burn"))
-            {
-                return;
-            }
-
-            _avatar.GetFrontTilePos(out int facingTileX, out int facingTileY);
-
-            if (_worldManager.CheckScriptedTiles(facingTileX, facingTileY, out ScriptedTile scriptedTile) &&
-                scriptedTile.RequiredAction.Equals("Burn"))
-            {
-                _avatar.AddMP(-1);
-                _avatar.PushCampaignFlag(scriptedTile.UniqueId);
-                _worldManager.SetTileId(facingTileX, facingTileY, scriptedTile.AfterTileId);
-                _powerAction = "Burn!";
-                _powerResult = "Cleared Path!";
-                _soundManager.PlaySound(SoundFX.Fire);
-            }
-
-            _powerAction = "(No Target)";
-            _soundManager.PlaySound(SoundFX.Blocked);
-        }
-
-        private void DoUnlockAction()
-        {
-            if (_avatar.MP <= 0 ||
-                !_avatar.KnowsSpell("Unlock"))
-            {
-                return;
-            }
-
-            _avatar.GetFrontTilePos(out int facingTileX, out int facingTileY);
-
-            if (_worldManager.CheckScriptedTiles(facingTileX, facingTileY, out ScriptedTile scriptedTile) &&
-                scriptedTile.RequiredAction.Equals("Unlock"))
-            {
-                _avatar.AddMP(-1);
-                _avatar.PushCampaignFlag(scriptedTile.UniqueId);
-                _worldManager.SetTileId(facingTileX, facingTileY, scriptedTile.AfterTileId);
-                _powerAction = "Unlock!";
-                _powerResult = "Door Opened!";
-                _soundManager.PlaySound(SoundFX.Unlock);
-            }
-
-            _powerAction = "(No Target)";
-            _soundManager.PlaySound(SoundFX.Blocked);
         }
     }
 }

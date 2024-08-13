@@ -364,7 +364,7 @@
                 if (_runSuccess)
                 {
                     Reset();
-                    _gameStateManager.ChangeState(GameState.Explore);
+                    _gameStateManager.StartExplore();
 
                     return;
                 }
@@ -420,8 +420,7 @@
             if (_windowManager.KeyPressed(InputKey.KEY_A) ||
                 _windowManager.KeyPressed(InputKey.KEY_B))
             {
-                Reset();
-                _gameStateManager.ChangeState(GameState.Explore);
+                _gameStateManager.StartExplore();
             }
         }
 
@@ -430,10 +429,10 @@
             if (_windowManager.KeyPressed(InputKey.KEY_A) ||
                 _windowManager.KeyPressed(InputKey.KEY_B))
             {
-                Reset();
                 _avatar.Respawn();
+                _ = _exploreManager.Save();
                 _exploreManager.LoadWorld(_avatar.World);
-                _gameStateManager.ChangeState(GameState.Explore);
+                _gameStateManager.StartExplore();
             }
         }
 

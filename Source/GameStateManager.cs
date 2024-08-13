@@ -9,16 +9,18 @@
 
         private TitleManager _titleManager;
         private ExploreManager _exploreManager;
+        private InGameMenuManager _inGameMenuManager;
         private DialogManager _dialogManager;
         private CombatManager _combatManager;
 
         private GameState _gameState = GameState.Title;
-        private bool _redraw = false;
         private bool _quit = false;
 
         private GameStateManager()
         {
         }
+
+        public GameState State { get => _gameState; }
 
         public static GameStateManager GetInstance()
         {
@@ -41,6 +43,7 @@
         {
             _titleManager = TitleManager.GetInstance();
             _exploreManager = ExploreManager.GetInstance();
+            _inGameMenuManager = InGameMenuManager.GetInstance();
             _dialogManager = DialogManager.GetInstance();
             _combatManager = CombatManager.GetInstance();
 
@@ -55,18 +58,6 @@
         public void RegisterQuit()
         {
             _quit = true;
-        }
-
-        public void ChangeState(GameState gameState)
-        {
-            _gameState = gameState;
-
-            switch (_gameState)
-            {
-                case GameState.Info:
-                    _exploreManager.UpdateSpells();
-                    break;
-            }
         }
 
         public void Update()
@@ -90,7 +81,7 @@
                     break;
 
                 case GameState.Info:
-                    _exploreManager.UpdateInfo();
+                    _inGameMenuManager.Update();
                     break;
             }
         }
@@ -116,21 +107,44 @@
                     break;
 
                 case GameState.Info:
-                    _exploreManager.RenderInfo();
+                    _exploreManager.RenderWorld();
+                    _inGameMenuManager.Render();
                     break;
             }
+        }
+
+        public void MainMenu()
+        {
+            _gameState = GameState.Title;
+        }
+
+        public void InGameMenu()
+        {
+            _inGameMenuManager.UpdateSpells();
+            _gameState = GameState.Info;
         }
 
         public void StartCombat(string enemyId, string uniqueFlag = "")
         {
             _combatManager.StartCombat(enemyId, uniqueFlag);
-            ChangeState(GameState.Combat);
+            _gameState = GameState.Combat;
         }
 
         public void StartDialog(string storeName)
         {
             _dialogManager.StartDialog(storeName);
-            ChangeState(GameState.Dialog);
+            _gameState = GameState.Dialog;
+        }
+
+        public void StartExplore()
+        {
+            _gameState = GameState.Explore;
+        }
+
+        public void StartGame()
+        {
+            _exploreManager.Start();
+            StartExplore();
         }
     }
 }

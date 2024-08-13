@@ -110,6 +110,7 @@
 
         public void StartDialog(string storeName)
         {
+            _message.Clear();
             LoadStore(storeName);
         }
 
@@ -172,8 +173,7 @@
 
                     if (_buttons[i].Action.Equals(DialogButtonAction.Exit))
                     {
-                        _message.Clear();
-                        _gameStateManager.ChangeState(GameState.Explore);
+                        _gameStateManager.StartExplore();
                         return;
                     }
 
@@ -241,8 +241,7 @@
 
             if (_windowManager.KeyPressed(InputKey.KEY_B))
             {
-                _message.Clear();
-                _gameStateManager.ChangeState(GameState.Explore);
+                _gameStateManager.StartExplore();
                 return;
             }
         }

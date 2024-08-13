@@ -59,62 +59,6 @@
             SleepPosY = 1;
         }
 
-        public void Save()
-        {
-            Directory.CreateDirectory("Save");
-
-            using (StreamWriter streamWriter = new("Save/avatar.json"))
-            {
-                AvatarBase avatarBase = this;
-                string avatarData = JsonConvert.SerializeObject(avatarBase, Formatting.Indented, new StringEnumConverter());
-                streamWriter.Write(avatarData);
-            }
-        }
-
-        public bool SaveExists()
-        {
-            return File.Exists("Save/avatar.json");
-        }
-
-        public void Load()
-        {
-            if (!SaveExists())
-            {
-                return;
-            }
-
-            using (StreamReader streamReader = new("Save/avatar.json"))
-            {
-                string jsonData = streamReader.ReadToEnd();
-                streamReader.Close();
-
-                var avatarBase = JsonConvert.DeserializeObject<AvatarBase>(jsonData, new StringEnumConverter());
-
-                if (avatarBase is not null)
-                {
-                    HP = avatarBase.HP;
-                    MaxHP = avatarBase.MaxHP;
-                    MP = avatarBase.MP;
-                    MaxMP = avatarBase.MaxMP;
-                    Attack = avatarBase.Attack;
-                    Defence = avatarBase.Defence;
-                    Gold = avatarBase.Gold;
-                    X = avatarBase.X;
-                    Y = avatarBase.Y;
-                    Facing = avatarBase.Facing;
-                    World = avatarBase.World;
-                    SleepPosX = avatarBase.SleepPosX;
-                    SleepPosY = avatarBase.SleepPosY;
-                    SleepWorld = avatarBase.SleepWorld;
-                    Weapon = avatarBase.Weapon;
-                    Armor = avatarBase.Armor;
-                    SpellBookLevel = avatarBase.SpellBookLevel;
-                    SpellBook = avatarBase.SpellBook;
-                    Campaign = avatarBase.Campaign;
-                }
-            }
-        }
-
         public void Sleep()
         {
             HP = MaxHP;
@@ -123,8 +67,6 @@
             SleepWorld = World;
             SleepPosX = X;
             SleepPosY = Y;
-
-            Save();
         }
 
         public void Respawn()
@@ -138,8 +80,6 @@
             Y = SleepPosY;
 
             World = SleepWorld;
-
-            Save();
         }
 
         public bool IsBadlyHurt()

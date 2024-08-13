@@ -13,7 +13,6 @@
         private ResourceManager _resourceManager;
         private SoundManager _soundManager;
         private TextManager _textManager;
-        private ExploreManager _exploreManager;
 
         private TitleState _state = TitleState.Main;
         private ImageResource _imageBackground;
@@ -48,7 +47,6 @@
             _resourceManager = ResourceManager.GetInstance();
             _soundManager = SoundManager.GetInstance();
             _textManager = TextManager.GetInstance();
-            _exploreManager = ExploreManager.GetInstance();
 
             _menuCount = Enum.GetValues(typeof(TitleState)).Length;
 
@@ -84,7 +82,7 @@
                     // Start
                     case 0:
                         _soundManager.PlaySound(SoundFX.Click);
-                        _exploreManager.Start();
+                        _gameStateManager.StartGame();
                         break;
 
                     // Options
