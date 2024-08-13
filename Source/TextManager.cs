@@ -55,6 +55,11 @@
 
         public void Render(string text, int posX, int posY, TextJustify textJustify = TextJustify.JUSTIFY_LEFT)
         {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return;
+            }
+
             int currentPosX;
             string textUpperCase = text.ToUpper();
 

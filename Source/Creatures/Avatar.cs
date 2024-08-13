@@ -412,5 +412,50 @@
 
             return Campaign.Contains(flag.ToUpper());
         }
+
+        public string Serialize()
+        {
+            return JsonConvert.SerializeObject(
+                this,
+                Formatting.Indented,
+                new StringEnumConverter());
+        }
+
+        public bool Deserialize(string data)
+        {
+            if (string.IsNullOrWhiteSpace(data))
+            {
+                return false;
+            }
+
+            AvatarBase avatarBase = JsonConvert.DeserializeObject<AvatarBase>(data, new StringEnumConverter());
+
+            if (avatarBase is not null)
+            {
+                X = avatarBase.X;
+                Y = avatarBase.Y;
+                Facing = avatarBase.Facing;
+                World = avatarBase.World;
+                HP = avatarBase.HP;
+                MaxHP = avatarBase.MaxHP;
+                MP = avatarBase.MP;
+                MaxMP = avatarBase.MaxMP;
+                Attack = avatarBase.Attack;
+                Defence = avatarBase.Defence;
+                Gold = avatarBase.Gold;
+                SleepPosX = avatarBase.SleepPosX;
+                SleepPosY = avatarBase.SleepPosY;
+                SleepWorld = avatarBase.SleepWorld;
+                Weapon = avatarBase.Weapon;
+                Armor = avatarBase.Armor;
+                SpellBookLevel = avatarBase.SpellBookLevel;
+                SpellBook = avatarBase.SpellBook;
+                Campaign = avatarBase.Campaign;
+
+                return true;
+            }
+
+            return false;
+        }
     }
 }

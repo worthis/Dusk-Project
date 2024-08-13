@@ -15,7 +15,7 @@
         private TextManager _textManager;
         private ExploreManager _exploreManager;
 
-        private TitleState _state = TitleState.Loading;
+        private TitleState _state = TitleState.Main;
         private ImageResource _imageBackground;
         private int _menuSelected = 0;
         private int _menuCount;

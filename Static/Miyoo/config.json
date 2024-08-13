@@ -2,5 +2,5 @@
   "label":"Dusk Project",
   "icon":"Data/icon.png",
   "launch":"launch.sh",
-  "description":"Dusk Project C# dungeon crawl"
+  "description":"Dusk Project a C# dungeon crawl game"
 }

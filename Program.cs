@@ -12,6 +12,8 @@
 
         public static void Main()
         {
+            Console.WriteLine("Game started: {0} msecs", Environment.TickCount);
+
             // Create singletons
             WindowManager windowManager = WindowManager.GetInstance();
             ResourceManager resourceManager = ResourceManager.GetInstance();
@@ -40,6 +42,8 @@
 
             _lastUpdateTime = SDL.SDL_GetTicks();
 
+            Console.WriteLine("Main loop started: {0} msecs", Environment.TickCount);
+
             while (windowManager.WindowOpened)
             {
                 // FPS limiter
@@ -61,6 +65,7 @@
                     windowManager.KeyPressed(InputKey.KEY_QUIT) ||
                     gameStateManager.Quitting())
                 {
+                    exploreManager.Save();
                     windowManager.Close();
                     continue;
                 }
@@ -74,8 +79,6 @@
                 // Render screen
                 windowManager.Display();
             }
-
-            exploreManager.Save();
 
             soundManager.Quit();
             windowManager.Quit();

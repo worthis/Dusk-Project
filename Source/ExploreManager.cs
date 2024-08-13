@@ -118,6 +118,7 @@
             }
 
             LoadWorld(_avatar.World);
+            _avatar.Save();
             _gameStateManager.StartDialog("8-a-nightmare");
         }
 
@@ -568,10 +569,10 @@
                 _textManager.Render("SPELLS", 316, 60, TextJustify.JUSTIFY_RIGHT);
             }
 
-            RenderHeroEquipment(ItemType.Armor, 0);                     // Base
-            RenderHeroEquipment(ItemType.Armor, _avatar.Armor.Level);   // Armor
-            RenderHeroEquipment(ItemType.Weapon, _avatar.Weapon.Level); // Weapon
-            RenderHeroStats(true);                                      // HP / MP / Gold
+            RenderHeroEquipment(ItemType.Armor, 0);                             // Base
+            RenderHeroEquipment(ItemType.Armor, _avatar.Armor?.Level ?? 0);     // Armor
+            RenderHeroEquipment(ItemType.Weapon, _avatar.Weapon?.Level ?? 0);   // Weapon
+            RenderHeroStats(true);                                              // HP / MP / Gold
             RenderSpells();
 
             if (string.IsNullOrWhiteSpace(_powerAction) ||
@@ -595,7 +596,7 @@
             }
             else
             {
-                _textManager.Render(_avatar.Armor.Name, 4, 130);
+                _textManager.Render(_avatar.Armor?.Name, 4, 130);
             }
 
             // Weapon
@@ -611,7 +612,7 @@
             }
             else
             {
-                _textManager.Render(_avatar.Weapon.Name, 4, 150);
+                _textManager.Render(_avatar.Weapon?.Name, 4, 150);
             }
 
             // Messages

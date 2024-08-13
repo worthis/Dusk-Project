@@ -57,6 +57,7 @@
             SDL_mixer.Mix_Init(SDL_mixer.MIX_InitFlags.MIX_INIT_OGG);
             SDL_mixer.Mix_OpenAudio(44100, SDL.AUDIO_S16SYS, 2, 1024);
             SDL_mixer.Mix_VolumeMusic(_volumeMusic);
+            SDL_mixer.Mix_Volume(-1, _volumeSound);
 
             LoadSounds();
 
@@ -134,7 +135,7 @@
                 _music.GetMusic() != IntPtr.Zero &&
                 SDL_mixer.Mix_PlayingMusic() <= 0)
             {
-                SDL_mixer.Mix_PlayMusic(_music.GetMusic(), -1);
+                SDL_mixer.Mix_FadeInMusic(_music.GetMusic(), -1, 2000);
             }
         }
 
