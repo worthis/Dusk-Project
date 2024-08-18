@@ -3,6 +3,7 @@
     using System;
     using System.Runtime.InteropServices;
     using DuskProject.Source.Enums;
+    using DuskProject.Source.Input;
     using SDL2;
 
     public class WindowManager
@@ -25,11 +26,16 @@
         private IntPtr _screenPtr;
         private SDL.SDL_Surface _screenSurface;
         private SDL.SDL_Rect _screenRect;
-
-        private List<InputKey> _keyPressed = new List<InputKey>();
+        private IInput _inputHandler = new PCInput();
 
         private WindowManager()
         {
+            // todo: Miyoo detection
+            if (OperatingSystem.IsLinux())
+            {
+                _inputHandler = new MiyooInput();
+                return;
+            }
         }
 
         public int WindowWidth { get => _windowWidth; }
@@ -136,88 +142,12 @@
 
         public void ProcessInput()
         {
-            _keyPressed.Clear();
-
-            while (SDL.SDL_PollEvent(out SDL.SDL_Event e) != 0)
-            {
-                switch (e.type)
-                {
-                    case SDL.SDL_EventType.SDL_QUIT:
-                        _keyPressed.Add(InputKey.KEY_QUIT);
-                        break;
-
-                    case SDL.SDL_EventType.SDL_KEYUP:
-                        switch (e.key.keysym.sym)
-                        {
-                            case SDL.SDL_Keycode.SDLK_UP:
-                                _keyPressed.Add(InputKey.KEY_UP);
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_DOWN:
-                                _keyPressed.Add(InputKey.KEY_DOWN);
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_LEFT:
-                                _keyPressed.Add(InputKey.KEY_LEFT);
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_RIGHT:
-                                _keyPressed.Add(InputKey.KEY_RIGHT);
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_SPACE:
-                                _keyPressed.Add(InputKey.KEY_A);
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_LCTRL:
-                                _keyPressed.Add(InputKey.KEY_B);
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_LSHIFT:
-                                _keyPressed.Add(InputKey.KEY_X);
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_LALT:
-                                _keyPressed.Add(InputKey.KEY_Y);
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_e:
-                                _keyPressed.Add(InputKey.KEY_L1);
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_TAB:
-                                _keyPressed.Add(InputKey.KEY_L2);
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_t:
-                                _keyPressed.Add(InputKey.KEY_R1);
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_BACKSPACE:
-                                _keyPressed.Add(InputKey.KEY_R2);
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_RCTRL:
-                                _keyPressed.Add(InputKey.KEY_SELECT);
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_RETURN:
-                                _keyPressed.Add(InputKey.KEY_START);
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_ESCAPE:
-                                _keyPressed.Add(InputKey.KEY_MENU);
-                                break;
-                        }
-
-                        break;
-                }
-            }
+            _inputHandler.ProcessInput();
         }
 
         public bool KeyPressed(InputKey key)
         {
-            return _keyPressed.Contains(key);
+            return _inputHandler.KeyPressed(key);
         }
 
         private static void CheckSDLError(int error)
