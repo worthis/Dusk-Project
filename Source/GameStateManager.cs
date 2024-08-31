@@ -1,26 +1,39 @@
 ﻿namespace DuskProject.Source
 {
+    using DuskProject.Source.Creatures;
     using DuskProject.Source.Enums;
+    using DuskProject.Source.GameStates.Combat;
+    using DuskProject.Source.GameStates.Dialog;
+    using DuskProject.Source.GameStates.Explore;
+    using DuskProject.Source.GameStates.Menu;
+    using DuskProject.Source.GameStates.Title;
+    using DuskProject.Source.Interfaces;
 
     public class GameStateManager
     {
         private static GameStateManager instance;
         private static object instanceLock = new object();
 
+        private WindowManager _windowManager;
+        private ResourceManager _resourceManager;
+        private SoundManager _soundManager;
+        private TextManager _textManager;
+        private WorldManager _worldManager;
         private TitleManager _titleManager;
         private ExploreManager _exploreManager;
         private InGameMenuManager _inGameMenuManager;
         private DialogManager _dialogManager;
-        private CombatManager _combatManager;
+        private Avatar _avatar;
 
-        private GameState _gameState = GameState.Title;
         private bool _quit = false;
 
         private GameStateManager()
         {
         }
 
-        public GameState State { get => _gameState; }
+        public IGameState State { get; set; }
+
+        public (string Id, string UniqueFlag) Enemy { get; set; }
 
         public static GameStateManager GetInstance()
         {
@@ -41,11 +54,16 @@
 
         public void Init()
         {
+            _windowManager = WindowManager.GetInstance();
+            _resourceManager = ResourceManager.GetInstance();
+            _soundManager = SoundManager.GetInstance();
+            _textManager = TextManager.GetInstance();
+            _worldManager = WorldManager.GetInstance();
             _titleManager = TitleManager.GetInstance();
             _exploreManager = ExploreManager.GetInstance();
             _inGameMenuManager = InGameMenuManager.GetInstance();
             _dialogManager = DialogManager.GetInstance();
-            _combatManager = CombatManager.GetInstance();
+            _avatar = Avatar.GetInstance();
 
             Console.WriteLine("GameStateManager initialized");
         }
@@ -60,85 +78,43 @@
             _quit = true;
         }
 
-        public void Update()
-        {
-            switch (_gameState)
-            {
-                case GameState.Title:
-                    _titleManager.Update();
-                    break;
+        public void Update() => State.Update();
 
-                case GameState.Explore:
-                    _exploreManager.Update();
-                    break;
-
-                case GameState.Combat:
-                    _combatManager.Update();
-                    break;
-
-                case GameState.Dialog:
-                    _dialogManager.Update();
-                    break;
-
-                case GameState.Info:
-                    _inGameMenuManager.Update();
-                    break;
-            }
-        }
-
-        public void Render()
-        {
-            switch (_gameState)
-            {
-                case GameState.Title:
-                    _titleManager.Render();
-                    break;
-
-                case GameState.Explore:
-                    _exploreManager.Render();
-                    break;
-
-                case GameState.Combat:
-                    _combatManager.Render();
-                    break;
-
-                case GameState.Dialog:
-                    _dialogManager.Render();
-                    break;
-
-                case GameState.Info:
-                    _exploreManager.RenderWorld();
-                    _inGameMenuManager.Render();
-                    break;
-            }
-        }
+        public void Render() => State.Render();
 
         public void MainMenu()
         {
-            _gameState = GameState.Title;
+            State = new TitleState();
         }
 
         public void InGameMenu()
         {
             _inGameMenuManager.UpdateSpells();
-            _gameState = GameState.Info;
+            State = new MenuState();
         }
 
         public void StartCombat(string enemyId, string uniqueFlag = "")
         {
-            _combatManager.StartCombat(enemyId, uniqueFlag);
-            _gameState = GameState.Combat;
+            Enemy = (enemyId, uniqueFlag);
+            State = new CombatState(
+                this,
+                _windowManager,
+                _resourceManager,
+                _soundManager,
+                _textManager,
+                _worldManager,
+                _avatar);
         }
 
         public void StartDialog(string storeName)
         {
-            _dialogManager.StartDialog(storeName);
-            _gameState = GameState.Dialog;
+            // _dialogManager.StartDialog(storeName);
+            State = new DialogState();
         }
 
         public void StartExplore()
         {
-            _gameState = GameState.Explore;
+            State = new ExploreState();
         }
 
         public void StartGame()
