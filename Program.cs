@@ -18,7 +18,6 @@
             SoundManager soundManager = SoundManager.GetInstance();
             TextManager textManager = TextManager.GetInstance();
             GameStateManager gameStateManager = GameStateManager.GetInstance();
-            InGameMenuManager inGameMenuManager = InGameMenuManager.GetInstance();
             WorldManager worldManager = WorldManager.GetInstance();
             ItemManager itemManager = ItemManager.GetInstance();
             Avatar avatar = Avatar.GetInstance();
@@ -30,9 +29,10 @@
             textManager.Init(resourceManager.LoadImage("Data/images/interface/boxy_bold.png"));
             gameStateManager.Init();
             itemManager.Init();
-            inGameMenuManager.Init();
             worldManager.Init();
             avatar.Init();
+
+            gameStateManager.MainMenu();
 
             _lastUpdateTime = SDL.SDL_GetTicks();
 

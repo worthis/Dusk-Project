@@ -24,8 +24,9 @@ public class CombatDefeatPhase : CombatPhaseBase
                 Combat.WindowManager.KeyPressed(InputKey.KEY_B))
         {
             Combat.Avatar.Respawn();
-            _ = _exploreManager.Save();
-            _exploreManager.LoadWorld(Combat.Avatar.World);
+            _ = Combat.GameStateManager.Save();
+            Combat.WorldManager.LoadWorld(Combat.Avatar.World);
+            Combat.WorldManager.InitScriptedEvents(Combat.Avatar.HasCampaignFlag);
             Combat.GameStateManager.StartExplore();
         }
     }

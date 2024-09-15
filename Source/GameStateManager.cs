@@ -21,18 +21,15 @@
         private TextManager _textManager;
         private WorldManager _worldManager;
         private ItemManager _itemManager;
-        private ExploreManager _exploreManager;
-        private InGameMenuManager _inGameMenuManager;
         private Avatar _avatar;
 
         private bool _quit = false;
         private bool _gameStarted = false;
+        private IGameState _state;
 
         private GameStateManager()
         {
         }
-
-        public IGameState State { get; set; }
 
         public (string Id, string UniqueFlag) Enemy { get; set; }
 
@@ -63,8 +60,6 @@
             _textManager = TextManager.GetInstance();
             _worldManager = WorldManager.GetInstance();
             _itemManager = ItemManager.GetInstance();
-            _exploreManager = ExploreManager.GetInstance();
-            _inGameMenuManager = InGameMenuManager.GetInstance();
             _avatar = Avatar.GetInstance();
 
             Console.WriteLine("GameStateManager initialized");
@@ -80,15 +75,14 @@
             _quit = true;
         }
 
-        public void Update() => State.Update();
+        public void Update() => _state.Update();
 
-        public void Render() => State.Render();
+        public void Render() => _state.Render();
 
         public void MainMenu()
         {
             _gameStarted = false;
-
-            State = new TitleState(
+            _state = new TitleState(
                 this,
                 _windowManager,
                 _resourceManager,
@@ -98,14 +92,20 @@
 
         public void InGameMenu()
         {
-            _inGameMenuManager.UpdateSpells();
-            State = new MenuState();
+            _state = new MenuState(
+                this,
+                _windowManager,
+                _resourceManager,
+                _soundManager,
+                _textManager,
+                _worldManager,
+                _avatar);
         }
 
         public void StartCombat(string enemyId, string uniqueFlag = "")
         {
             Enemy = (enemyId, uniqueFlag);
-            State = new CombatState(
+            _state = new CombatState(
                 this,
                 _windowManager,
                 _resourceManager,
@@ -118,7 +118,7 @@
         public void StartDialog(string storeName)
         {
             Store = storeName;
-            State = new DialogState(
+            _state = new DialogState(
                 this,
                 _windowManager,
                 _resourceManager,
@@ -131,13 +131,14 @@
 
         public void StartExplore()
         {
-            State = new ExploreState(
+            _state = new ExploreState(
                 this,
                 _windowManager,
                 _resourceManager,
                 _soundManager,
                 _textManager,
                 _worldManager,
+                _itemManager,
                 _avatar);
         }
 
@@ -197,6 +198,8 @@
                 await streamWriter.WriteAsync(avatarSerialized);
                 await streamWriter.FlushAsync();
             }
+
+            Console.WriteLine("Game saved.");
         }
     }
 }
