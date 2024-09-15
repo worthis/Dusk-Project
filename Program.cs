@@ -18,12 +18,10 @@
             SoundManager soundManager = SoundManager.GetInstance();
             TextManager textManager = TextManager.GetInstance();
             GameStateManager gameStateManager = GameStateManager.GetInstance();
-            TitleManager titleManager = TitleManager.GetInstance();
             ExploreManager exploreManager = ExploreManager.GetInstance();
             InGameMenuManager inGameMenuManager = InGameMenuManager.GetInstance();
             WorldManager worldManager = WorldManager.GetInstance();
-            DialogManager dialogManager = DialogManager.GetInstance();
-            CombatManager combatManager = CombatManager.GetInstance();
+            ItemManager itemManager = ItemManager.GetInstance();
             Avatar avatar = Avatar.GetInstance();
 
             // Initialization
@@ -32,12 +30,10 @@
             soundManager.Init();
             textManager.Init(resourceManager.LoadImage("Data/images/interface/boxy_bold.png"));
             gameStateManager.Init();
-            titleManager.Init();
+            itemManager.Init();
             exploreManager.Init();
             inGameMenuManager.Init();
             worldManager.Init();
-            dialogManager.Init();
-            combatManager.Init();
             avatar.Init();
 
             _lastUpdateTime = SDL.SDL_GetTicks();

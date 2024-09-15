@@ -1,6 +1,7 @@
 ﻿namespace DuskProject.Source.Input
 {
     using DuskProject.Source.Enums;
+    using DuskProject.Source.Interfaces;
 
     public abstract class InputBase : IInput
     {

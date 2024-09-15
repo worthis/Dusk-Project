@@ -1,4 +1,4 @@
-﻿namespace DuskProject.Source.Input
+﻿namespace DuskProject.Source.Interfaces
 {
     using DuskProject.Source.Enums;
 

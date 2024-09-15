@@ -4,6 +4,7 @@
     using System.Runtime.InteropServices;
     using DuskProject.Source.Enums;
     using DuskProject.Source.Input;
+    using DuskProject.Source.Interfaces;
     using SDL2;
 
     public class WindowManager

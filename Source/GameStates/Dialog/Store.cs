@@ -1,4 +1,4 @@
-﻿namespace DuskProject.Source.Dialog
+﻿namespace DuskProject.Source.GameStates.Dialog
 {
     public record Store
     {
