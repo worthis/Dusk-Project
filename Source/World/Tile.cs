@@ -1,33 +1,32 @@
-﻿namespace DuskProject.Source.World
+﻿namespace DuskProject.Source.World;
+
+using DuskProject.Source.Resources;
+
+public record Tile
 {
-    using DuskProject.Source.Resources;
+    private ImageResource _image;
+    private bool _walkable;
 
-    public record Tile
+    public Tile(ImageResource image, bool walkable)
     {
-        private ImageResource _image;
-        private bool _walkable;
+        _image = image;
+        _walkable = walkable;
+    }
 
-        public Tile(ImageResource image, bool walkable)
+    public ImageResource Image { get => _image; }
+
+    public bool Walkable { get => _walkable; }
+
+    public string Name
+    {
+        get
         {
-            _image = image;
-            _walkable = walkable;
-        }
-
-        public ImageResource Image { get => _image; }
-
-        public bool Walkable { get => _walkable; }
-
-        public string Name
-        {
-            get
+            if (_image is not null)
             {
-                if (_image is not null)
-                {
-                    return _image.Name;
-                }
-
-                return string.Empty;
+                return _image.Name;
             }
+
+            return string.Empty;
         }
     }
 }

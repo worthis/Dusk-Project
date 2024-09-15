@@ -9,8 +9,8 @@
 
     public class WindowManager
     {
+        private static readonly object InstanceLock = new object();
         private static WindowManager instance;
-        private static object instanceLock = new object();
 
         private int _renderWidth = 320;
         private int _renderHeight = 240;
@@ -37,6 +37,19 @@
                 _inputHandler = new MiyooInput();
                 return;
             }
+
+            Console.WriteLine("WindowManager created");
+        }
+
+        public static WindowManager Instance
+        {
+            get
+            {
+                lock (InstanceLock)
+                {
+                    return instance ??= new WindowManager();
+                }
+            }
         }
 
         public int WindowWidth { get => _windowWidth; }
@@ -52,23 +65,6 @@
         public IntPtr ScreenSurfacePtr { get => _screenPtr; }
 
         public bool WindowOpened { get => _windowOpened; }
-
-        public static WindowManager GetInstance()
-        {
-            if (instance == null)
-            {
-                lock (instanceLock)
-                {
-                    if (instance == null)
-                    {
-                        instance = new WindowManager();
-                        Console.WriteLine("WindowManager created");
-                    }
-                }
-            }
-
-            return instance;
-        }
 
         public void CreateWindow(string title)
         {

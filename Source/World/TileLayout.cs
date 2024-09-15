@@ -1,17 +1,16 @@
-﻿namespace DuskProject.Source.World
+﻿namespace DuskProject.Source.World;
+
+public record TileLayout
 {
-    public record TileLayout
-    {
-        public int Width { get; set; }
+    public int Width { get; init; }
 
-        public int Height { get; set; }
+    public int Height { get; init; }
 
-        public int SrcX { get; set; }
+    public int SrcX { get; init; }
 
-        public int SrcY { get; set; }
+    public int SrcY { get; init; }
 
-        public int DstX { get; set; }
+    public int DstX { get; init; }
 
-        public int DstY { get; set; }
-    }
+    public int DstY { get; init; }
 }

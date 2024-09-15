@@ -10,10 +10,10 @@
 
     public class GameStateManager
     {
-        private const string _saveFile = "Save/avatar.json";
+        private const string SaveFilePath = "Save/avatar.json";
 
+        private static readonly object InstanceLock = new object();
         private static GameStateManager instance;
-        private static object instanceLock = new object();
 
         private WindowManager _windowManager;
         private ResourceManager _resourceManager;
@@ -23,66 +23,57 @@
         private ItemManager _itemManager;
         private Avatar _avatar;
 
-        private bool _quit = false;
-        private bool _gameStarted = false;
-        private IGameState _state;
+        private bool _isQuitting = false;
+        private bool _isGameStarted = false;
+        private IGameState _currentState;
 
         private GameStateManager()
         {
+            Console.WriteLine("GameStateManager created");
         }
 
-        public (string Id, string UniqueFlag) Enemy { get; set; }
-
-        public string Store { get; set; }
-
-        public static GameStateManager GetInstance()
+        public static GameStateManager Instance
         {
-            if (instance == null)
+            get
             {
-                lock (instanceLock)
+                lock (InstanceLock)
                 {
-                    if (instance == null)
-                    {
-                        instance = new GameStateManager();
-                        Console.WriteLine("GameStateManager created");
-                    }
+                    return instance ??= new GameStateManager();
                 }
             }
-
-            return instance;
         }
+
+        public (string Id, string UniqueFlag) Enemy { get; private set; }
+
+        public string Store { get; private set; }
+
+        public bool IsQuitting => _isQuitting;
+
+        public static bool SaveFileExists() => File.Exists(SaveFilePath);
 
         public void Init()
         {
-            _windowManager = WindowManager.GetInstance();
-            _resourceManager = ResourceManager.GetInstance();
-            _soundManager = SoundManager.GetInstance();
-            _textManager = TextManager.GetInstance();
-            _worldManager = WorldManager.GetInstance();
-            _itemManager = ItemManager.GetInstance();
-            _avatar = Avatar.GetInstance();
+            _windowManager = WindowManager.Instance;
+            _resourceManager = ResourceManager.Instance;
+            _soundManager = SoundManager.Instance;
+            _textManager = TextManager.Instance;
+            _worldManager = WorldManager.Instance;
+            _itemManager = ItemManager.Instance;
+            _avatar = Avatar.Instance;
 
             Console.WriteLine("GameStateManager initialized");
         }
 
-        public bool Quitting()
+        public void RegisterQuit() => _isQuitting = true;
+
+        public void Update() => _currentState?.Update();
+
+        public void Render() => _currentState?.Render();
+
+        public void ShowMainMenu()
         {
-            return _quit;
-        }
-
-        public void RegisterQuit()
-        {
-            _quit = true;
-        }
-
-        public void Update() => _state.Update();
-
-        public void Render() => _state.Render();
-
-        public void MainMenu()
-        {
-            _gameStarted = false;
-            _state = new TitleState(
+            _isGameStarted = false;
+            _currentState = new TitleState(
                 this,
                 _windowManager,
                 _resourceManager,
@@ -90,9 +81,9 @@
                 _textManager);
         }
 
-        public void InGameMenu()
+        public void ShowInGameMenu()
         {
-            _state = new MenuState(
+            _currentState = new MenuState(
                 this,
                 _windowManager,
                 _resourceManager,
@@ -105,7 +96,7 @@
         public void StartCombat(string enemyId, string uniqueFlag = "")
         {
             Enemy = (enemyId, uniqueFlag);
-            _state = new CombatState(
+            _currentState = new CombatState(
                 this,
                 _windowManager,
                 _resourceManager,
@@ -118,7 +109,7 @@
         public void StartDialog(string storeName)
         {
             Store = storeName;
-            _state = new DialogState(
+            _currentState = new DialogState(
                 this,
                 _windowManager,
                 _resourceManager,
@@ -131,7 +122,7 @@
 
         public void StartExplore()
         {
-            _state = new ExploreState(
+            _currentState = new ExploreState(
                 this,
                 _windowManager,
                 _resourceManager,
@@ -146,22 +137,51 @@
         {
             if (SaveFileExists())
             {
-                using (StreamReader streamReader = new(_saveFile))
-                {
-                    string jsonData = streamReader.ReadToEnd();
-                    _avatar.Deserialize(jsonData);
-                }
-
-                _gameStarted = true;
-                _worldManager.LoadWorld(_avatar.World);
-                _worldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
+                LoadGame();
                 StartExplore();
-
                 return;
             }
 
-            _avatar.Reset();
+            InitializeNewGame();
+            StartDialog("8-a-nightmare");
+            _ = SaveGame();
+        }
 
+        public async Task SaveGame()
+        {
+            if (!_isGameStarted)
+            {
+                return;
+            }
+
+            string serializedAvatar = _avatar.Serialize();
+            await File.WriteAllTextAsync(SaveFilePath, serializedAvatar);
+
+            Console.WriteLine("Game saved.");
+        }
+
+        public void LoadGame()
+        {
+            string jsonData = File.ReadAllText(SaveFilePath);
+            _avatar.Deserialize(jsonData);
+            _isGameStarted = true;
+            _worldManager.LoadWorld(_avatar.World);
+            _worldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
+
+            Console.WriteLine("Game loaded.");
+        }
+
+        private void InitializeNewGame()
+        {
+            _avatar.Reset();
+            EquipStartingItems();
+            _isGameStarted = true;
+            _worldManager.LoadWorld(_avatar.World);
+            _worldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
+        }
+
+        private void EquipStartingItems()
+        {
             if (_itemManager.GetItem("Bare Fists", out var weapon))
             {
                 _avatar.EquipItem(weapon);
@@ -171,35 +191,6 @@
             {
                 _avatar.EquipItem(armor);
             }
-
-            _gameStarted = true;
-            _worldManager.LoadWorld(_avatar.World);
-            _worldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
-            StartDialog("8-a-nightmare");
-            _ = Save();
-        }
-
-        public bool SaveFileExists()
-        {
-            return File.Exists(_saveFile);
-        }
-
-        public async Task Save()
-        {
-            if (!_gameStarted)
-            {
-                return;
-            }
-
-            string avatarSerialized = _avatar.Serialize();
-
-            using (StreamWriter streamWriter = new StreamWriter(_saveFile))
-            {
-                await streamWriter.WriteAsync(avatarSerialized);
-                await streamWriter.FlushAsync();
-            }
-
-            Console.WriteLine("Game saved.");
         }
     }
 }

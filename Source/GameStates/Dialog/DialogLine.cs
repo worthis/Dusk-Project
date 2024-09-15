@@ -1,17 +1,16 @@
-﻿namespace DuskProject.Source.GameStates.Dialog
+﻿namespace DuskProject.Source.GameStates.Dialog;
+
+using DuskProject.Source.Enums;
+
+public record DialogLine
 {
-    using DuskProject.Source.Enums;
+    public DialogType Type { get; init; }
 
-    public record DialogLine
-    {
-        public DialogType Type { get; set; }
+    public string Value { get; init; } = string.Empty;
 
-        public string Value { get; set; }
+    public int Cost { get; init; }
 
-        public int Cost { get; set; }
+    public string MessageFirst { get; init; } = string.Empty;
 
-        public string MessageFirst { get; set; }
-
-        public string MessageSecond { get; set; }
-    }
+    public string MessageSecond { get; init; } = string.Empty;
 }

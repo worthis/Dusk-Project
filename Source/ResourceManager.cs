@@ -4,31 +4,26 @@
 
     public class ResourceManager
     {
+        private static readonly object InstanceLock = new object();
         private static ResourceManager instance;
-        private static object instanceLock = new object();
 
         private IntPtr _screenSurfacePtr = IntPtr.Zero;
         private Dictionary<string, WeakReference> _resources = new();
 
         private ResourceManager()
         {
+            Console.WriteLine("ResourceManager created");
         }
 
-        public static ResourceManager GetInstance()
+        public static ResourceManager Instance
         {
-            if (instance == null)
+            get
             {
-                lock (instanceLock)
+                lock (InstanceLock)
                 {
-                    if (instance == null)
-                    {
-                        instance = new ResourceManager();
-                        Console.WriteLine("ResourceManager created");
-                    }
+                    return instance ??= new ResourceManager();
                 }
             }
-
-            return instance;
         }
 
         public void Init(IntPtr screenSurfacePtr)

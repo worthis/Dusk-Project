@@ -1,11 +1,10 @@
-﻿namespace DuskProject.Source.World
+﻿namespace DuskProject.Source.World;
+
+using DuskProject.Source.Enums;
+
+public record RestPoint : WorldPoint
 {
-    using DuskProject.Source.Enums;
+    public string Message { get; init; } = string.Empty;
 
-    public record RestPoint : WorldPoint
-    {
-        public string Message { get; set; } = string.Empty;
-
-        public SoundFX Sound { get; set; } = SoundFX.Coin;
-    }
+    public SoundFX Sound { get; init; } = SoundFX.Coin;
 }

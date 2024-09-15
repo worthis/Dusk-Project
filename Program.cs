@@ -13,14 +13,14 @@
         public static void Main()
         {
             // Create singletons
-            WindowManager windowManager = WindowManager.GetInstance();
-            ResourceManager resourceManager = ResourceManager.GetInstance();
-            SoundManager soundManager = SoundManager.GetInstance();
-            TextManager textManager = TextManager.GetInstance();
-            GameStateManager gameStateManager = GameStateManager.GetInstance();
-            WorldManager worldManager = WorldManager.GetInstance();
-            ItemManager itemManager = ItemManager.GetInstance();
-            Avatar avatar = Avatar.GetInstance();
+            WindowManager windowManager = WindowManager.Instance;
+            ResourceManager resourceManager = ResourceManager.Instance;
+            SoundManager soundManager = SoundManager.Instance;
+            TextManager textManager = TextManager.Instance;
+            GameStateManager gameStateManager = GameStateManager.Instance;
+            WorldManager worldManager = WorldManager.Instance;
+            ItemManager itemManager = ItemManager.Instance;
+            Avatar avatar = Avatar.Instance;
 
             // Initialization
             windowManager.CreateWindow("Dusk Project");
@@ -32,7 +32,7 @@
             worldManager.Init();
             avatar.Init();
 
-            gameStateManager.MainMenu();
+            gameStateManager.ShowMainMenu();
 
             _lastUpdateTime = SDL.SDL_GetTicks();
 
@@ -55,9 +55,9 @@
                 // Check quit conditions
                 if (windowManager.KeyPressed(InputKey.KEY_MENU) ||
                     windowManager.KeyPressed(InputKey.KEY_QUIT) ||
-                    gameStateManager.Quitting())
+                    gameStateManager.IsQuitting)
                 {
-                    _ = gameStateManager.Save();
+                    _ = gameStateManager.SaveGame();
                     windowManager.Close();
                     continue;
                 }

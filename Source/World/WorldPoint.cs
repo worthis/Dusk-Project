@@ -1,15 +1,14 @@
-﻿namespace DuskProject.Source.World
+﻿namespace DuskProject.Source.World;
+
+public record WorldPoint
 {
-    public record WorldPoint
+    public int X { get; init; } = 0;
+
+    public int Y { get; init; } = 0;
+
+    public bool MatchPos(int posX, int posY)
     {
-        public int X { get; set; } = 0;
-
-        public int Y { get; set; } = 0;
-
-        public bool MatchPos(int posX, int posY)
-        {
-            return posX.Equals(X) &&
-                posY.Equals(Y);
-        }
+        return posX.Equals(X) &&
+            posY.Equals(Y);
     }
 }

@@ -1,13 +1,12 @@
-﻿namespace DuskProject.Source.World
+﻿namespace DuskProject.Source.World;
+
+using DuskProject.Source.Enums;
+
+public record MessagePoint : WorldPoint
 {
-    using DuskProject.Source.Enums;
+    public string UniqueId { get; init; } = string.Empty;
 
-    public record MessagePoint : WorldPoint
-    {
-        public string UniqueId { get; set; } = string.Empty;
+    public string Message { get; init; } = string.Empty;
 
-        public string Message { get; set; } = string.Empty;
-
-        public SoundFX Sound { get; set; } = SoundFX.None;
-    }
+    public SoundFX Sound { get; init; } = SoundFX.None;
 }

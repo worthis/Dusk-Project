@@ -1,42 +1,41 @@
-﻿namespace DuskProject.Source.Dialog
+﻿namespace DuskProject.Source.Dialog;
+
+using DuskProject.Source.Enums;
+using Newtonsoft.Json;
+
+public record Item
 {
-    using DuskProject.Source.Enums;
-    using Newtonsoft.Json;
+    [JsonIgnore]
+    public string Id { get; init; }
 
-    public record Item
+    [JsonProperty]
+    public string Name { get; init; } = string.Empty;
+
+    [JsonProperty]
+    public ItemType Type { get; init; }
+
+    [JsonProperty]
+    public int Gold { get; init; } = 0;
+
+    [JsonProperty]
+    public int AttackMin { get; init; } = 0;
+
+    [JsonProperty]
+    public int AttackMax { get; init; } = 0;
+
+    [JsonProperty]
+    public int Defence { get; init; } = 0;
+
+    [JsonProperty]
+    public int Level { get; init; } = 0;
+
+    public int AttackAvg()
     {
-        [JsonIgnore]
-        public string Id { get; protected set; }
+        return (int)((AttackMin + AttackMax) * 0.5);
+    }
 
-        [JsonProperty]
-        public string Name { get; protected set; } = string.Empty;
-
-        [JsonProperty]
-        public ItemType Type { get; protected set; }
-
-        [JsonProperty]
-        public int Gold { get; protected set; } = 0;
-
-        [JsonProperty]
-        public int AttackMin { get; protected set; } = 0;
-
-        [JsonProperty]
-        public int AttackMax { get; protected set; } = 0;
-
-        [JsonProperty]
-        public int Defence { get; protected set; } = 0;
-
-        [JsonProperty]
-        public int Level { get; protected set; } = 0;
-
-        public int AttackAvg()
-        {
-            return (int)((AttackMin + AttackMax) * 0.5);
-        }
-
-        public int AttackDispersion()
-        {
-            return AttackMax - AttackMin;
-        }
+    public int AttackDispersion()
+    {
+        return AttackMax - AttackMin;
     }
 }

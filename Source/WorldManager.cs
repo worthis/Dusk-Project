@@ -8,8 +8,8 @@
 
     public class WorldManager
     {
+        private static readonly object InstanceLock = new object();
         private static WorldManager instance;
-        private static object instanceLock = new object();
 
         private readonly TileLayout[] _tileLayouts =
         {
@@ -39,6 +39,18 @@
 
         private WorldManager()
         {
+            Console.WriteLine("WorldManager created");
+        }
+
+        public static WorldManager Instance
+        {
+            get
+            {
+                lock (InstanceLock)
+                {
+                    return instance ??= new WorldManager();
+                }
+            }
         }
 
         public int TileSetRenderOffsetX { get; set; } = 0;
@@ -57,27 +69,10 @@
 
         public Minimap Minimap { get => _minimap; }
 
-        public static WorldManager GetInstance()
-        {
-            if (instance == null)
-            {
-                lock (instanceLock)
-                {
-                    if (instance == null)
-                    {
-                        instance = new WorldManager();
-                        Console.WriteLine("WorldManager created");
-                    }
-                }
-            }
-
-            return instance;
-        }
-
         public void Init()
         {
-            _resourceManager = ResourceManager.GetInstance();
-            _soundManager = SoundManager.GetInstance();
+            _resourceManager = ResourceManager.Instance;
+            _soundManager = SoundManager.Instance;
 
             LoadTiles();
             LoadBackgrounds();
@@ -398,7 +393,7 @@
                 _tileLayouts[layoutId].Width,
                 _tileLayouts[layoutId].Height,
                 _tileLayouts[layoutId].DstX + TileSetRenderOffsetX,
-                _tileLayouts[layoutId].DstY = TileSetRenderOffsetY);
+                _tileLayouts[layoutId].DstY + TileSetRenderOffsetY);
         }
 
         private void LoadTiles()

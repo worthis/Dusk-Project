@@ -1,35 +1,31 @@
 ﻿namespace DuskProject.Source;
 
+using DuskProject.Source.Creatures;
 using DuskProject.Source.Dialog;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 public class ItemManager
 {
+    private static readonly object InstanceLock = new object();
     private static ItemManager instance;
-    private static object instanceLock = new object();
 
     private Dictionary<string, Item> _items;
 
     private ItemManager()
     {
+        Console.WriteLine("ItemManager created");
     }
 
-    public static ItemManager GetInstance()
+    public static ItemManager Instance
     {
-        if (instance == null)
+        get
         {
-            lock (instanceLock)
+            lock (InstanceLock)
             {
-                if (instance == null)
-                {
-                    instance = new ItemManager();
-                    Console.WriteLine("ItemManager created");
-                }
+                return instance ??= new ItemManager();
             }
         }
-
-        return instance;
     }
 
     public void Init()

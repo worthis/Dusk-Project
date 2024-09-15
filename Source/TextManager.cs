@@ -8,8 +8,8 @@
 
     public class TextManager
     {
+        private static readonly object InstanceLock = new object();
         private static TextManager instance;
-        private static object instanceLock = new object();
 
         private ImageResource _imageFont;
         private Dictionary<char, TextGlyph> _glyphDictionary;
@@ -18,26 +18,21 @@
 
         private TextManager()
         {
+            Console.WriteLine("TextManager created");
+        }
+
+        public static TextManager Instance
+        {
+            get
+            {
+                lock (InstanceLock)
+                {
+                    return instance ??= new TextManager();
+                }
+            }
         }
 
         public TextColor Color { get; set; } = TextColor.Default;
-
-        public static TextManager GetInstance()
-        {
-            if (instance == null)
-            {
-                lock (instanceLock)
-                {
-                    if (instance == null)
-                    {
-                        instance = new TextManager();
-                        Console.WriteLine("TextManager created");
-                    }
-                }
-            }
-
-            return instance;
-        }
 
         public void Init(ImageResource fontImage)
         {

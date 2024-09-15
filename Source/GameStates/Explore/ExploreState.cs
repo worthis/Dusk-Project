@@ -25,7 +25,6 @@ public class ExploreState : IGameState
 
     private Random _randGen;
     private int _encounterChance = 0;
-    private bool _gameStarted = false;
 
     public ExploreState(
         GameStateManager gameStateManager,
@@ -76,7 +75,7 @@ public class ExploreState : IGameState
         if (_windowManager.KeyPressed(InputKey.KEY_SELECT))
         {
             _soundManager.PlaySound(SoundFX.Click);
-            _gameStateManager.InGameMenu();
+            _gameStateManager.ShowInGameMenu();
 
             return;
         }
@@ -86,8 +85,8 @@ public class ExploreState : IGameState
         {
             _soundManager.StopMusic();
             _soundManager.PlaySound(SoundFX.Click);
-            _ = _gameStateManager.Save();
-            _gameStateManager.MainMenu();
+            _ = _gameStateManager.SaveGame();
+            _gameStateManager.ShowMainMenu();
 
             return;
         }
@@ -191,7 +190,7 @@ public class ExploreState : IGameState
             if (_worldManager.CheckRestPoints(_avatar.X, _avatar.Y, out RestPoint restPoint))
             {
                 _avatar.Sleep();
-                _ = _gameStateManager.Save();
+                _ = _gameStateManager.SaveGame();
                 _message.Start(restPoint.Message);
                 _soundManager.PlaySound(restPoint.Sound);
 
