@@ -2,13 +2,14 @@
 {
     using DuskProject.Source.Enums;
     using DuskProject.Source.Resources;
+    using DuskProject.Source.UI;
     using DuskProject.Source.World;
     using Newtonsoft.Json;
 
     public class WorldManager
     {
+        private static readonly object InstanceLock = new object();
         private static WorldManager instance;
-        private static object instanceLock = new object();
 
         private readonly TileLayout[] _tileLayouts =
         {
@@ -32,10 +33,24 @@
 
         private Tile[] _tileSet;
         private ImageResource[] _backgrounds;
-        private World.WorldData _world;
+        private WorldData _world;
+
+        private Minimap _minimap;
 
         private WorldManager()
         {
+            Console.WriteLine("WorldManager created");
+        }
+
+        public static WorldManager Instance
+        {
+            get
+            {
+                lock (InstanceLock)
+                {
+                    return instance ??= new WorldManager();
+                }
+            }
         }
 
         public int TileSetRenderOffsetX { get; set; } = 0;
@@ -52,27 +67,12 @@
 
         public List<string> Enemies { get => _world.Enemies; }
 
-        public static WorldManager GetInstance()
-        {
-            if (instance == null)
-            {
-                lock (instanceLock)
-                {
-                    if (instance == null)
-                    {
-                        instance = new WorldManager();
-                        Console.WriteLine("WorldManager created");
-                    }
-                }
-            }
-
-            return instance;
-        }
+        public Minimap Minimap { get => _minimap; }
 
         public void Init()
         {
-            _resourceManager = ResourceManager.GetInstance();
-            _soundManager = SoundManager.GetInstance();
+            _resourceManager = ResourceManager.Instance;
+            _soundManager = SoundManager.Instance;
 
             LoadTiles();
             LoadBackgrounds();
@@ -113,6 +113,8 @@
 
             TileSetRenderOffsetX = 0;
             TileSetRenderOffsetY = 0;
+
+            LoadMinimap();
 
             _soundManager.PlayMusic(_world.Music);
 
@@ -391,7 +393,7 @@
                 _tileLayouts[layoutId].Width,
                 _tileLayouts[layoutId].Height,
                 _tileLayouts[layoutId].DstX + TileSetRenderOffsetX,
-                _tileLayouts[layoutId].DstY = TileSetRenderOffsetY);
+                _tileLayouts[layoutId].DstY + TileSetRenderOffsetY);
         }
 
         private void LoadTiles()
@@ -428,6 +430,43 @@
             _backgrounds[1] = _resourceManager.LoadImage("Data/images/backgrounds/nightsky.png");
             _backgrounds[2] = _resourceManager.LoadImage("Data/images/backgrounds/tempest.png");
             _backgrounds[3] = _resourceManager.LoadImage("Data/images/backgrounds/interior.png");
+        }
+
+        private void LoadMinimap()
+        {
+            _minimap = new Minimap(
+               Width,
+               Height,
+               _resourceManager.LoadImage("Data/images/interface/minimap.png"),
+               _resourceManager.LoadImage("Data/images/interface/minimap_cursor.png"));
+
+            _minimap.X = 4;
+            _minimap.Y = 4;
+
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    // Portals
+                    if (CheckPortals(i, j, out WorldPortal worldPortal))
+                    {
+                        _minimap.SetTileType(i, j, MinimapTileType.Portal);
+                        continue;
+                    }
+
+                    // Stores
+                    if (CheckStores(i, j, out StorePortal storePortal))
+                    {
+                        _minimap.SetTileType(i, j, MinimapTileType.Store);
+                        continue;
+                    }
+
+                    _minimap.SetTileType(
+                        i,
+                        j,
+                        GetTile(i, j).Walkable ? MinimapTileType.Walkable : MinimapTileType.Blocked);
+                }
+            }
         }
     }
 }

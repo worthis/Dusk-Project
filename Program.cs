@@ -13,18 +13,14 @@
         public static void Main()
         {
             // Create singletons
-            WindowManager windowManager = WindowManager.GetInstance();
-            ResourceManager resourceManager = ResourceManager.GetInstance();
-            SoundManager soundManager = SoundManager.GetInstance();
-            TextManager textManager = TextManager.GetInstance();
-            GameStateManager gameStateManager = GameStateManager.GetInstance();
-            TitleManager titleManager = TitleManager.GetInstance();
-            ExploreManager exploreManager = ExploreManager.GetInstance();
-            InGameMenuManager inGameMenuManager = InGameMenuManager.GetInstance();
-            WorldManager worldManager = WorldManager.GetInstance();
-            DialogManager dialogManager = DialogManager.GetInstance();
-            CombatManager combatManager = CombatManager.GetInstance();
-            Avatar avatar = Avatar.GetInstance();
+            WindowManager windowManager = WindowManager.Instance;
+            ResourceManager resourceManager = ResourceManager.Instance;
+            SoundManager soundManager = SoundManager.Instance;
+            TextManager textManager = TextManager.Instance;
+            GameStateManager gameStateManager = GameStateManager.Instance;
+            WorldManager worldManager = WorldManager.Instance;
+            ItemManager itemManager = ItemManager.Instance;
+            Avatar avatar = Avatar.Instance;
 
             // Initialization
             windowManager.CreateWindow("Dusk Project");
@@ -32,13 +28,11 @@
             soundManager.Init();
             textManager.Init(resourceManager.LoadImage("Data/images/interface/boxy_bold.png"));
             gameStateManager.Init();
-            titleManager.Init();
-            exploreManager.Init();
-            inGameMenuManager.Init();
+            itemManager.Init();
             worldManager.Init();
-            dialogManager.Init();
-            combatManager.Init();
             avatar.Init();
+
+            gameStateManager.ShowMainMenu();
 
             _lastUpdateTime = SDL.SDL_GetTicks();
 
@@ -61,9 +55,9 @@
                 // Check quit conditions
                 if (windowManager.KeyPressed(InputKey.KEY_MENU) ||
                     windowManager.KeyPressed(InputKey.KEY_QUIT) ||
-                    gameStateManager.Quitting())
+                    gameStateManager.IsQuitting)
                 {
-                    _ = exploreManager.Save();
+                    _ = gameStateManager.SaveGame();
                     windowManager.Close();
                     continue;
                 }

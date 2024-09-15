@@ -7,8 +7,8 @@
 
     public class SoundManager
     {
+        private static readonly object InstanceLock = new object();
         private static SoundManager instance;
-        private static object instanceLock = new object();
 
         private ResourceManager _resourceManager;
 
@@ -21,28 +21,23 @@
 
         private SoundManager()
         {
+            Console.WriteLine("SoundManager created");
         }
 
-        public static SoundManager GetInstance()
+        public static SoundManager Instance
         {
-            if (instance == null)
+            get
             {
-                lock (instanceLock)
+                lock (InstanceLock)
                 {
-                    if (instance == null)
-                    {
-                        instance = new SoundManager();
-                        Console.WriteLine("SoundManager created");
-                    }
+                    return instance ??= new SoundManager();
                 }
             }
-
-            return instance;
         }
 
         public void Init()
         {
-            _resourceManager = ResourceManager.GetInstance();
+            _resourceManager = ResourceManager.Instance;
 
             if (SDL.SDL_InitSubSystem(SDL.SDL_INIT_AUDIO) == -1)
             {

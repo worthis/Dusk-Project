@@ -1,51 +1,50 @@
-﻿namespace DuskProject.Source.World
+﻿namespace DuskProject.Source.World;
+
+using Newtonsoft.Json;
+
+public class WorldData
 {
-    using Newtonsoft.Json;
+    [JsonIgnore]
+    public string Id { get; set; } = string.Empty;
 
-    public class WorldData
-    {
-        [JsonIgnore]
-        public string Id { get; set; } = string.Empty;
+    [JsonProperty]
+    public string Name { get; init; } = string.Empty;
 
-        [JsonProperty]
-        public string Name { get; set; } = string.Empty;
+    [JsonProperty]
+    public string Music { get; init; } = string.Empty;
 
-        [JsonProperty]
-        public string Music { get; set; } = string.Empty;
+    [JsonProperty]
+    public int Width { get; init; } = 0;
 
-        [JsonProperty]
-        public int Width { get; set; } = 0;
+    [JsonProperty]
+    public int Height { get; init; } = 0;
 
-        [JsonProperty]
-        public int Height { get; set; } = 0;
+    [JsonProperty]
+    public int BackgroundImage { get; init; } = 0;
 
-        [JsonProperty]
-        public int BackgroundImage { get; set; } = 0;
+    [JsonProperty]
+    public int[,] Tiles { get; init; } = new int[0, 0];
 
-        [JsonProperty]
-        public int[,] Tiles { get; set; } = new int[0, 0];
+    [JsonProperty]
+    public List<WorldPortal> Portals { get; init; } = new();
 
-        [JsonProperty]
-        public List<WorldPortal> Portals { get; set; } = new();
+    [JsonProperty]
+    public List<StorePortal> Stores { get; init; } = new();
 
-        [JsonProperty]
-        public List<StorePortal> Stores { get; set; } = new();
+    [JsonProperty]
+    public List<string> Enemies { get; init; } = new();
 
-        [JsonProperty]
-        public List<string> Enemies { get; set; } = new();
+    public List<RestPoint> RestPoints { get; init; } = new();
 
-        public List<RestPoint> RestPoints { get; set; } = new();
+    [JsonProperty]
+    public List<ChestPoint> Chests { get; init; } = new();
 
-        [JsonProperty]
-        public List<ChestPoint> Chests { get; set; } = new();
+    [JsonProperty]
+    public List<MessagePoint> MessagePoints { get; init; } = new();
 
-        [JsonProperty]
-        public List<MessagePoint> MessagePoints { get; set; } = new();
+    [JsonProperty]
+    public List<ScriptedEnemy> ScriptedEnemies { get; init; } = new();
 
-        [JsonProperty]
-        public List<ScriptedEnemy> ScriptedEnemies { get; set; } = new();
-
-        [JsonProperty]
-        public List<ScriptedTile> ScriptedTiles { get; set; } = new();
-    }
+    [JsonProperty]
+    public List<ScriptedTile> ScriptedTiles { get; init; } = new();
 }

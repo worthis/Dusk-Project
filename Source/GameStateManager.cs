@@ -1,150 +1,196 @@
 ﻿namespace DuskProject.Source
 {
-    using DuskProject.Source.Enums;
+    using DuskProject.Source.Creatures;
+    using DuskProject.Source.GameStates.Combat;
+    using DuskProject.Source.GameStates.Dialog;
+    using DuskProject.Source.GameStates.Explore;
+    using DuskProject.Source.GameStates.Menu;
+    using DuskProject.Source.GameStates.Title;
+    using DuskProject.Source.Interfaces;
 
     public class GameStateManager
     {
+        private const string SaveFilePath = "Save/avatar.json";
+
+        private static readonly object InstanceLock = new object();
         private static GameStateManager instance;
-        private static object instanceLock = new object();
 
-        private TitleManager _titleManager;
-        private ExploreManager _exploreManager;
-        private InGameMenuManager _inGameMenuManager;
-        private DialogManager _dialogManager;
-        private CombatManager _combatManager;
+        private WindowManager _windowManager;
+        private ResourceManager _resourceManager;
+        private SoundManager _soundManager;
+        private TextManager _textManager;
+        private WorldManager _worldManager;
+        private ItemManager _itemManager;
+        private Avatar _avatar;
 
-        private GameState _gameState = GameState.Title;
-        private bool _quit = false;
+        private bool _isQuitting = false;
+        private bool _isGameStarted = false;
+        private IGameState _currentState;
 
         private GameStateManager()
         {
+            Console.WriteLine("GameStateManager created");
         }
 
-        public GameState State { get => _gameState; }
-
-        public static GameStateManager GetInstance()
+        public static GameStateManager Instance
         {
-            if (instance == null)
+            get
             {
-                lock (instanceLock)
+                lock (InstanceLock)
                 {
-                    if (instance == null)
-                    {
-                        instance = new GameStateManager();
-                        Console.WriteLine("GameStateManager created");
-                    }
+                    return instance ??= new GameStateManager();
                 }
             }
-
-            return instance;
         }
+
+        public (string Id, string UniqueFlag) Enemy { get; private set; }
+
+        public string Store { get; private set; }
+
+        public bool IsQuitting => _isQuitting;
+
+        public static bool SaveFileExists() => File.Exists(SaveFilePath);
 
         public void Init()
         {
-            _titleManager = TitleManager.GetInstance();
-            _exploreManager = ExploreManager.GetInstance();
-            _inGameMenuManager = InGameMenuManager.GetInstance();
-            _dialogManager = DialogManager.GetInstance();
-            _combatManager = CombatManager.GetInstance();
+            _windowManager = WindowManager.Instance;
+            _resourceManager = ResourceManager.Instance;
+            _soundManager = SoundManager.Instance;
+            _textManager = TextManager.Instance;
+            _worldManager = WorldManager.Instance;
+            _itemManager = ItemManager.Instance;
+            _avatar = Avatar.Instance;
 
             Console.WriteLine("GameStateManager initialized");
         }
 
-        public bool Quitting()
+        public void RegisterQuit() => _isQuitting = true;
+
+        public void Update() => _currentState?.Update();
+
+        public void Render() => _currentState?.Render();
+
+        public void ShowMainMenu()
         {
-            return _quit;
+            _isGameStarted = false;
+            _currentState = new TitleState(
+                this,
+                _windowManager,
+                _resourceManager,
+                _soundManager,
+                _textManager);
         }
 
-        public void RegisterQuit()
+        public void ShowInGameMenu()
         {
-            _quit = true;
-        }
-
-        public void Update()
-        {
-            switch (_gameState)
-            {
-                case GameState.Title:
-                    _titleManager.Update();
-                    break;
-
-                case GameState.Explore:
-                    _exploreManager.Update();
-                    break;
-
-                case GameState.Combat:
-                    _combatManager.Update();
-                    break;
-
-                case GameState.Dialog:
-                    _dialogManager.Update();
-                    break;
-
-                case GameState.Info:
-                    _inGameMenuManager.Update();
-                    break;
-            }
-        }
-
-        public void Render()
-        {
-            switch (_gameState)
-            {
-                case GameState.Title:
-                    _titleManager.Render();
-                    break;
-
-                case GameState.Explore:
-                    _exploreManager.Render();
-                    break;
-
-                case GameState.Combat:
-                    _combatManager.Render();
-                    break;
-
-                case GameState.Dialog:
-                    _dialogManager.Render();
-                    break;
-
-                case GameState.Info:
-                    _exploreManager.RenderWorld();
-                    _inGameMenuManager.Render();
-                    break;
-            }
-        }
-
-        public void MainMenu()
-        {
-            _gameState = GameState.Title;
-        }
-
-        public void InGameMenu()
-        {
-            _inGameMenuManager.UpdateSpells();
-            _gameState = GameState.Info;
+            _currentState = new MenuState(
+                this,
+                _windowManager,
+                _resourceManager,
+                _soundManager,
+                _textManager,
+                _worldManager,
+                _avatar);
         }
 
         public void StartCombat(string enemyId, string uniqueFlag = "")
         {
-            _combatManager.StartCombat(enemyId, uniqueFlag);
-            _gameState = GameState.Combat;
+            Enemy = (enemyId, uniqueFlag);
+            _currentState = new CombatState(
+                this,
+                _windowManager,
+                _resourceManager,
+                _soundManager,
+                _textManager,
+                _worldManager,
+                _avatar);
         }
 
         public void StartDialog(string storeName)
         {
-            _dialogManager.StartDialog(storeName);
-            _gameState = GameState.Dialog;
+            Store = storeName;
+            _currentState = new DialogState(
+                this,
+                _windowManager,
+                _resourceManager,
+                _soundManager,
+                _textManager,
+                _worldManager,
+                _itemManager,
+                _avatar);
         }
 
         public void StartExplore()
         {
-            _gameState = GameState.Explore;
+            _currentState = new ExploreState(
+                this,
+                _windowManager,
+                _resourceManager,
+                _soundManager,
+                _textManager,
+                _worldManager,
+                _itemManager,
+                _avatar);
         }
 
         public void StartGame()
         {
-            _exploreManager.Start();
-            StartExplore();
+            if (SaveFileExists())
+            {
+                LoadGame();
+                StartExplore();
+                return;
+            }
+
+            InitializeNewGame();
+            StartDialog("8-a-nightmare");
+            _ = SaveGame();
+        }
+
+        public async Task SaveGame()
+        {
+            if (!_isGameStarted)
+            {
+                return;
+            }
+
+            string serializedAvatar = _avatar.Serialize();
+            await File.WriteAllTextAsync(SaveFilePath, serializedAvatar);
+
+            Console.WriteLine("Game saved.");
+        }
+
+        public void LoadGame()
+        {
+            string jsonData = File.ReadAllText(SaveFilePath);
+            _avatar.Deserialize(jsonData);
+            _isGameStarted = true;
+            _worldManager.LoadWorld(_avatar.World);
+            _worldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
+
+            Console.WriteLine("Game loaded.");
+        }
+
+        private void InitializeNewGame()
+        {
+            _avatar.Reset();
+            EquipStartingItems();
+            _isGameStarted = true;
+            _worldManager.LoadWorld(_avatar.World);
+            _worldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
+        }
+
+        private void EquipStartingItems()
+        {
+            if (_itemManager.GetItem("Bare Fists", out var weapon))
+            {
+                _avatar.EquipItem(weapon);
+            }
+
+            if (_itemManager.GetItem("Serf Rags", out var armor))
+            {
+                _avatar.EquipItem(armor);
+            }
         }
     }
 }

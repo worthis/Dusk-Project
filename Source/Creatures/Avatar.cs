@@ -8,28 +8,23 @@
 
     public class Avatar : AvatarBase
     {
+        private static readonly object InstanceLock = new object();
         private static Avatar instance;
-        private static object instanceLock = new object();
 
         private Avatar()
         {
+            Console.WriteLine("Avatar created");
         }
 
-        public static Avatar GetInstance()
+        public static Avatar Instance
         {
-            if (instance == null)
+            get
             {
-                lock (instanceLock)
+                lock (InstanceLock)
                 {
-                    if (instance == null)
-                    {
-                        instance = new Avatar();
-                        Console.WriteLine("Avatar created");
-                    }
+                    return instance ??= new Avatar();
                 }
             }
-
-            return instance;
         }
 
         public void Init()

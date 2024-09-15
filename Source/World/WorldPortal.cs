@@ -1,11 +1,10 @@
-﻿namespace DuskProject.Source.World
+﻿namespace DuskProject.Source.World;
+
+public record WorldPortal : WorldPoint
 {
-    public record WorldPortal : WorldPoint
-    {
-        public string Destination { get; set; }
+    public string Destination { get; init; }
 
-        public int DestX { get; set; }
+    public int DestX { get; init; }
 
-        public int DestY { get; set; }
-    }
+    public int DestY { get; init; }
 }

@@ -1,21 +1,20 @@
-﻿namespace DuskProject.Source.World
+﻿namespace DuskProject.Source.World;
+
+using DuskProject.Source.Enums;
+
+public record ChestPoint : WorldPoint
 {
-    using DuskProject.Source.Enums;
+    public string UniqueId { get; init; } = string.Empty;
 
-    public record ChestPoint : WorldPoint
-    {
-        public string UniqueId { get; set; } = string.Empty;
+    public int ClosedTileId { get; init; } = 0;
 
-        public int ClosedTileId { get; set; } = 0;
+    public int OpenedTileId { get; init; } = 0;
 
-        public int OpenedTileId { get; set; } = 0;
+    public ChestRewardType RewardType { get; init; } = ChestRewardType.None;
 
-        public ChestRewardType RewardType { get; set; } = ChestRewardType.None;
+    public string RewardItemId { get; init; } = string.Empty;
 
-        public string RewardItemId { get; set; } = string.Empty;
+    public int RewardItemAmount { get; init; } = 0;
 
-        public int RewardItemAmount { get; set; } = 0;
-
-        public SoundFX Sound { get; set; } = SoundFX.Coin;
-    }
+    public SoundFX Sound { get; init; } = SoundFX.Coin;
 }
