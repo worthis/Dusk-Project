@@ -10,6 +10,8 @@
 
     public class GameStateManager
     {
+        private const string _saveFile = "Save/avatar.json";
+
         private static GameStateManager instance;
         private static object instanceLock = new object();
 
@@ -24,6 +26,7 @@
         private Avatar _avatar;
 
         private bool _quit = false;
+        private bool _gameStarted = false;
 
         private GameStateManager()
         {
@@ -83,6 +86,8 @@
 
         public void MainMenu()
         {
+            _gameStarted = false;
+
             State = new TitleState(
                 this,
                 _windowManager,
@@ -126,13 +131,72 @@
 
         public void StartExplore()
         {
-            State = new ExploreState();
+            State = new ExploreState(
+                this,
+                _windowManager,
+                _resourceManager,
+                _soundManager,
+                _textManager,
+                _worldManager,
+                _avatar);
         }
 
         public void StartGame()
         {
-            _exploreManager.Start();
-            StartExplore();
+            if (SaveFileExists())
+            {
+                using (StreamReader streamReader = new(_saveFile))
+                {
+                    string jsonData = streamReader.ReadToEnd();
+                    _avatar.Deserialize(jsonData);
+                }
+
+                _gameStarted = true;
+                _worldManager.LoadWorld(_avatar.World);
+                _worldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
+                StartExplore();
+
+                return;
+            }
+
+            _avatar.Reset();
+
+            if (_itemManager.GetItem("Bare Fists", out var weapon))
+            {
+                _avatar.EquipItem(weapon);
+            }
+
+            if (_itemManager.GetItem("Serf Rags", out var armor))
+            {
+                _avatar.EquipItem(armor);
+            }
+
+            _gameStarted = true;
+            _worldManager.LoadWorld(_avatar.World);
+            _worldManager.InitScriptedEvents(_avatar.HasCampaignFlag);
+            StartDialog("8-a-nightmare");
+            _ = Save();
+        }
+
+        public bool SaveFileExists()
+        {
+            return File.Exists(_saveFile);
+        }
+
+        public async Task Save()
+        {
+            if (!_gameStarted)
+            {
+                return;
+            }
+
+            string avatarSerialized = _avatar.Serialize();
+
+            using (StreamWriter streamWriter = new StreamWriter(_saveFile))
+            {
+                await streamWriter.WriteAsync(avatarSerialized);
+                await streamWriter.FlushAsync();
+            }
         }
     }
 }

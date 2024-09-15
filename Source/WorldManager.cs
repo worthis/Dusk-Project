@@ -2,6 +2,7 @@
 {
     using DuskProject.Source.Enums;
     using DuskProject.Source.Resources;
+    using DuskProject.Source.UI;
     using DuskProject.Source.World;
     using Newtonsoft.Json;
 
@@ -32,7 +33,9 @@
 
         private Tile[] _tileSet;
         private ImageResource[] _backgrounds;
-        private World.WorldData _world;
+        private WorldData _world;
+
+        private Minimap _minimap;
 
         private WorldManager()
         {
@@ -51,6 +54,8 @@
         public string WorldName { get => _world.Name; }
 
         public List<string> Enemies { get => _world.Enemies; }
+
+        public Minimap Minimap { get => _minimap; }
 
         public static WorldManager GetInstance()
         {
@@ -113,6 +118,8 @@
 
             TileSetRenderOffsetX = 0;
             TileSetRenderOffsetY = 0;
+
+            LoadMinimap();
 
             _soundManager.PlayMusic(_world.Music);
 
@@ -428,6 +435,43 @@
             _backgrounds[1] = _resourceManager.LoadImage("Data/images/backgrounds/nightsky.png");
             _backgrounds[2] = _resourceManager.LoadImage("Data/images/backgrounds/tempest.png");
             _backgrounds[3] = _resourceManager.LoadImage("Data/images/backgrounds/interior.png");
+        }
+
+        private void LoadMinimap()
+        {
+            _minimap = new Minimap(
+               Width,
+               Height,
+               _resourceManager.LoadImage("Data/images/interface/minimap.png"),
+               _resourceManager.LoadImage("Data/images/interface/minimap_cursor.png"));
+
+            _minimap.X = 4;
+            _minimap.Y = 4;
+
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    // Portals
+                    if (CheckPortals(i, j, out WorldPortal worldPortal))
+                    {
+                        _minimap.SetTileType(i, j, MinimapTileType.Portal);
+                        continue;
+                    }
+
+                    // Stores
+                    if (CheckStores(i, j, out StorePortal storePortal))
+                    {
+                        _minimap.SetTileType(i, j, MinimapTileType.Store);
+                        continue;
+                    }
+
+                    _minimap.SetTileType(
+                        i,
+                        j,
+                        GetTile(i, j).Walkable ? MinimapTileType.Walkable : MinimapTileType.Blocked);
+                }
+            }
         }
     }
 }

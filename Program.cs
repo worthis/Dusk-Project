@@ -18,7 +18,6 @@
             SoundManager soundManager = SoundManager.GetInstance();
             TextManager textManager = TextManager.GetInstance();
             GameStateManager gameStateManager = GameStateManager.GetInstance();
-            ExploreManager exploreManager = ExploreManager.GetInstance();
             InGameMenuManager inGameMenuManager = InGameMenuManager.GetInstance();
             WorldManager worldManager = WorldManager.GetInstance();
             ItemManager itemManager = ItemManager.GetInstance();
@@ -31,7 +30,6 @@
             textManager.Init(resourceManager.LoadImage("Data/images/interface/boxy_bold.png"));
             gameStateManager.Init();
             itemManager.Init();
-            exploreManager.Init();
             inGameMenuManager.Init();
             worldManager.Init();
             avatar.Init();
@@ -59,7 +57,7 @@
                     windowManager.KeyPressed(InputKey.KEY_QUIT) ||
                     gameStateManager.Quitting())
                 {
-                    _ = exploreManager.Save();
+                    _ = gameStateManager.Save();
                     windowManager.Close();
                     continue;
                 }
