@@ -19,9 +19,9 @@ public class TitleMainPage : TitlePageBase
     {
         _imageBackground.Render();
 
-        Title.TextManager.Render(GetMenuItemText("START", 0, _menuSelected), 160, 100, TextJustify.JUSTIFY_CENTER);
-        Title.TextManager.Render(GetMenuItemText("OPTIONS", 1, _menuSelected), 160, 100 + 16, TextJustify.JUSTIFY_CENTER);
-        Title.TextManager.Render(GetMenuItemText("QUIT", 2, _menuSelected), 160, 100 + 16 + 16, TextJustify.JUSTIFY_CENTER);
+        RenderMenuItem("START", 0, 100);
+        RenderMenuItem("OPTIONS", 1, 116);
+        RenderMenuItem("QUIT", 2, 132);
 
         Title.TextManager.Render("by Worthis, 2024", 160, 200, TextJustify.JUSTIFY_CENTER);
         Title.TextManager.Render("ft. music by Yubatake", 160, 200 + 16, TextJustify.JUSTIFY_CENTER);
@@ -29,50 +29,55 @@ public class TitleMainPage : TitlePageBase
 
     public override void Update()
     {
+        HandleMenuNavigation();
+
+        if (Title.WindowManager.KeyPressed(InputKey.KEY_A))
+        {
+            Title.SoundManager.PlaySound(SoundFX.Click);
+            ExecuteMenuAction(_menuSelected);
+        }
+    }
+
+    private static string GetMenuItemText(string text, int position, int selected)
+    {
+        return selected.Equals(position) ? $"[ {text} ]" : text;
+    }
+
+    private void RenderMenuItem(string text, int position, int yOffset)
+    {
+        Title.TextManager.Render(
+            GetMenuItemText(text, position, _menuSelected),
+            160,
+            yOffset,
+            TextJustify.JUSTIFY_CENTER);
+    }
+
+    private void HandleMenuNavigation()
+    {
         if (Title.WindowManager.KeyPressed(InputKey.KEY_UP))
         {
-            _menuSelected--;
-            if (_menuSelected < 0)
-            {
-                _menuSelected = 0;
-            }
+            _menuSelected = Math.Max(_menuSelected - 1, 0);
         }
 
         if (Title.WindowManager.KeyPressed(InputKey.KEY_DOWN))
         {
-            _menuSelected++;
-            if (_menuSelected >= _menuCount)
-            {
-                _menuSelected = _menuCount - 1;
-            }
-        }
-
-        if (Title.WindowManager.KeyPressed(InputKey.KEY_A))
-        {
-            switch (_menuSelected)
-            {
-                // Start
-                case 0:
-                    Title.SoundManager.PlaySound(SoundFX.Click);
-                    Title.GameStateManager.StartGame();
-                    break;
-
-                // Options
-                case 1:
-                    Title.SoundManager.PlaySound(SoundFX.Click);
-                    break;
-
-                // Quit
-                case 2:
-                    Title.SoundManager.PlaySound(SoundFX.Click);
-                    Title.GameStateManager.RegisterQuit();
-                    break;
-            }
+            _menuSelected = Math.Min(_menuSelected + 1, _menuCount - 1);
         }
     }
 
-    private static string GetMenuItemText(string menuItemText, int menuItemPos, int menuSelected)
+    private void ExecuteMenuAction(int selected)
     {
-        return menuSelected.Equals(menuItemPos) ? string.Format("[ {0} ]", menuItemText) : menuItemText;
+        switch (selected)
+        {
+            case 0:
+                Title.GameStateManager.StartGame();
+                break;
+            case 1:
+                // Options logic
+                break;
+            case 2:
+                Title.GameStateManager.RegisterQuit();
+                break;
+        }
     }
 }
