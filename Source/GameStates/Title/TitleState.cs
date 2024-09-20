@@ -26,6 +26,8 @@ public class TitleState : IGameState
 
         Page = new TitleMainPage(this);
 
+        soundManager.PlayMusic("wendale_abbey");
+
         Console.WriteLine("Title State created");
     }
 
