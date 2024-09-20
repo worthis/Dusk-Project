@@ -1,6 +1,5 @@
 ﻿namespace DuskProject.Source;
 
-using DuskProject.Source.Creatures;
 using DuskProject.Source.Dialog;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -10,7 +9,7 @@ public class ItemManager
     private static readonly object InstanceLock = new object();
     private static ItemManager instance;
 
-    private Dictionary<string, Item> _items;
+    private Dictionary<string, Item> _items = new();
 
     private ItemManager()
     {
@@ -58,7 +57,12 @@ public class ItemManager
             string jsonData = streamReader.ReadToEnd();
             streamReader.Close();
 
-            _items = JsonConvert.DeserializeObject<Dictionary<string, Item>>(jsonData, new StringEnumConverter());
+            var items = JsonConvert.DeserializeObject<List<Item>>(jsonData, new StringEnumConverter());
+
+            foreach (var item in items)
+            {
+                _items.Add(item.Id, item);
+            }
         }
 
         Console.WriteLine("Items loaded from {0}", fileName);

@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 public record Item
 {
-    [JsonIgnore]
+    [JsonProperty]
     public string Id { get; init; }
 
     [JsonProperty]
