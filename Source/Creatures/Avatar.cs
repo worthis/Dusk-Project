@@ -79,7 +79,7 @@
 
         public bool IsBadlyHurt()
         {
-            return HP <= MaxHP / 3;
+            return HP <= MaxHP * 0.33;
         }
 
         public void LearnSpell(Item spell)
